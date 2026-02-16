@@ -1,0 +1,42 @@
+{
+  "name": "HustleKE - Kenyan Freelance Marketplace",
+  "short_name": "HustleKE",
+  "description": "Connect with global clients. Get paid instantly via M-Pesa. Only 6% service fee.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "en",
+  "dir": "ltr",
+  "shortcuts": [
+    {
+      "name": "Find Work",
+      "short_name": "Jobs",
+      "description": "Browse available jobs",
+      "url": "/jobs"
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your dashboard",
+      "url": "/dashboard"
+    },
+    {
+      "name": "Wallet",
+      "short_name": "Wallet",
+      "description": "Check your M-Pesa wallet",
+      "url": "/dashboard/wallet"
+    }
+  ]
+}
