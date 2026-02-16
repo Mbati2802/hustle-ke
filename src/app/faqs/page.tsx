@@ -536,7 +536,7 @@ export default function FAQsPage() {
         </section>
 
         {/* System Intelligence Section */}
-        <section className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
+        <section className="py-12 sm:py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
           <div className="absolute top-10 right-10 w-72 h-72 bg-green-500/10 rounded-full blur-3xl" />
           <div className="absolute bottom-10 left-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />
 
@@ -655,7 +655,7 @@ export default function FAQsPage() {
         </section>
 
         {/* How It Works + Pro Upgrade */}
-        <section className="py-20 bg-gray-50">
+        <section className="py-12 sm:py-20 bg-gray-50">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
               <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
@@ -793,7 +793,7 @@ export default function FAQsPage() {
         </section>
 
         {/* Contact CTA */}
-        <section className="py-20 bg-gradient-to-br from-green-600 to-emerald-700">
+        <section className="py-12 sm:py-20 bg-gradient-to-br from-green-600 to-emerald-700">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl lg:text-4xl font-bold text-white mb-5">
               {content.cta_title}

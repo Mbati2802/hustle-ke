@@ -463,7 +463,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Process Steps - Animated Cards */}
-      <section className="py-20 px-4">
+      <section className="py-12 sm:py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -510,7 +510,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Features Section - Animated Cards */}
-      <section className="py-20 px-4 bg-white">
+      <section className="py-12 sm:py-20 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <span className="inline-block bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">
@@ -550,7 +550,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Testimonials Carousel */}
-      <section className="py-20 px-4 bg-gray-900 text-white relative overflow-hidden">
+      <section className="py-12 sm:py-20 px-4 bg-gray-900 text-white relative overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-green-900/20 to-gray-900"></div>
@@ -637,7 +637,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* FAQ Section - Modern Tabs Design */}
-      <section className="py-20 px-4 bg-gray-50">
+      <section className="py-12 sm:py-20 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <span className="inline-block bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">
@@ -668,7 +668,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Newsletter Section */}
-      <section className="py-20 px-4 bg-gradient-to-br from-green-600 to-green-700 relative overflow-hidden">
+      <section className="py-12 sm:py-20 px-4 bg-gradient-to-br from-green-600 to-green-700 relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-green-400/20 rounded-full blur-3xl"></div>
@@ -705,7 +705,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-20 px-4 bg-white">
+      <section className="py-12 sm:py-20 px-4 bg-white">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
             {hiwContent.cta_title}

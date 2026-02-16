@@ -229,7 +229,7 @@ export default function SubmitProposalsPage() {
         </section>
 
         {/* What makes a winning proposal */}
-        <section className="py-20 bg-gray-50">
+        <section className="py-12 sm:py-20 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
@@ -301,7 +301,7 @@ export default function SubmitProposalsPage() {
         </section>
 
         {/* Step by step */}
-        <section id="steps" className="py-20 bg-white scroll-mt-20">
+        <section id="steps" className="py-12 sm:py-20 bg-white scroll-mt-20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
@@ -347,7 +347,7 @@ export default function SubmitProposalsPage() {
         </section>
 
         {/* AI Proposal Polisher Feature */}
-        <section className="py-20 bg-gradient-to-br from-purple-900 via-indigo-900 to-gray-900 relative overflow-hidden">
+        <section className="py-12 sm:py-20 bg-gradient-to-br from-purple-900 via-indigo-900 to-gray-900 relative overflow-hidden">
           <div className="absolute top-10 right-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl" />
           <div className="absolute bottom-10 left-10 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl" />
 
@@ -421,7 +421,7 @@ export default function SubmitProposalsPage() {
         </section>
 
         {/* Quick tips checklist */}
-        <section className="py-20 bg-gray-50">
+        <section className="py-12 sm:py-20 bg-gray-50">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
@@ -491,7 +491,7 @@ export default function SubmitProposalsPage() {
         </section>
 
         {/* CTA */}
-        <section className="py-20 bg-gradient-to-br from-purple-600 to-indigo-700">
+        <section className="py-12 sm:py-20 bg-gradient-to-br from-purple-600 to-indigo-700">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl lg:text-4xl font-bold text-white mb-5">
               Ready to Land Your First Job?

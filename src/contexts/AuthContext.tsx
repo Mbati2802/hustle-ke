@@ -101,6 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [orgRole, setOrgRole] = useState<string | null>(null)
   const [orgMode, setOrgMode] = useState(false)
   const [pendingInvites, setPendingInvites] = useState<OrgInvite[]>([])
+  const [loggingOut, setLoggingOut] = useState(false)
   const router = useRouter()
   const supabase = useMemo(() => createClient(), [])
   const fetchProfile = useCallback(async (userId: string) => {
@@ -219,7 +220,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Also listen for future auth changes (login/logout/token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: string, s: Session | null) => {
-        if (!isMounted) return
+        if (!isMounted || loggingOut) return
         setSession(s)
         setUser(s?.user ?? null)
         if (s?.user) {
@@ -298,8 +299,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [profile]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const logout = useCallback(async () => {
-    await fetch('/api/auth/logout', { method: 'POST' })
-    await supabase.auth.signOut()
+    setLoggingOut(true)
+    // Clear all state immediately
     setUser(null)
     setProfile(null)
     setSession(null)
@@ -308,10 +309,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setActiveOrg(null)
     setOrgRole(null)
     setOrgMode(false)
-    try { sessionStorage.removeItem('hk_active_org') } catch {}
-    router.push('/')
-    router.refresh()
-  }, [supabase, router])
+    setPendingInvites([])
+    try {
+      sessionStorage.removeItem('hk_profile')
+      sessionStorage.removeItem('hk_active_org')
+    } catch {}
+    // Sign out on server and client
+    try { await fetch('/api/auth/logout', { method: 'POST' }) } catch {}
+    try { await supabase.auth.signOut() } catch {}
+    // Hard redirect to ensure clean state
+    window.location.href = '/'
+  }, [supabase])
 
   return (
     <AuthContext.Provider value={{ user, profile, session, loading, login, signup, logout, refreshProfile, userOrg, userOrgRole, activeOrg, orgRole, orgMode, pendingInvites, switchToOrg, switchToPersonal, refreshOrg, refreshInvites }}>

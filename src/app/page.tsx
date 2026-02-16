@@ -526,9 +526,9 @@ export default function LandingPage() {
       </section>
 
       {/* Value Proposition */}
-      <section className="py-24 bg-white">
+      <section className="py-12 sm:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10 sm:mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
               {content.value_props_title}
             </h2>
@@ -570,9 +570,9 @@ export default function LandingPage() {
       </section>
 
       {/* Featured Talent */}
-      <section className="py-24 bg-gray-50">
+      <section className="py-12 sm:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-end mb-12">
+          <div className="flex justify-between items-end mb-8 sm:mb-12">
             <div>
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
                 Featured Talent
@@ -724,9 +724,9 @@ export default function LandingPage() {
       </section>
 
       {/* Featured Reviews */}
-      <section className="py-24 bg-white">
+      <section className="py-12 sm:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-end mb-12">
+          <div className="flex justify-between items-end mb-8 sm:mb-12">
             <div>
               <div className="inline-flex items-center gap-2 bg-yellow-50 text-yellow-700 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
                 <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
@@ -840,7 +840,7 @@ export default function LandingPage() {
       </section>
 
       {/* System Intelligence — Internal Ads */}
-      <section className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
+      <section className="py-12 sm:py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
         {/* Animated CSS */}
         <style jsx>{`
           @keyframes hk-float-1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(30px,-40px) scale(1.1); } }
@@ -967,9 +967,9 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section className="py-24 bg-gray-50">
+      <section className="py-12 sm:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10 sm:mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
               How It Works
             </h2>
@@ -1019,7 +1019,7 @@ export default function LandingPage() {
       </section>
 
       {/* Live Hustle Feed — Real-time platform activity */}
-      <section className="py-20 bg-white relative overflow-hidden">
+      <section className="py-12 sm:py-20 bg-white relative overflow-hidden">
         <style jsx>{`
           @keyframes hk-feed-in { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
           @keyframes hk-feed-out { from { opacity:1; transform: translateY(0); } to { opacity:0; transform: translateY(-16px); } }
@@ -1224,7 +1224,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-green-600 to-green-700">
+      <section className="py-12 sm:py-24 bg-gradient-to-br from-green-600 to-green-700">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl lg:text-5xl font-bold text-white mb-6">
             {content.cta_title}

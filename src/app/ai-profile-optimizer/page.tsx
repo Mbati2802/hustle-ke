@@ -179,7 +179,7 @@ export default function AIProfileOptimizerPage() {
 
         {/* Not logged in */}
         {!authLoading && !profile && (
-          <section className="py-20">
+          <section className="py-12 sm:py-20">
             <div className="max-w-md mx-auto px-4 text-center">
               <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
                 <User className="w-8 h-8 text-gray-400" />
@@ -198,7 +198,7 @@ export default function AIProfileOptimizerPage() {
 
         {/* Loading */}
         {loading && (
-          <section className="py-20">
+          <section className="py-12 sm:py-20">
             <div className="max-w-md mx-auto px-4 text-center">
               <Loader2 className="w-12 h-12 text-emerald-500 animate-spin mx-auto mb-5" />
               <h2 className="text-xl font-bold text-gray-900 mb-2">AI is Analyzing Your Profile...</h2>
@@ -209,7 +209,7 @@ export default function AIProfileOptimizerPage() {
 
         {/* Error */}
         {error && (
-          <section className="py-20">
+          <section className="py-12 sm:py-20">
             <div className="max-w-md mx-auto px-4 text-center">
               <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-4" />
               <h2 className="text-xl font-bold text-gray-900 mb-2">Analysis Failed</h2>

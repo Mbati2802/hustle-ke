@@ -253,7 +253,7 @@ export default function TalentPage() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col overflow-x-hidden">
       <Header activeLink="/talent" />
 
       {/* Hero */}

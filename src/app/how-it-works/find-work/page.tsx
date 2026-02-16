@@ -36,7 +36,7 @@ export default function FindWorkPage() {
       <Header activeLink="/how-it-works" />
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-green-600 to-green-700 py-20 px-4">
+      <section className="bg-gradient-to-br from-green-600 to-green-700 py-12 sm:py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 mb-6">
             <Search className="w-4 h-4 text-white" />

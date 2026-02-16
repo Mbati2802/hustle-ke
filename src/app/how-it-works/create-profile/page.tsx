@@ -246,7 +246,7 @@ export default function CreateProfilePage() {
         </section>
 
         {/* What makes a standout profile */}
-        <section className="py-20 bg-gray-50">
+        <section className="py-12 sm:py-20 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
@@ -317,7 +317,7 @@ export default function CreateProfilePage() {
         </section>
 
         {/* Step by step guide */}
-        <section id="steps" className="py-20 bg-white scroll-mt-20">
+        <section id="steps" className="py-12 sm:py-20 bg-white scroll-mt-20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
@@ -365,7 +365,7 @@ export default function CreateProfilePage() {
         </section>
 
         {/* Pro Tips */}
-        <section className="py-20 bg-gray-50">
+        <section className="py-12 sm:py-20 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
@@ -463,7 +463,7 @@ export default function CreateProfilePage() {
         </section>
 
         {/* CTA */}
-        <section className="py-20 bg-gradient-to-br from-green-600 to-green-700">
+        <section className="py-12 sm:py-20 bg-gradient-to-br from-green-600 to-green-700">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl lg:text-4xl font-bold text-white mb-5">
               Ready to Build Your Profile?
