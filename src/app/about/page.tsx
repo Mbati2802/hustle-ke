@@ -81,12 +81,9 @@ export default function AboutPage() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [usersRes, jobsRes] = await Promise.all([
-          fetch('/api/admin/stats').then(r => r.ok ? r.json() : null).catch(() => null),
-          fetch('/api/jobs?limit=1').then(r => r.ok ? r.json() : null).catch(() => null),
-        ])
-        const totalUsers = usersRes?.total_users || usersRes?.totalUsers
-        const totalJobs = usersRes?.total_jobs || usersRes?.totalJobs
+        const statsRes = await fetch('/api/public/stats').then(r => r.ok ? r.json() : null).catch(() => null)
+        const totalUsers = statsRes?.total_users
+        const totalJobs = statsRes?.total_jobs
         if (totalUsers || totalJobs) {
           setRealStats([
             { value: totalUsers ? `${totalUsers.toLocaleString()}+` : content.stats[0].value, label: 'Active Users' },
@@ -275,11 +272,15 @@ export default function AboutPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">Leadership Team</h2>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {content.team.map((member: { name: string; role: string; image: string; bio: string }) => (
+            {content.team.map((member: { name: string; role: string; image?: string; bio: string }) => (
               <div key={member.name} className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow group">
                 <div className="bg-gradient-to-br from-green-500 to-green-600 p-8 flex items-center justify-center">
                   <div className="w-24 h-24 rounded-full overflow-hidden bg-white/20 group-hover:scale-110 transition-transform">
-                    <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
+                    <img
+                      src={member.image || `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(member.name)}&backgroundColor=b6e3f4`}
+                      alt={member.name}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
                 <div className="p-6 text-center">

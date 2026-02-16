@@ -27,7 +27,19 @@ export async function POST(req: NextRequest) {
     }
   )
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  // Prefer the actual request origin so deployed environments don't accidentally
+  // generate localhost links if NEXT_PUBLIC_APP_URL isn't set.
+  const origin =
+    req.headers.get('origin') ||
+    req.headers.get('x-forwarded-host')?.split(',')[0]?.trim() ||
+    req.headers.get('host') ||
+    ''
+
+  const protocol = (req.headers.get('x-forwarded-proto') || 'https').split(',')[0]?.trim()
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL
+    || (origin ? `${origin.startsWith('http') ? '' : `${protocol}://`}${origin}` : '')
+    || 'http://localhost:3000'
 
   await supabase.auth.resetPasswordForEmail(result.data.email, {
     redirectTo: `${appUrl}/api/auth/callback?next=/reset-password`,

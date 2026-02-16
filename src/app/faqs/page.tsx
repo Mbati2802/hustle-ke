@@ -311,7 +311,7 @@ export default function FAQsPage() {
         {/* Category quick links */}
         <section className="py-8 bg-gray-50 border-b border-gray-100">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-wrap justify-center gap-3">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-3">
               {categories.map((cat) => {
                 const config = categoryConfig[cat.id] || { icon: HelpCircle, color: 'text-gray-600', bg: 'bg-gray-100', border: 'border-gray-200' }
                 const Icon = config.icon
@@ -320,7 +320,7 @@ export default function FAQsPage() {
                   <button
                     key={cat.id}
                     onClick={() => { setActiveCategory(cat.id); setSearchQuery(''); setOpenQuestion(null) }}
-                    className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                    className={`w-full sm:w-auto inline-flex items-center justify-center sm:justify-start gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
                       isActive
                         ? 'bg-green-600 text-white shadow-md'
                         : `bg-white ${config.color} border ${config.border} hover:shadow-sm`

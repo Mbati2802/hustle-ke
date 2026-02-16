@@ -123,21 +123,21 @@ export default function MpesaTariffsPage() {
           <div className="absolute top-10 right-20 w-72 h-72 bg-green-500/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-10 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl" />
 
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 lg:py-20">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/20 text-green-400 px-4 py-1.5 rounded-full text-sm font-medium mb-6">
+              <div className="text-center lg:text-left">
+                <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/20 text-green-400 px-4 py-1.5 rounded-full text-sm font-medium mb-6 mx-auto lg:mx-0">
                   <Smartphone className="w-4 h-4" />
                   Safaricom M-Pesa
                 </div>
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-5 leading-tight">
                   {content.hero_title}
                 </h1>
-                <p className="text-gray-400 text-lg mb-8 leading-relaxed max-w-lg">
+                <p className="text-gray-400 text-lg mb-8 leading-relaxed max-w-lg mx-auto lg:mx-0">
                   {content.hero_subtitle}
                 </p>
 
-                <div className="flex flex-wrap gap-4 mb-8">
+                <div className="flex flex-wrap gap-3 sm:gap-4 mb-8 justify-center lg:justify-start">
                   {[
                     { icon: Shield, text: 'Zero HustleKE fees', color: 'text-green-400' },
                     { icon: Zap, text: 'Instant withdrawal', color: 'text-amber-400' },
@@ -340,7 +340,7 @@ export default function MpesaTariffsPage() {
               <p className="text-gray-500 max-w-lg mx-auto">From your HustleKE wallet to your M-Pesa in seconds. Here&apos;s the full flow.</p>
             </div>
 
-            <div className="grid md:grid-cols-4 gap-6">
+            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
               {[
                 {
                   step: '01',
@@ -371,13 +371,13 @@ export default function MpesaTariffsPage() {
                   color: 'from-purple-500 to-pink-600',
                 },
               ].map(item => (
-                <div key={item.step} className="relative bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-shadow group">
-                  <div className="absolute -top-3 left-6">
+                <div key={item.step} className="relative bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-shadow group text-center md:text-left">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 md:left-6 md:translate-x-0">
                     <span className={`bg-gradient-to-r ${item.color} text-white text-xs font-bold px-3 py-1 rounded-full`}>
                       Step {item.step}
                     </span>
                   </div>
-                  <div className={`w-12 h-12 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center mb-4 mt-2 shadow-lg group-hover:scale-105 transition-transform`}>
+                  <div className={`w-12 h-12 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center mb-4 mt-2 shadow-lg group-hover:scale-105 transition-transform mx-auto md:mx-0`}>
                     <item.icon className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="font-bold text-gray-900 mb-1.5">{item.title}</h3>
