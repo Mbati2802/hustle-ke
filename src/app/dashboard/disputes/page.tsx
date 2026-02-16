@@ -58,6 +58,8 @@ export default function DisputesPage() {
   })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [evidenceUploading, setEvidenceUploading] = useState(false)
+  const [evidenceError, setEvidenceError] = useState('')
 
   useEffect(() => {
     loadDisputes()
@@ -109,6 +111,36 @@ export default function DisputesPage() {
       setError('Network error')
     }
     setSubmitting(false)
+  }
+
+  const handleEvidenceUpload = async (file: File) => {
+    setEvidenceError('')
+    setEvidenceUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      const res = await fetch('/api/disputes/upload', {
+        method: 'POST',
+        body: fd,
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setEvidenceError(data.error || 'Failed to upload evidence')
+        setEvidenceUploading(false)
+        return
+      }
+      if (data.file?.url) {
+        setFormData((prev) => ({
+          ...prev,
+          evidence_urls: [...prev.evidence_urls, data.file.url].slice(0, 5),
+        }))
+      } else {
+        setEvidenceError('Upload succeeded but no URL was returned')
+      }
+    } catch {
+      setEvidenceError('Network error while uploading evidence')
+    }
+    setEvidenceUploading(false)
   }
 
   const handleJobSelect = (jobId: string) => {
@@ -343,6 +375,45 @@ export default function DisputesPage() {
                 />
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Evidence (optional)</label>
+                {evidenceError && (
+                  <p className="text-xs text-red-600 bg-red-50 p-3 rounded-lg mb-2">{evidenceError}</p>
+                )}
+                <div className="flex items-center gap-3 flex-wrap">
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png,.webp,.txt,.doc,.docx"
+                    disabled={evidenceUploading}
+                    onChange={(e) => {
+                      const f = e.target.files?.[0]
+                      if (f) handleEvidenceUpload(f)
+                      e.currentTarget.value = ''
+                    }}
+                    className="block w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                  />
+                  <span className="text-xs text-gray-500">Max 5 files • Up to 20MB each</span>
+                </div>
+                {formData.evidence_urls.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    {formData.evidence_urls.map((url, idx) => (
+                      <div key={url} className="flex items-center justify-between gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+                        <a href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:text-blue-700 underline truncate">
+                          Evidence {idx + 1}
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, evidence_urls: prev.evidence_urls.filter((_, i) => i !== idx) }))}
+                          className="text-xs text-gray-500 hover:text-red-600"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
                 <p className="text-sm font-medium text-amber-800 mb-1">Dispute Resolution Process</p>
                 <p className="text-xs text-amber-600">
@@ -404,6 +475,25 @@ export default function DisputesPage() {
                 <div>
                   <p className="text-sm font-semibold text-gray-900 mb-2">Description</p>
                   <p className="text-sm text-gray-700 whitespace-pre-wrap">{selectedDispute.description}</p>
+                </div>
+              )}
+
+              {selectedDispute.evidence_urls && selectedDispute.evidence_urls.length > 0 && (
+                <div>
+                  <p className="text-sm font-semibold text-gray-900 mb-2">Evidence</p>
+                  <div className="space-y-2">
+                    {selectedDispute.evidence_urls.map((url, idx) => (
+                      <a
+                        key={url}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block text-sm text-blue-600 hover:text-blue-700 underline"
+                      >
+                        Evidence {idx + 1}
+                      </a>
+                    ))}
+                  </div>
                 </div>
               )}
 

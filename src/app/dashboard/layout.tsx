@@ -43,6 +43,7 @@ const freelancerItems = [
   { icon: Briefcase, label: 'My Hustles', href: '/dashboard/jobs' },
   { icon: Search, label: 'Find Work', href: '/jobs' },
   { icon: Heart, label: 'Saved Jobs', href: '/dashboard/saved-jobs' },
+  { icon: Bell, label: 'Job Alerts', href: '/dashboard/job-alerts' },
   { icon: FileText, label: 'My Proposals', href: '/dashboard/proposals' },
   { icon: MessageSquare, label: 'Messages', href: '/dashboard/messages' },
   { icon: Shield, label: 'Escrow', href: '/dashboard/escrow' },
