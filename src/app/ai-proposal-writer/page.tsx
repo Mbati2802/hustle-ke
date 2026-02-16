@@ -409,7 +409,7 @@ export default function AIProposalWriterPage() {
                     </h2>
                   </div>
                   <div className="p-6">
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       {TONES.map(t => {
                         const Icon = t.icon
                         const isActive = tone === t.id

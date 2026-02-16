@@ -539,18 +539,19 @@ export default function AIJobMatcherPage() {
                 <h2 className="text-3xl font-bold text-gray-900 mb-3">How AI Matching Works</h2>
                 <p className="text-gray-500">Our algorithm scores every job based on 5 factors</p>
               </div>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                 {[
-                  { title: 'Skill Fit', desc: 'How many of your skills match the job requirements', points: '0-50 pts', icon: Target, color: 'from-purple-500 to-indigo-600' },
-                  { title: 'Budget Match', desc: 'Does the job budget align with your rate?', points: '0-15 pts', icon: DollarSign, color: 'from-green-500 to-emerald-600' },
-                  { title: 'Competition', desc: 'Fewer freelancers with these skills = higher score', points: '0-15 pts', icon: TrendingUp, color: 'from-amber-500 to-orange-600' },
-                  { title: 'Freshness', desc: 'Newer jobs get higher scores — apply early', points: '0-10 pts', icon: Clock, color: 'from-blue-500 to-cyan-600' },
-                  { title: 'Client Quality', desc: 'Verified clients with high scores rank better', points: '0-10 pts', icon: Shield, color: 'from-pink-500 to-rose-600' },
+                  { title: 'Skill Fit', desc: 'How many of your skills match the job requirements', points: '0-50 pts', icon: Target, color: 'from-purple-500 to-indigo-600', iconColor: 'text-purple-600' },
+                  { title: 'Budget Match', desc: 'Does the job budget align with your rate?', points: '0-15 pts', icon: DollarSign, color: 'from-green-500 to-emerald-600', iconColor: 'text-green-600' },
+                  { title: 'Competition', desc: 'Fewer freelancers with these skills = higher score', points: '0-15 pts', icon: TrendingUp, color: 'from-amber-500 to-orange-600', iconColor: 'text-amber-600' },
+                  { title: 'Freshness', desc: 'Newer jobs get higher scores — apply early', points: '0-10 pts', icon: Clock, color: 'from-blue-500 to-cyan-600', iconColor: 'text-blue-600' },
+                  { title: 'Client Quality', desc: 'Verified clients with high scores rank better', points: '0-10 pts', icon: Shield, color: 'from-pink-500 to-rose-600', iconColor: 'text-pink-600' },
                 ].map(item => (
                   <div key={item.title} className="bg-gray-50 rounded-2xl border border-gray-200 p-5 text-center hover:shadow-md transition-shadow group">
-                    <div className={`w-12 h-12 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg group-hover:scale-105 transition-transform`}>
+                    <div className={`hidden lg:flex w-12 h-12 bg-gradient-to-br ${item.color} rounded-xl items-center justify-center mx-auto mb-3 shadow-lg group-hover:scale-105 transition-transform`}>
                       <item.icon className="w-6 h-6 text-white" />
                     </div>
+                    <item.icon className={`lg:hidden w-7 h-7 ${item.iconColor} mx-auto mb-2`} />
                     <h3 className="font-bold text-gray-900 text-sm">{item.title}</h3>
                     <p className="text-xs text-gray-500 mt-1 leading-relaxed">{item.desc}</p>
                     <span className="inline-block mt-2 text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full">{item.points}</span>

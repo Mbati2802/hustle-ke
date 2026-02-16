@@ -618,7 +618,7 @@ export default function Header({ activeLink }: HeaderProps) {
                       </span>
                       <span className="truncate">
                         <span className={`${t.offer} font-extrabold sm:text-[15px] transition-colors duration-700`}>50% OFF</span>
-                        <span className={`hidden sm:inline ${t.muted} transition-colors duration-700`}> first Pro month</span>
+                        <span className={`${t.muted} transition-colors duration-700`}> <span className="hidden sm:inline">first</span> <span className="sm:hidden">First</span> Pro <span className="sm:hidden">Month</span><span className="hidden sm:inline">month</span></span>
                         <span className={`${t.separator} mx-1 sm:mx-2 transition-colors duration-700`}>|</span>
                         <span className={`${t.muted} transition-colors duration-700`}>Code: </span>
                       </span>
@@ -633,7 +633,7 @@ export default function Header({ activeLink }: HeaderProps) {
                         href="/pricing"
                         className={`inline-flex items-center gap-1 text-xs sm:text-sm font-bold ${t.cta} transition-colors duration-700 group whitespace-nowrap`}
                       >
-                        Claim
+                        <span className="hidden sm:inline">Claim</span><span className="sm:hidden font-bold">Claim Now</span>
                         <ChevronRight className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform ${t.ctaHover}`} />
                       </Link>
                       <button
