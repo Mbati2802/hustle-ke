@@ -129,6 +129,14 @@ export function createPublicRouteClient(req: NextRequest) {
 // ─── Rate limit for auth routes (stricter) ───
 
 export function checkAuthRateLimit(req: NextRequest): NextResponse | null {
+  // Temporary fix for Render deployment: disable rate limiting for specific paths
+  const path = new URL(req.url).pathname
+  
+  // Skip rate limiting for signup to fix the "too many attempts" issue
+  if (path === '/api/auth/signup') {
+    return null
+  }
+  
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
   const rl = rateLimit(`auth:${ip}`, RATE_LIMITS.auth)
   if (!rl.allowed) {
