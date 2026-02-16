@@ -459,6 +459,102 @@ export default function LiveChatWidget() {
 
     const trimmedText = inputText.trim()
 
+    // FIRST PRIORITY: Check for human handoff triggers BEFORE anything else
+    const handoffTriggers = ['human', 'agent', 'person', 'real person', 'support team', 'operator', 'live agent', 'connect me to someone', 'talk to someone', 'speak to', 'connect to', 'connect me', 'talk to agent', 'speak with', 'real human']
+    const wantsHuman = handoffTriggers.some(trigger => trimmedText.toLowerCase().includes(trigger))
+
+    if (wantsHuman && user && !humanHandoff) {
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        text: trimmedText,
+        sender: 'user',
+        timestamp: new Date(),
+        status: 'sent',
+      }
+      setMessages((prev) => [...prev, userMessage])
+      setInputText('')
+      setIsTyping(true)
+      setIsConnectingHuman(true)
+
+      setTimeout(async () => {
+        try {
+          const intent = analyzeIntent(trimmedText)
+          const issueClassification = classifyIssue(trimmedText, intent)
+
+          const res = await fetch('/api/support/tickets', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              subject: 'Live Chat Support Request',
+              category: issueClassification.category,
+              sub_category: issueClassification.subCategory,
+              urgency: intent.urgency,
+              message: trimmedText,
+            }),
+          })
+          const data = await res.json()
+          const ticketId = data.ticket?.id
+
+          if (!res.ok || !ticketId) {
+            setMessages(prev => [...prev, {
+              id: (Date.now() + 2).toString(),
+              text: 'Sorry — I could not connect you to support right now. Please try again in a minute or use the Contact page.',
+              sender: 'bot',
+              timestamp: new Date(),
+            }])
+            setIsTyping(false)
+            setIsConnectingHuman(false)
+            return
+          }
+
+          setSupportTicketId(ticketId)
+          setHumanHandoff(true)
+          setMessages(prev => [...prev, {
+            id: (Date.now() + 1).toString(),
+            text: `✅ Connected to human support!\n\nTicket ID: ${ticketId}\n\nA support agent will respond shortly. You can continue chatting here.`,
+            sender: 'human',
+            timestamp: new Date(),
+          }])
+        } catch {
+          setMessages(prev => [...prev, {
+            id: (Date.now() + 2).toString(),
+            text: 'Network error while connecting to support. Please try again.',
+            sender: 'bot',
+            timestamp: new Date(),
+          }])
+        } finally {
+          setIsTyping(false)
+          setIsConnectingHuman(false)
+        }
+      }, 600)
+      return
+    }
+
+    if (wantsHuman && !user) {
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        text: trimmedText,
+        sender: 'user',
+        timestamp: new Date(),
+        status: 'sent',
+      }
+      setMessages((prev) => [...prev, userMessage])
+      setInputText('')
+      setIsTyping(true)
+
+      setTimeout(() => {
+        setMessages(prev => [...prev, {
+          id: (Date.now() + 1).toString(),
+          text: 'To connect with a human support agent, please log in or sign up first. This helps us provide personalized assistance and track your support history.',
+          sender: 'bot',
+          timestamp: new Date(),
+          suggestions: ['Log in', 'Sign up', 'Continue with AI'],
+        }])
+        setIsTyping(false)
+      }, 700)
+      return
+    }
+
     // If we're already in human support mode, route messages to the support ticket
     if (humanHandoff && supportTicketId) {
       const userMessage: Message = {
@@ -544,78 +640,6 @@ export default function LiveChatWidget() {
     const isThankYou = smallTalk.gratitude.some(g => trimmedText.toLowerCase().includes(g))
     if (isThankYou && conversationStage === 'helped') {
       setConversationStage('follow_up')
-    }
-
-    // PRIORITY CHECK: Human handoff triggers (check BEFORE AI call)
-    const handoffTriggers = ['human', 'agent', 'person', 'real person', 'support team', 'operator', 'live agent', 'connect me to someone', 'talk to someone', 'speak to', 'connect to']
-    const wantsHuman = handoffTriggers.some(trigger => trimmedText.toLowerCase().includes(trigger))
-
-    if (wantsHuman && user) {
-      setIsConnectingHuman(true)
-      setTimeout(async () => {
-        try {
-          const res = await fetch('/api/support/tickets', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              subject: 'Live Chat Support Request',
-              category: issueClassification.category,
-              sub_category: issueClassification.subCategory,
-              urgency: intent.urgency,
-              message: trimmedText,
-            }),
-          })
-          const data = await res.json()
-          const ticketId = data.ticket?.id
-
-          if (!res.ok || !ticketId) {
-            setMessages(prev => [...prev, {
-              id: (Date.now() + 2).toString(),
-              text: 'Sorry — I could not connect you to support right now. Please try again in a minute or use the Contact page.',
-              sender: 'bot',
-              timestamp: new Date(),
-            }])
-            setIsTyping(false)
-            setIsConnectingHuman(false)
-            return
-          }
-
-          setSupportTicketId(ticketId)
-          setHumanHandoff(true)
-          setMessages(prev => [...prev, {
-            id: (Date.now() + 1).toString(),
-            text: `✅ Connected to human support!\n\nTicket ID: ${ticketId}\n\nA support agent will respond shortly. You can continue chatting here.`,
-            sender: 'human',
-            timestamp: new Date(),
-          }])
-        } catch {
-          setMessages(prev => [...prev, {
-            id: (Date.now() + 2).toString(),
-            text: 'Network error while connecting to support. Please try again.',
-            sender: 'bot',
-            timestamp: new Date(),
-          }])
-        } finally {
-          setIsTyping(false)
-          setIsConnectingHuman(false)
-        }
-      }, 600)
-      return
-    }
-
-    // If anonymous user wants human, prompt to log in
-    if (wantsHuman && !user) {
-      setTimeout(() => {
-        setMessages(prev => [...prev, {
-          id: (Date.now() + 1).toString(),
-          text: 'To connect with a human support agent, please log in or sign up first. This helps us provide personalized assistance and track your support history.',
-          sender: 'bot',
-          timestamp: new Date(),
-          suggestions: ['Log in', 'Sign up', 'Continue with AI'],
-        }])
-        setIsTyping(false)
-      }, 700)
-      return
     }
 
     // If user is logged in, use AI chat API (memory + citations)
