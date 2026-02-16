@@ -146,7 +146,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 overflow-x-hidden">
       <NotificationPermission />
       {/* Mobile Header */}
       <header className={`lg:hidden sticky top-0 z-50 ${orgMode ? 'bg-indigo-950' : 'bg-slate-900'}`}>
@@ -409,7 +409,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* ─── Mobile Bottom Navigation ─── */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 pb-safe shadow-lg">
-        <div className="flex items-center justify-around h-16 px-1">
+        <div className="flex items-center justify-around h-16 px-1 max-w-full overflow-x-hidden">
           {orgMode ? (
             <>
               <Link href="/dashboard" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${pathname === '/dashboard' ? 'text-purple-600' : 'text-gray-400 hover:text-purple-600 hover:bg-purple-50'}`}>

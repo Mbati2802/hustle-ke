@@ -198,7 +198,7 @@ export default function JobsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col overflow-x-hidden">
       <Header activeLink="/jobs" />
 
       {/* Hero search header */}
@@ -490,9 +490,9 @@ export default function JobsPage() {
                           : 'border-gray-200 hover:border-green-200 hover:shadow-md'
                       }`}
                     >
-                      <div className="p-6">
+                      <div className="p-4 sm:p-6">
                         {/* Top row: title + budget + org logo */}
-                        <div className="flex items-start justify-between gap-4 mb-3">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 mb-3">
                           <div className="flex-1 min-w-0">
                             {isOrgJob && (
                               <div className="flex items-center gap-1.5 mb-1.5">
@@ -508,7 +508,7 @@ export default function JobsPage() {
                               </Link>
                             </h3>
                           </div>
-                          <div className="shrink-0 flex items-center gap-2">
+                          <div className="shrink-0 flex items-center gap-2 self-start">
                             {isOrgJob && job.organization?.logo_url && (
                               <img
                                 src={job.organization.logo_url}
@@ -550,8 +550,8 @@ export default function JobsPage() {
                         </div>
 
                         {/* Meta row */}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4 text-xs text-gray-500">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                          <div className="flex items-center gap-2 sm:gap-4 text-xs text-gray-500 flex-wrap min-w-0">
                             {/* Client/Org info */}
                             <div className="flex items-center gap-1.5">
                               {isOrgJob ? (
@@ -613,7 +613,7 @@ export default function JobsPage() {
                           {/* Apply button — dark grey for org jobs, green for personal */}
                           <Link
                             href={`/jobs/${job.id}`}
-                            className={`shrink-0 px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors flex items-center gap-2 ${
+                            className={`shrink-0 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-colors flex items-center gap-2 w-full sm:w-auto justify-center ${
                               isOrgJob
                                 ? 'bg-slate-700 hover:bg-slate-600 text-white'
                                 : 'bg-green-600 hover:bg-green-500 text-white'

@@ -590,7 +590,7 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {talentLoading ? (
               // Loading skeleton
               Array.from({ length: 4 }).map((_, i) => (
@@ -902,7 +902,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {adsLoading ? (
               Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 animate-pulse">
