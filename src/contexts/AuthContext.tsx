@@ -243,6 +243,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     try {
+      // Sign in on server (sets cookies for SSR)
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -251,15 +252,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await res.json()
       if (!res.ok) return { error: data.error || 'Invalid email or password' }
 
-      // Just refresh the session — onAuthStateChange will handle user + profile
-      await supabase.auth.getSession()
+      // Also sign in on client so onAuthStateChange fires and session is set locally
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password })
+      if (authError || !authData.user) {
+        // Fallback: force session refresh
+        await supabase.auth.getSession()
+      }
+
+      // Eagerly fetch profile so the name appears immediately
+      if (authData?.user) {
+        await fetchProfile(authData.user.id)
+      }
 
       const redirect = data.user?.profile?.role === 'Admin' ? '/admin' : '/dashboard'
       return { redirect }
     } catch {
       return { error: 'Network error. Please try again.' }
     }
-  }, [supabase])
+  }, [supabase, fetchProfile])
 
   const signup = useCallback(async (signupData: SignupData) => {
     try {
@@ -281,14 +291,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await res.json()
       if (!res.ok) return { error: data.error || 'Signup failed' }
 
-      // Just refresh the session — onAuthStateChange will handle user + profile
-      await supabase.auth.getSession()
+      // Also sign in on client so session is set locally and name appears immediately
+      const { data: authData } = await supabase.auth.signInWithPassword({
+        email: signupData.email,
+        password: signupData.password,
+      })
+      if (authData?.user) {
+        await fetchProfile(authData.user.id)
+      } else {
+        await supabase.auth.getSession()
+      }
 
       return {}
     } catch {
       return { error: 'Network error. Please try again.' }
     }
-  }, [supabase])
+  }, [supabase, fetchProfile])
 
   // Fetch org + invites after profile loads
   useEffect(() => {

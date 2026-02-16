@@ -116,8 +116,8 @@ export default function NotificationDropdown({ variant = 'desktop' }: { variant?
       </button>
 
       {open && (
-        <div className={`absolute z-[100] bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden ${
-          isMobile ? 'right-0 top-12 w-[calc(100vw-32px)] max-w-sm' : 'right-0 top-12 w-96'
+        <div className={`z-[100] bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden ${
+          isMobile ? 'fixed left-4 right-4 top-16' : 'absolute right-0 top-12 w-96'
         }`}>
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
             <h3 className="font-semibold text-gray-900 text-sm">Notifications</h3>
