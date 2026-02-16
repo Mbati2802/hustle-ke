@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Users, Briefcase, FileText, DollarSign,
   AlertTriangle, Star, MessageSquare, Settings, FileCode,
   ChevronLeft, ChevronRight, LogOut, Menu, X, Bell, Search,
-  Shield, Activity
+  Shield, Activity, LifeBuoy
 } from 'lucide-react'
 
 interface AdminUser {
@@ -25,6 +25,7 @@ const navItems = [
   { href: '/admin/disputes', label: 'Disputes', icon: AlertTriangle },
   { href: '/admin/reviews', label: 'Reviews', icon: Star },
   { href: '/admin/messages', label: 'Messages', icon: MessageSquare },
+  { href: '/admin/support', label: 'Support', icon: LifeBuoy },
   { href: '/admin/pages', label: 'Pages', icon: FileCode },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
   { href: '/admin/activity', label: 'Activity Log', icon: Activity },

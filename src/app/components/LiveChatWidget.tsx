@@ -141,6 +141,8 @@ export default function LiveChatWidget() {
   const [conversationStage, setConversationStage] = useState<'initial' | 'helped' | 'follow_up' | 'closing'>('initial')
   const [unansweredQuestions, setUnansweredQuestions] = useState<Array<{question: string; timestamp: Date}>>([])
   const [humanHandoff, setHumanHandoff] = useState(false)
+  const [supportTicketId, setSupportTicketId] = useState<string | null>(null)
+  const [isConnectingHuman, setIsConnectingHuman] = useState(false)
   const [conversationHistory, setConversationHistory] = useState<string[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -164,6 +166,43 @@ export default function LiveChatWidget() {
     window.addEventListener('open-live-chat', handleOpenChat)
     return () => window.removeEventListener('open-live-chat', handleOpenChat)
   }, [])
+
+  useEffect(() => {
+    if (!supportTicketId) return
+
+    const fetchSupportMessages = async () => {
+      try {
+        const res = await fetch(`/api/support/tickets/${supportTicketId}/messages?limit=200`)
+        const data = await res.json()
+        const supMsgs = (data.messages || []) as Array<{ id: string; sender_type: string; message: string; created_at: string }>
+
+        setMessages((prev) => {
+          const existing = new Set(prev.map((m) => m.id))
+          const mapped: Message[] = supMsgs
+            .map((m) => ({
+              id: `support-${m.id}`,
+              text: m.message,
+              sender: (m.sender_type === 'admin'
+                ? 'human'
+                : m.sender_type === 'user'
+                  ? 'user'
+                  : 'bot') as Message['sender'],
+              timestamp: new Date(m.created_at),
+            }))
+            .filter((m) => !existing.has(m.id))
+
+          if (mapped.length === 0) return prev
+          return [...prev, ...mapped].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+        })
+      } catch {
+        // ignore
+      }
+    }
+
+    fetchSupportMessages()
+    const interval = setInterval(fetchSupportMessages, 5000)
+    return () => clearInterval(interval)
+  }, [supportTicketId])
 
   const analyzeIntent = useCallback((text: string): { topic: string | null; confidence: number; urgency: 'low' | 'medium' | 'high' } => {
     const lowerText = text.toLowerCase()
@@ -409,6 +448,48 @@ export default function LiveChatWidget() {
     if (!inputText.trim()) return
 
     const trimmedText = inputText.trim()
+
+    // If we're already in human support mode, route messages to the support ticket
+    if (humanHandoff && supportTicketId) {
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        text: trimmedText,
+        sender: 'user',
+        timestamp: new Date(),
+        status: 'sent',
+      }
+
+      setMessages((prev) => [...prev, userMessage])
+      setInputText('')
+      setIsTyping(true)
+
+      try {
+        const res = await fetch(`/api/support/tickets/${supportTicketId}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: trimmedText }),
+        })
+        if (!res.ok) {
+          setMessages((prev) => [...prev, {
+            id: (Date.now() + 1).toString(),
+            text: 'Failed to send message to support. Please try again.',
+            sender: 'bot',
+            timestamp: new Date(),
+          }])
+        }
+      } catch {
+        setMessages((prev) => [...prev, {
+          id: (Date.now() + 1).toString(),
+          text: 'Network error while contacting support. Please try again.',
+          sender: 'bot',
+          timestamp: new Date(),
+        }])
+      } finally {
+        setIsTyping(false)
+      }
+
+      return
+    }
     
     // Store unanswered questions for potential FAQ addition
     const intent = analyzeIntent(trimmedText)
@@ -459,17 +540,55 @@ export default function LiveChatWidget() {
     const wantsHuman = handoffTriggers.some(trigger => trimmedText.toLowerCase().includes(trigger))
 
     if (wantsHuman) {
-      setTimeout(() => {
-        const humanMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          text: 'I understand you would like to speak with a human agent. Let me connect you...\n\n⏳ Connecting to available agent...\n\nAgent Sarah is now joining the chat.',
-          sender: 'human',
-          timestamp: new Date(),
+      setIsConnectingHuman(true)
+      setTimeout(async () => {
+        try {
+          const res = await fetch('/api/support/tickets', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              subject: 'Live Chat Support Request',
+              category: issueClassification.category,
+              sub_category: issueClassification.subCategory,
+              urgency: intent.urgency,
+              message: trimmedText,
+            }),
+          })
+          const data = await res.json()
+          const ticketId = data.ticket?.id
+
+          if (!res.ok || !ticketId) {
+            setMessages(prev => [...prev, {
+              id: (Date.now() + 2).toString(),
+              text: 'Sorry — I could not connect you to support right now. Please try again in a minute or use the Contact page.',
+              sender: 'bot',
+              timestamp: new Date(),
+            }])
+            setIsTyping(false)
+            setIsConnectingHuman(false)
+            return
+          }
+
+          setSupportTicketId(ticketId)
+          setHumanHandoff(true)
+          setMessages(prev => [...prev, {
+            id: (Date.now() + 1).toString(),
+            text: `Support ticket created. A human agent will join shortly.\n\nTicket ID: ${ticketId}`,
+            sender: 'human',
+            timestamp: new Date(),
+          }])
+        } catch {
+          setMessages(prev => [...prev, {
+            id: (Date.now() + 2).toString(),
+            text: 'Network error while connecting to support. Please try again.',
+            sender: 'bot',
+            timestamp: new Date(),
+          }])
+        } finally {
+          setIsTyping(false)
+          setIsConnectingHuman(false)
         }
-        setMessages(prev => [...prev, humanMessage])
-        setHumanHandoff(true)
-        setIsTyping(false)
-      }, 1500)
+      }, 600)
       return
     }
 
@@ -599,12 +718,12 @@ export default function LiveChatWidget() {
               </div>
               <div>
                 <h3 className="text-white font-bold">
-                  {humanHandoff ? 'Agent Sarah' : 'HustleKE AI'}
+                  {humanHandoff ? 'Human Support' : 'HustleKE AI'}
                 </h3>
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                   <span className="text-green-100 text-sm">
-                    {humanHandoff ? 'Human Support' : 'AI Assistant'}
+                    {isConnectingHuman ? 'Connecting you to an agent…' : humanHandoff ? 'Connected to support' : 'AI Assistant'}
                   </span>
                 </div>
               </div>
