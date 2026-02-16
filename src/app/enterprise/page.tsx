@@ -97,7 +97,7 @@ export default function EnterprisePage() {
           <div className="absolute bottom-10 left-10 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl" />
           <div className="absolute top-40 left-1/3 w-64 h-64 bg-green-500/5 rounded-full blur-3xl" />
 
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-28">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
                 <div className="inline-flex items-center gap-2 bg-green-500/15 text-green-400 px-4 py-1.5 rounded-full text-sm font-medium mb-6">
@@ -105,7 +105,7 @@ export default function EnterprisePage() {
                   Enterprise Solutions
                 </div>
 
-                <h1 className="text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
                   Hire Kenya&rsquo;s Best Talent
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300"> at Scale</span>
                 </h1>
@@ -130,17 +130,17 @@ export default function EnterprisePage() {
                   </a>
                 </div>
 
-                <div className="flex items-center gap-6 text-sm text-gray-400">
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-400">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-400" />
+                    <CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" />
                     <span>No setup fees</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-400" />
+                    <CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" />
                     <span>Cancel anytime</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-400" />
+                    <CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" />
                     <span>24/7 support</span>
                   </div>
                 </div>

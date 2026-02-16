@@ -176,11 +176,11 @@ export default function AIClientBriefPage() {
               <Brain className="w-4 h-4" />
               AI Project Brief Builder
             </div>
-            <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4">Describe It. AI Structures It.</h1>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">Describe It. AI Structures It.</h1>
             <p className="text-emerald-200/70 text-lg max-w-2xl mx-auto mb-6">
               Just tell us what you need in plain language. Our AI will generate a professional job posting with the right budget, skills, timeline, and structure to attract top freelancers.
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-emerald-300/60">
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-emerald-300/60">
               {[
                 { icon: DollarSign, text: 'Market-rate budget suggestions' },
                 { icon: Clock, text: 'Smart timeline estimation' },

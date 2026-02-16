@@ -116,7 +116,7 @@ export default function CreateProfilePage() {
           <div className="absolute top-20 right-20 w-72 h-72 bg-green-500/10 rounded-full blur-3xl" />
           <div className="absolute bottom-10 left-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" />
 
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-28">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               {/* Left — Text */}
               <div>
@@ -131,7 +131,7 @@ export default function CreateProfilePage() {
                   Step 1 of 5
                 </div>
 
-                <h1 className="text-4xl lg:text-5xl font-bold text-white mb-5 leading-tight">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-5 leading-tight">
                   Your Profile is Your
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400"> First Impression</span>
                 </h1>
@@ -156,17 +156,17 @@ export default function CreateProfilePage() {
                   </a>
                 </div>
 
-                <div className="flex items-center gap-6 text-sm text-gray-400">
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-400">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+                    <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
                     <span>100% Free</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-green-500" />
+                    <Zap className="w-4 h-4 text-green-500 shrink-0" />
                     <span>Takes 5 minutes</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-green-500" />
+                    <Shield className="w-4 h-4 text-green-500 shrink-0" />
                     <span>Secure & Private</span>
                   </div>
                 </div>

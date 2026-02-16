@@ -33,6 +33,7 @@ import {
   Star,
   ChevronRight,
   Crown,
+  MoreHorizontal,
 } from 'lucide-react'
 import NotificationDropdown from '../components/NotificationDropdown'
 import NotificationPermission from '../components/NotificationPermission'
@@ -90,6 +91,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { openModal: openPostJobModal } = usePostJobModal()
   const [showSwitcher, setShowSwitcher] = useState(false)
   const [showInviteBanner, setShowInviteBanner] = useState(true)
+  const [moreOpen, setMoreOpen] = useState(false)
 
   // Auth guard — redirect to home if not logged in
   useEffect(() => {
@@ -346,7 +348,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </aside>
 
         {/* ─── Main Content ─── */}
-        <main className="flex-1 min-w-0">
+        <main className="flex-1 min-w-0 pb-20 lg:pb-0">
           {/* Top Bar - Desktop */}
           <div className="hidden lg:flex items-center justify-between px-8 h-16 bg-white border-b border-gray-200 sticky top-0 z-40">
             <div className="flex items-center gap-4 flex-1">
@@ -407,56 +409,107 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </main>
       </div>
 
+      {/* ─── Mobile More Drawer ─── */}
+      {moreOpen && (
+        <div className="lg:hidden fixed inset-0 z-[60]">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setMoreOpen(false)} />
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl max-h-[70vh] overflow-y-auto animate-in slide-in-from-bottom">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl z-10">
+              <h3 className="font-bold text-gray-900 text-sm">All Menu</h3>
+              <button onClick={() => setMoreOpen(false)} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="px-3 py-2 pb-8">
+              {sidebarItems.map((item) => {
+                const Icon = item.icon
+                const isActive = item.href === '/dashboard' ? pathname === '/dashboard' : item.href ? pathname.startsWith(item.href) : false
+                const accentColor = orgMode ? 'text-purple-600 bg-purple-50' : 'text-green-600 bg-green-50'
+                const handleClick = () => {
+                  setMoreOpen(false)
+                  if ('action' in item && item.action === 'postJob') {
+                    openPostJobModal()
+                  }
+                }
+                if ('action' in item && item.action === 'postJob') {
+                  return (
+                    <button
+                      key={item.label}
+                      onClick={handleClick}
+                      className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span>{item.label}</span>
+                    </button>
+                  )
+                }
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setMoreOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+                      isActive ? accentColor : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span>{item.label}</span>
+                  </Link>
+                )
+              })}
+              <button
+                onClick={() => { setMoreOpen(false); logout() }}
+                className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-colors mt-1"
+              >
+                <LogOut className="w-5 h-5" />
+                <span>Log Out</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ─── Mobile Bottom Navigation ─── */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 pb-safe shadow-lg">
         <div className="flex items-center justify-around h-16 px-1 max-w-full overflow-x-hidden">
-          {orgMode ? (
-            <>
-              <Link href="/dashboard" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${pathname === '/dashboard' ? 'text-purple-600' : 'text-gray-400 hover:text-purple-600 hover:bg-purple-50'}`}>
-                <LayoutDashboard className="w-5 h-5" />
-                <span className="text-[10px] font-medium">Org</span>
-              </Link>
-              <Link href="/dashboard/projects" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${pathname.startsWith('/dashboard/projects') ? 'text-purple-600' : 'text-gray-400 hover:text-purple-600 hover:bg-purple-50'}`}>
-                <Briefcase className="w-5 h-5" />
-                <span className="text-[10px] font-medium">Jobs</span>
-              </Link>
-              <Link href="/dashboard/proposals" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${pathname.startsWith('/dashboard/proposals') ? 'text-purple-600' : 'text-gray-400 hover:text-purple-600 hover:bg-purple-50'}`}>
-                <FileText className="w-5 h-5" />
-                <span className="text-[10px] font-medium">Proposals</span>
-              </Link>
-              <Link href="/dashboard/messages" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg relative ${pathname.startsWith('/dashboard/messages') ? 'text-purple-600' : 'text-gray-400 hover:text-purple-600 hover:bg-purple-50'}`}>
-                <MessageSquare className="w-5 h-5" />
-                <span className="text-[10px] font-medium">Messages</span>
-              </Link>
-              <Link href="/dashboard/escrow" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${pathname.startsWith('/dashboard/escrow') ? 'text-purple-600' : 'text-gray-400 hover:text-purple-600 hover:bg-purple-50'}`}>
-                <Shield className="w-5 h-5" />
-                <span className="text-[10px] font-medium">Escrow</span>
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link href="/dashboard" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${pathname === '/dashboard' ? 'text-green-600' : 'text-gray-400 hover:text-green-600 hover:bg-green-50'}`}>
-                <LayoutDashboard className="w-5 h-5" />
-                <span className="text-[10px] font-medium">Home</span>
-              </Link>
-              <Link href={isClient ? '/talent' : '/jobs'} className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${(isClient ? pathname === '/talent' : pathname === '/jobs') ? 'text-green-600' : 'text-gray-400 hover:text-green-600 hover:bg-green-50'}`}>
-                <Search className="w-5 h-5" />
-                <span className="text-[10px] font-medium">{isClient ? 'Talent' : 'Jobs'}</span>
-              </Link>
-              <Link href="/dashboard/messages" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg relative ${pathname.startsWith('/dashboard/messages') ? 'text-green-600' : 'text-gray-400 hover:text-green-600 hover:bg-green-50'}`}>
-                <MessageSquare className="w-5 h-5" />
-                <span className="text-[10px] font-medium">Messages</span>
-              </Link>
-              <Link href="/dashboard/wallet" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${pathname.startsWith('/dashboard/wallet') ? 'text-green-600' : 'text-gray-400 hover:text-green-600 hover:bg-green-50'}`}>
-                <Wallet className="w-5 h-5" />
-                <span className="text-[10px] font-medium">Wallet</span>
-              </Link>
-              <Link href="/dashboard/settings" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${pathname.startsWith('/dashboard/settings') ? 'text-green-600' : 'text-gray-400 hover:text-green-600 hover:bg-green-50'}`}>
-                <User className="w-5 h-5" />
-                <span className="text-[10px] font-medium">Profile</span>
-              </Link>
-            </>
-          )}
+          {(() => {
+            const accent = orgMode ? 'text-purple-600' : 'text-green-600'
+            const hoverAccent = orgMode ? 'hover:text-purple-600 hover:bg-purple-50' : 'hover:text-green-600 hover:bg-green-50'
+            const bottomItems = orgMode
+              ? [
+                  { icon: LayoutDashboard, label: 'Org', href: '/dashboard', match: pathname === '/dashboard' },
+                  { icon: Briefcase, label: 'Jobs', href: '/dashboard/projects', match: pathname.startsWith('/dashboard/projects') },
+                  { icon: MessageSquare, label: 'Messages', href: '/dashboard/messages', match: pathname.startsWith('/dashboard/messages') },
+                  { icon: Shield, label: 'Escrow', href: '/dashboard/escrow', match: pathname.startsWith('/dashboard/escrow') },
+                ]
+              : isClient
+              ? [
+                  { icon: LayoutDashboard, label: 'Home', href: '/dashboard', match: pathname === '/dashboard' },
+                  { icon: Search, label: 'Talent', href: '/talent', match: pathname === '/talent' },
+                  { icon: MessageSquare, label: 'Messages', href: '/dashboard/messages', match: pathname.startsWith('/dashboard/messages') },
+                  { icon: Wallet, label: 'Wallet', href: '/dashboard/wallet', match: pathname.startsWith('/dashboard/wallet') },
+                ]
+              : [
+                  { icon: LayoutDashboard, label: 'Home', href: '/dashboard', match: pathname === '/dashboard' },
+                  { icon: Search, label: 'Jobs', href: '/jobs', match: pathname === '/jobs' },
+                  { icon: MessageSquare, label: 'Messages', href: '/dashboard/messages', match: pathname.startsWith('/dashboard/messages') },
+                  { icon: Wallet, label: 'Wallet', href: '/dashboard/wallet', match: pathname.startsWith('/dashboard/wallet') },
+                ]
+            return (
+              <>
+                {bottomItems.map((item) => (
+                  <Link key={item.label} href={item.href} className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${item.match ? accent : `text-gray-400 ${hoverAccent}`}`}>
+                    <item.icon className="w-5 h-5" />
+                    <span className="text-[10px] font-medium">{item.label}</span>
+                  </Link>
+                ))}
+                <button onClick={() => setMoreOpen(true)} className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${moreOpen ? accent : `text-gray-400 ${hoverAccent}`}`}>
+                  <MoreHorizontal className="w-5 h-5" />
+                  <span className="text-[10px] font-medium">More</span>
+                </button>
+              </>
+            )
+          })()}
         </div>
       </nav>
     </div>
