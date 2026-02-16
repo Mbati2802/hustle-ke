@@ -55,7 +55,9 @@ export function rateLimit(
 
 // Preset configs
 export const RATE_LIMITS = {
-  auth: { maxRequests: 5, windowMs: 15 * 60 * 1000 },      // 5 per 15 min
+  auth: process.env.NODE_ENV === 'development' 
+    ? { maxRequests: 30, windowMs: 15 * 60 * 1000 }        // 30 per 15 min in dev
+    : { maxRequests: 5, windowMs: 15 * 60 * 1000 },        // 5 per 15 min in production
   api: { maxRequests: 60, windowMs: 60 * 1000 },            // 60 per min
   search: { maxRequests: 30, windowMs: 60 * 1000 },         // 30 per min
   upload: { maxRequests: 10, windowMs: 60 * 1000 },         // 10 per min
