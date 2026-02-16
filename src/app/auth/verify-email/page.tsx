@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 import {
@@ -12,7 +12,22 @@ import {
   Loader2,
 } from 'lucide-react'
 
-export default function VerifyEmailPage() {
+// Loading fallback for suspense
+function VerificationFallback() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden p-8 text-center">
+          <Loader2 className="w-12 h-12 text-green-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading verification page...</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Main verification component that uses searchParams (needs Suspense)
+function VerificationContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
@@ -58,7 +73,7 @@ export default function VerifyEmailPage() {
       setMessage('Please check your email and click the verification link.')
     }
   }
-
+  
   const resendVerification = async () => {
     setResending(true)
     try {
@@ -177,5 +192,14 @@ export default function VerifyEmailPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+// Main page component that exports
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<VerificationFallback />}>
+      <VerificationContent />
+    </Suspense>
   )
 }
