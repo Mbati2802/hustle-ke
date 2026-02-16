@@ -474,9 +474,9 @@ function MessagesContent() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto flex h-[calc(100vh-56px-64px)] lg:h-[calc(100vh-64px)]">
+    <div className="max-w-5xl mx-auto flex h-[calc(100vh-56px-64px)] lg:h-[calc(100vh-64px)] overflow-hidden">
       {/* Conversations List */}
-      <div className={`${mobileShowChat ? 'hidden md:flex' : 'flex'} w-full md:w-80 bg-white border-r border-gray-200 flex-col`}>
+      <div className={`${mobileShowChat ? 'hidden md:flex' : 'flex'} w-full md:w-80 bg-white border-r border-gray-200 flex-col h-full`}>
         <div className="p-4 border-b border-gray-100">
           <h2 className="font-bold text-gray-900 mb-3">Messages</h2>
           <div className="relative">
@@ -534,7 +534,7 @@ function MessagesContent() {
       </div>
 
       {/* Chat Area */}
-      <div className={`${mobileShowChat ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-gray-50`}>
+      <div className={`${mobileShowChat ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-gray-50 h-full`}>
         {activeConv ? (
           <>
             {/* Chat Header */}
@@ -737,7 +737,7 @@ function MessagesContent() {
             )}
 
             {/* Input */}
-            <div className="bg-white border-t border-gray-200 p-3 lg:p-4 pb-20 lg:pb-4">
+            <div className="bg-white border-t border-gray-200 p-3 lg:p-4 pb-20 lg:pb-4 sticky bottom-0">
               <div className="flex items-center gap-2 lg:gap-3">
                 <input
                   ref={inputRef}

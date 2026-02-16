@@ -374,7 +374,7 @@ export default function Header({ activeLink }: HeaderProps) {
         {/* === Main Navigation === */}
         <div className="bg-white border-b border-gray-200 relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
+            <div className="flex items-center justify-between h-14 sm:h-16">
               <Link href="/" className="flex items-center gap-2">
                 <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-green-700 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-xl">H</span>
@@ -496,19 +496,20 @@ export default function Header({ activeLink }: HeaderProps) {
               </div>
 
               <button
-                className="md:hidden p-2 text-gray-600"
+                className="md:hidden p-2.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Toggle menu"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
 
             {mobileMenuOpen && (
-              <div className="md:hidden border-t border-gray-100 py-3 max-h-[70vh] overflow-y-auto">
+              <div className="md:hidden border-t border-gray-100 py-2 pb-4 max-h-[80vh] overflow-y-auto">
                 {navItems.map((item) => (
                   <div key={item.key}>
                     <button
-                      className={`w-full flex items-center justify-between px-4 py-3 rounded-lg font-medium ${
+                      className={`w-full flex items-center justify-between px-4 py-3.5 rounded-lg font-medium ${
                         activeLink === item.href
                           ? 'text-green-600 bg-green-50'
                           : 'text-gray-700 hover:bg-gray-50'

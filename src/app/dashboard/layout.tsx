@@ -150,16 +150,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <NotificationPermission />
       {/* Mobile Header */}
       <header className={`lg:hidden sticky top-0 z-50 ${orgMode ? 'bg-indigo-950' : 'bg-slate-900'}`}>
-        <div className="flex items-center justify-between px-4 h-14">
+        <div className="flex items-center justify-between px-3 sm:px-4 h-14">
           <Link href="/" className="flex items-center gap-2">
             <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${orgMode ? 'bg-purple-500' : 'bg-green-500'}`}>
               <span className="text-white font-bold text-sm">{orgMode ? 'O' : 'H'}</span>
             </div>
-            <span className="font-bold text-white">{orgMode && activeOrg ? activeOrg.name : 'HustleKE'}</span>
+            <span className="font-bold text-white text-sm sm:text-base truncate max-w-[120px] sm:max-w-[200px]">{orgMode && activeOrg ? activeOrg.name : 'HustleKE'}</span>
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 sm:gap-3">
             <NotificationDropdown variant="mobile" />
-            <Link href="/dashboard/settings">
+            <Link href="/dashboard/settings" className="flex items-center justify-center">
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt={displayName} className="w-8 h-8 rounded-full object-cover" />
               ) : (
@@ -408,50 +408,50 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
 
       {/* ─── Mobile Bottom Navigation ─── */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 pb-safe">
-        <div className="flex items-center justify-around h-16">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 pb-safe shadow-lg">
+        <div className="flex items-center justify-around h-16 px-1">
           {orgMode ? (
             <>
-              <Link href="/dashboard" className={`flex flex-col items-center justify-center gap-0.5 w-16 ${pathname === '/dashboard' ? 'text-purple-600' : 'text-gray-400'}`}>
+              <Link href="/dashboard" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${pathname === '/dashboard' ? 'text-purple-600' : 'text-gray-400 hover:text-purple-600 hover:bg-purple-50'}`}>
                 <LayoutDashboard className="w-5 h-5" />
                 <span className="text-[10px] font-medium">Org</span>
               </Link>
-              <Link href="/dashboard/projects" className={`flex flex-col items-center justify-center gap-0.5 w-16 ${pathname.startsWith('/dashboard/projects') ? 'text-purple-600' : 'text-gray-400'}`}>
+              <Link href="/dashboard/projects" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${pathname.startsWith('/dashboard/projects') ? 'text-purple-600' : 'text-gray-400 hover:text-purple-600 hover:bg-purple-50'}`}>
                 <Briefcase className="w-5 h-5" />
                 <span className="text-[10px] font-medium">Jobs</span>
               </Link>
-              <Link href="/dashboard/proposals" className={`flex flex-col items-center justify-center gap-0.5 w-16 ${pathname.startsWith('/dashboard/proposals') ? 'text-purple-600' : 'text-gray-400'}`}>
+              <Link href="/dashboard/proposals" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${pathname.startsWith('/dashboard/proposals') ? 'text-purple-600' : 'text-gray-400 hover:text-purple-600 hover:bg-purple-50'}`}>
                 <FileText className="w-5 h-5" />
                 <span className="text-[10px] font-medium">Proposals</span>
               </Link>
-              <Link href="/dashboard/messages" className={`flex flex-col items-center justify-center gap-0.5 w-16 relative ${pathname.startsWith('/dashboard/messages') ? 'text-purple-600' : 'text-gray-400'}`}>
+              <Link href="/dashboard/messages" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg relative ${pathname.startsWith('/dashboard/messages') ? 'text-purple-600' : 'text-gray-400 hover:text-purple-600 hover:bg-purple-50'}`}>
                 <MessageSquare className="w-5 h-5" />
                 <span className="text-[10px] font-medium">Messages</span>
               </Link>
-              <Link href="/dashboard/escrow" className={`flex flex-col items-center justify-center gap-0.5 w-16 ${pathname.startsWith('/dashboard/escrow') ? 'text-purple-600' : 'text-gray-400'}`}>
+              <Link href="/dashboard/escrow" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${pathname.startsWith('/dashboard/escrow') ? 'text-purple-600' : 'text-gray-400 hover:text-purple-600 hover:bg-purple-50'}`}>
                 <Shield className="w-5 h-5" />
                 <span className="text-[10px] font-medium">Escrow</span>
               </Link>
             </>
           ) : (
             <>
-              <Link href="/dashboard" className={`flex flex-col items-center justify-center gap-0.5 w-16 ${pathname === '/dashboard' ? 'text-green-600' : 'text-gray-400'}`}>
+              <Link href="/dashboard" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${pathname === '/dashboard' ? 'text-green-600' : 'text-gray-400 hover:text-green-600 hover:bg-green-50'}`}>
                 <LayoutDashboard className="w-5 h-5" />
                 <span className="text-[10px] font-medium">Home</span>
               </Link>
-              <Link href={isClient ? '/talent' : '/jobs'} className={`flex flex-col items-center justify-center gap-0.5 w-16 ${(isClient ? pathname === '/talent' : pathname === '/jobs') ? 'text-green-600' : 'text-gray-400'}`}>
+              <Link href={isClient ? '/talent' : '/jobs'} className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${(isClient ? pathname === '/talent' : pathname === '/jobs') ? 'text-green-600' : 'text-gray-400 hover:text-green-600 hover:bg-green-50'}`}>
                 <Search className="w-5 h-5" />
                 <span className="text-[10px] font-medium">{isClient ? 'Talent' : 'Jobs'}</span>
               </Link>
-              <Link href="/dashboard/messages" className={`flex flex-col items-center justify-center gap-0.5 w-16 relative ${pathname.startsWith('/dashboard/messages') ? 'text-green-600' : 'text-gray-400'}`}>
+              <Link href="/dashboard/messages" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg relative ${pathname.startsWith('/dashboard/messages') ? 'text-green-600' : 'text-gray-400 hover:text-green-600 hover:bg-green-50'}`}>
                 <MessageSquare className="w-5 h-5" />
                 <span className="text-[10px] font-medium">Messages</span>
               </Link>
-              <Link href="/dashboard/wallet" className={`flex flex-col items-center justify-center gap-0.5 w-16 ${pathname.startsWith('/dashboard/wallet') ? 'text-green-600' : 'text-gray-400'}`}>
+              <Link href="/dashboard/wallet" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${pathname.startsWith('/dashboard/wallet') ? 'text-green-600' : 'text-gray-400 hover:text-green-600 hover:bg-green-50'}`}>
                 <Wallet className="w-5 h-5" />
                 <span className="text-[10px] font-medium">Wallet</span>
               </Link>
-              <Link href="/dashboard/settings" className={`flex flex-col items-center justify-center gap-0.5 w-16 ${pathname.startsWith('/dashboard/settings') ? 'text-green-600' : 'text-gray-400'}`}>
+              <Link href="/dashboard/settings" className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg ${pathname.startsWith('/dashboard/settings') ? 'text-green-600' : 'text-gray-400 hover:text-green-600 hover:bg-green-50'}`}>
                 <User className="w-5 h-5" />
                 <span className="text-[10px] font-medium">Profile</span>
               </Link>

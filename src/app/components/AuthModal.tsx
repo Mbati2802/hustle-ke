@@ -149,7 +149,7 @@ export default function AuthModal() {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeModal} />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] sm:mx-4 mx-3 overflow-y-auto">
         {/* Close button */}
         <button onClick={closeModal} className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors z-10">
           <X className="w-5 h-5" />
@@ -195,7 +195,7 @@ export default function AuthModal() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-sm">
+              <div className="flex flex-wrap items-center justify-between text-sm gap-2">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" className="w-4 h-4 text-green-600 rounded border-gray-300" />
                   <span className="text-gray-600">Remember me</span>
@@ -225,7 +225,7 @@ export default function AuthModal() {
               <button onClick={() => setView('signup')} className="text-green-600 hover:text-green-700 font-semibold">Sign up</button>
             </p>
 
-            <div className="mt-5 flex items-center justify-center gap-5 text-xs text-gray-400">
+            <div className="mt-5 flex items-center justify-center flex-wrap gap-3 sm:gap-5 text-xs text-gray-400">
               <div className="flex items-center gap-1"><Shield className="w-3.5 h-3.5 text-green-500" /> Secure</div>
               <div className="flex items-center gap-1"><Zap className="w-3.5 h-3.5 text-green-500" /> Instant</div>
               <div className="flex items-center gap-1"><Wallet className="w-3.5 h-3.5 text-green-500" /> Free</div>
@@ -371,7 +371,7 @@ export default function AuthModal() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Skills (select up to 5)</label>
-                      <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto p-2 border border-gray-200 rounded-xl">
+                      <div className="flex flex-wrap gap-1.5 max-h-48 sm:max-h-32 overflow-y-auto p-2 border border-gray-200 rounded-xl">
                         {skillOptions.map(skill => (
                           <button key={skill} type="button" onClick={() => toggleSkill(skill)}
                             className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${signupForm.skills.includes(skill) ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100'}`}>

@@ -32,7 +32,8 @@ import {
 export default function SettingsPage() {
   const { profile: authProfile, refreshProfile } = useAuth()
   const searchParams = useSearchParams()
-  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'profile')
+  type TabType = 'profile' | 'portfolio' | 'subscription' | 'security' | 'notifications' | 'verification'
+  const [activeTab, setActiveTab] = useState<TabType>((searchParams.get('tab') as TabType) || 'profile')
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
@@ -540,7 +541,7 @@ export default function SettingsPage() {
   const completenessPercent = Math.round((completedCount / completenessChecks.length) * 100)
 
   return (
-    <div className="p-4 lg:p-6 xl:p-8 pb-24 lg:pb-8">
+    <div className="p-3 sm:p-4 lg:p-6 xl:p-8 pb-24 lg:pb-8">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
           {authProfile?.role === 'Freelancer' && authProfile?.id && (
@@ -551,9 +552,9 @@ export default function SettingsPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-hide">
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 sm:-mx-0 sm:px-0">
           {tabs.map((tab) => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${activeTab === tab.id ? 'bg-green-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
+            <button key={tab.id} onClick={() => setActiveTab(tab.id as TabType)} className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition-colors ${activeTab === tab.id ? 'bg-green-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
               <tab.icon className="w-4 h-4" /> {tab.label}
             </button>
           ))}
@@ -644,7 +645,7 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1">Full Name</label>
                   <input type="text" value={profileForm.fullName} onChange={(e) => setProfileForm({...profileForm, fullName: e.target.value})} placeholder="John Doe" className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none text-sm" />
@@ -682,7 +683,7 @@ export default function SettingsPage() {
                 <p className="text-[11px] text-gray-400 mt-1">Tip: Mention your years of experience, industries served, tools you use, and your unique value proposition.</p>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1">Hourly Rate (KES)</label>
                   <input type="number" value={profileForm.hourlyRate} onChange={(e) => setProfileForm({...profileForm, hourlyRate: parseInt(e.target.value) || 0})} placeholder="1500" className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none text-sm" />
@@ -703,13 +704,13 @@ export default function SettingsPage() {
                     { value: 'unavailable', label: 'Unavailable', color: 'bg-red-50 border-red-200 text-red-700' },
                     { value: 'available_from', label: 'Available From...', color: 'bg-blue-50 border-blue-200 text-blue-700' },
                   ].map(opt => (
-                    <button key={opt.value} onClick={() => setProfileForm({...profileForm, availability: opt.value})} className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${profileForm.availability === opt.value ? opt.color + ' ring-2 ring-offset-1 ring-current' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}>
+                    <button key={opt.value} onClick={() => setProfileForm({...profileForm, availability: opt.value})} className={`flex-grow sm:flex-grow-0 px-3 py-2 sm:py-1.5 rounded-lg text-xs font-medium border transition-colors ${profileForm.availability === opt.value ? opt.color + ' ring-2 ring-offset-1 ring-current' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}>
                       {opt.label}
                     </button>
                   ))}
                 </div>
                 {profileForm.availability === 'available_from' && (
-                  <input type="date" value={profileForm.availableFrom} onChange={(e) => setProfileForm({...profileForm, availableFrom: e.target.value})} className="mt-2 px-3 py-2 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
+                  <input type="date" value={profileForm.availableFrom} onChange={(e) => setProfileForm({...profileForm, availableFrom: e.target.value})} className="mt-2 w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
                 )}
               </div>
             </div>
@@ -733,8 +734,15 @@ export default function SettingsPage() {
               </div>
 
               <div className="flex gap-2">
-                <input type="text" value={newSkill} onChange={(e) => setNewSkill(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && newSkill.trim() && profileForm.skills.length < 20) { setProfileForm({...profileForm, skills: [...profileForm.skills, newSkill.trim()]}); setNewSkill('') } }} placeholder="Type a skill and press Enter" className="flex-1 px-3 py-2 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
-                <button onClick={() => { if (newSkill.trim() && profileForm.skills.length < 20) { setProfileForm({...profileForm, skills: [...profileForm.skills, newSkill.trim()]}); setNewSkill('') } }} className="px-3 py-2 bg-green-50 text-green-700 rounded-xl text-sm font-medium hover:bg-green-100 transition-colors"><Plus className="w-4 h-4" /></button>
+                <input type="text" value={newSkill} onChange={(e) => setNewSkill(e.target.value)} placeholder="Add a skill..." className="flex-1 px-3 py-2 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
+                <button onClick={() => {
+                  if (newSkill.trim() && profileForm.skills.length < 20) {
+                    setProfileForm({...profileForm, skills: [...profileForm.skills, newSkill.trim()]});
+                    setNewSkill('');
+                  }
+                }} className="px-3 sm:px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs sm:text-sm font-medium transition-colors flex items-center gap-1 disabled:opacity-50 whitespace-nowrap" disabled={profileForm.skills.length >= 20}>
+                  <Plus className="w-4 h-4" /> Add
+                </button>
               </div>
             </div>
 
