@@ -568,7 +568,7 @@ export default function LiveChatWidget() {
       {/* Chat Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 ${
+        className={`fixed bottom-20 lg:bottom-6 right-4 sm:right-6 z-40 w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 ${
           isOpen 
             ? 'bg-red-500 hover:bg-red-600 rotate-90' 
             : 'bg-green-600 hover:bg-green-700'
@@ -583,7 +583,7 @@ export default function LiveChatWidget() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-[420px] max-w-[calc(100vw-48px)] h-[580px] max-h-[calc(100vh-140px)] bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
+        <div className="fixed bottom-36 lg:bottom-24 right-3 sm:right-6 z-50 w-[420px] max-w-[calc(100vw-24px)] sm:max-w-[calc(100vw-48px)] h-[480px] sm:h-[580px] max-h-[calc(100vh-180px)] lg:max-h-[calc(100vh-140px)] bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
           {/* Header */}
           <div className="bg-gradient-to-r from-green-600 to-green-700 p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import LiveChatWidget from "./components/LiveChatWidget";
+import ScrollToTop from "./components/ScrollToTop";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AuthModalProvider } from "./components/AuthModalContext";
 import AuthModal from "./components/AuthModal";
@@ -76,6 +77,7 @@ export default function RootLayout({
               <ApplyJobModalProvider>
                 {children}
                 <LiveChatWidget />
+                <ScrollToTop />
                 <IncompleteApplicationNotifier />
                 <ApplyJobModalWrapper />
                 <AuthModal />

@@ -317,7 +317,7 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
 
             {/* ── Left: Text ── */}
-            <div>
+            <div className="text-center lg:text-left">
               {/* Live badge */}
               <div className="hk3-anim hk3-d1 inline-flex items-center gap-2 bg-green-500/15 text-green-400 px-4 py-1.5 rounded-full text-sm font-medium mb-6">
                 <span className="relative flex h-2 w-2">
@@ -347,23 +347,23 @@ export default function LandingPage() {
 
               {/* Rotating subtitle */}
               <p
-                className={`hk3-anim hk3-d3 text-lg text-gray-300 mb-8 leading-relaxed max-w-lg transition-all duration-300 ${isHeroTransitioning ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}`}
+                className={`hk3-anim hk3-d3 text-base sm:text-lg text-gray-300 mb-8 leading-relaxed max-w-lg mx-auto lg:mx-0 transition-all duration-300 ${isHeroTransitioning ? 'opacity-0 translate-y-1' : 'opacity-100 translate-y-0'}`}
               >
                 {currentRotation.subtitle}
               </p>
 
               {/* CTAs */}
-              <div className="hk3-anim hk3-d4 flex flex-wrap gap-4 mb-8">
+              <div className="hk3-anim hk3-d4 flex flex-row gap-3 sm:gap-4 mb-8 justify-center lg:justify-start">
                 <Link
                   href={content.hero_cta_primary_link}
-                  className="hk3-glow-btn group inline-flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white px-7 py-3.5 rounded-xl font-semibold transition-colors"
+                  className="hk3-glow-btn group inline-flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white px-5 sm:px-7 py-3 sm:py-3.5 rounded-xl font-semibold transition-colors text-sm sm:text-base"
                 >
                   {content.hero_cta_primary}
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                 </Link>
                 <button
                   onClick={() => openModal()}
-                  className="group inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 text-white px-7 py-3.5 rounded-xl font-medium transition-colors"
+                  className="group inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 text-white px-5 sm:px-7 py-3 sm:py-3.5 rounded-xl font-medium transition-colors text-sm sm:text-base"
                 >
                   {content.hero_cta_secondary}
                   <Briefcase className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
@@ -371,7 +371,7 @@ export default function LandingPage() {
               </div>
 
               {/* Trust indicators */}
-              <div className="hk3-anim hk3-d5 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-400">
+              <div className="hk3-anim hk3-d5 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-sm text-gray-400">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-green-500" />
                   <span>M-Pesa Payouts</span>
@@ -537,7 +537,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
             {content.value_props.map((prop: { title: string; description: string; features: string[] }, i: number) => {
               const icons = [Bot, Smartphone, Shield]
               const colors = [
@@ -590,7 +590,7 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {talentLoading ? (
               // Loading skeleton
               Array.from({ length: 4 }).map((_, i) => (
@@ -748,7 +748,7 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             {reviewsLoading ? (
               Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="bg-gray-50 rounded-2xl p-5 animate-pulse">
@@ -902,7 +902,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {adsLoading ? (
               Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 animate-pulse">
@@ -978,7 +978,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {[
               {
                 step: '01',
@@ -1006,12 +1006,12 @@ export default function LandingPage() {
               },
             ].map((item) => (
               <div key={item.step} className="relative">
-                <div className="text-6xl font-bold text-gray-100 mb-4">{item.step}</div>
-                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
-                  <item.icon className="w-6 h-6 text-green-600" />
+                <div className="text-4xl sm:text-6xl font-bold text-gray-100 mb-2 sm:mb-4">{item.step}</div>
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-xl flex items-center justify-center mb-3 sm:mb-4">
+                  <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.description}</p>
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1 sm:mb-2">{item.title}</h3>
+                <p className="text-sm sm:text-base text-gray-600">{item.description}</p>
               </div>
             ))}
           </div>

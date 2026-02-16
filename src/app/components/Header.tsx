@@ -39,7 +39,7 @@ interface HeaderProps {
   activeLink?: string
 }
 
-const BANNER_H = 44
+const BANNER_H = 52
 
 type BannerTheme = 'dark' | 'light' | 'green'
 
@@ -612,39 +612,36 @@ export default function Header({ activeLink }: HeaderProps) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative h-full">
                   <div className="flex items-center justify-between h-full">
                     {/* Promo content */}
-                    <div className="flex items-center gap-3 text-sm overflow-hidden min-w-0">
+                    <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm overflow-hidden min-w-0">
                       <span className="hk-zap flex-shrink-0">
-                        <Zap className={`w-4 h-4 ${t.highlight} transition-colors duration-700`} style={{ fill: 'currentColor' }} />
+                        <Zap className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${t.highlight} transition-colors duration-700`} style={{ fill: 'currentColor' }} />
                       </span>
                       <span className="truncate">
-                        <span className={`${t.highlight} font-bold tracking-wide transition-colors duration-700`}>LIMITED OFFER!</span>
-                        <span className={`${t.separator} mx-1.5 hidden sm:inline transition-colors duration-700`}>—</span>
-                        <span className={`hidden sm:inline ${t.muted} transition-colors duration-700`}>Get </span>
-                        <span className={`${t.offer} font-extrabold text-[15px] transition-colors duration-700`}>50% OFF</span>
-                        <span className={`hidden sm:inline ${t.muted} transition-colors duration-700`}> your first Pro month</span>
-                        <span className={`${t.separator} mx-2 transition-colors duration-700`}>|</span>
+                        <span className={`${t.offer} font-extrabold sm:text-[15px] transition-colors duration-700`}>50% OFF</span>
+                        <span className={`hidden sm:inline ${t.muted} transition-colors duration-700`}> first Pro month</span>
+                        <span className={`${t.separator} mx-1 sm:mx-2 transition-colors duration-700`}>|</span>
                         <span className={`${t.muted} transition-colors duration-700`}>Code: </span>
                       </span>
-                      <code className={`${t.codeBg} ${t.codeText} font-black text-xs px-2.5 py-1 rounded-md tracking-widest flex-shrink-0`}>
+                      <code className={`${t.codeBg} ${t.codeText} font-black text-[10px] sm:text-xs px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md tracking-widest flex-shrink-0`}>
                         HUSTLE50
                       </code>
                     </div>
 
                     {/* CTA + Dismiss */}
-                    <div className="flex items-center gap-3 flex-shrink-0 ml-4">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 ml-2 sm:ml-4">
                       <Link
                         href="/pricing"
-                        className={`hidden sm:inline-flex items-center gap-1 text-sm font-bold ${t.cta} transition-colors duration-700 group`}
+                        className={`inline-flex items-center gap-1 text-xs sm:text-sm font-bold ${t.cta} transition-colors duration-700 group whitespace-nowrap`}
                       >
-                        Claim Now
-                        <ChevronRight className={`w-3.5 h-3.5 transition-transform ${t.ctaHover}`} />
+                        Claim
+                        <ChevronRight className={`w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform ${t.ctaHover}`} />
                       </Link>
                       <button
                         onClick={dismissBanner}
-                        className={`p-1 ${t.dismissHover} rounded-full transition-colors duration-700 ${t.dismiss}`}
+                        className={`p-0.5 sm:p-1 ${t.dismissHover} rounded-full transition-colors duration-700 ${t.dismiss}`}
                         aria-label="Dismiss banner"
                       >
-                        <X className="w-4 h-4" />
+                        <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
                     </div>
                   </div>
