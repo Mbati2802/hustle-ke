@@ -562,14 +562,17 @@ export default function ContactPage() {
                 <span className="text-sm text-blue-600 font-medium">{content.phone}</span>
               </a>
 
-              <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:border-purple-200 hover:shadow-md transition-all group text-left">
+              <button
+                onClick={() => window.dispatchEvent(new Event('open-live-chat'))}
+                className="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:border-purple-200 hover:shadow-md transition-all group text-left w-full"
+              >
                 <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-purple-600 transition-colors">
                   <MessageSquare className="w-6 h-6 text-purple-600 group-hover:text-white transition-colors" />
                 </div>
                 <h3 className="font-bold text-gray-900 mb-1">Live Chat</h3>
-                <p className="text-sm text-gray-500 mb-3">Coming soon</p>
-                <span className="text-sm text-purple-600 font-medium">In-app messaging</span>
-              </div>
+                <p className="text-sm text-gray-500 mb-3">Get instant help from our AI assistant</p>
+                <span className="text-sm text-purple-600 font-medium">Click to chat now →</span>
+              </button>
 
               <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:border-amber-200 hover:shadow-md transition-all group text-left">
                 <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-amber-600 transition-colors">

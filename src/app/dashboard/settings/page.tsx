@@ -1326,8 +1326,33 @@ export default function SettingsPage() {
 
             <hr className="border-gray-200" />
             <h3 className="font-semibold text-red-600">Danger Zone</h3>
-            <p className="text-sm text-gray-600">Permanently delete your account and all associated data.</p>
-            <span className="inline-block border-2 border-gray-300 text-gray-400 px-6 py-2.5 rounded-xl font-semibold cursor-not-allowed" title="Account deletion coming soon">Delete Account</span>
+            <p className="text-sm text-gray-600">Permanently delete your account and all associated data. This action cannot be undone.</p>
+            <button
+              onClick={async () => {
+                if (!confirm('Are you absolutely sure you want to delete your account? This will permanently delete all your data, including jobs, proposals, messages, and wallet history. This action cannot be undone.\n\nType DELETE to confirm.')) return
+                const confirmText = prompt('Type DELETE in capital letters to confirm account deletion:')
+                if (confirmText !== 'DELETE') {
+                  alert('Account deletion cancelled.')
+                  return
+                }
+                try {
+                  const res = await fetch('/api/profile/delete', { method: 'DELETE' })
+                  const data = await res.json()
+                  if (res.ok) {
+                    alert('Your account has been deleted. You will be logged out.')
+                    await fetch('/api/auth/logout', { method: 'POST' })
+                    window.location.href = '/'
+                  } else {
+                    alert(data.error || 'Failed to delete account')
+                  }
+                } catch {
+                  alert('Network error. Please try again.')
+                }
+              }}
+              className="border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white px-6 py-2.5 rounded-xl font-semibold transition-colors"
+            >
+              Delete Account
+            </button>
           </div>
         )}
 

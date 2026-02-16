@@ -26,6 +26,7 @@ const navItems = [
   { href: '/admin/reviews', label: 'Reviews', icon: Star },
   { href: '/admin/messages', label: 'Messages', icon: MessageSquare },
   { href: '/admin/support', label: 'Support', icon: LifeBuoy },
+  { href: '/admin/saved-searches', label: 'Job Alerts', icon: Bell },
   { href: '/admin/pages', label: 'Pages', icon: FileCode },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
   { href: '/admin/activity', label: 'Activity Log', icon: Activity },
