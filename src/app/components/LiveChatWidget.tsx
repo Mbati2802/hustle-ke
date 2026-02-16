@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import { useAuth } from '@/contexts/AuthContext'
 import { 
   MessageCircle, 
   X, 
@@ -24,6 +25,13 @@ interface Message {
   timestamp: Date
   status?: 'sent' | 'delivered' | 'read'
   suggestions?: string[]
+  meta?: {
+    source?: string
+    confidence?: string
+    relatedFaqs?: Array<{ id: string; question: string; answer: string; category: string }>
+    category?: string
+    matchedQuestion?: string
+  }
 }
 
 interface ConversationContext {
@@ -119,6 +127,7 @@ const smallTalk = {
 }
 
 export default function LiveChatWidget() {
+  const { user } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -143,6 +152,7 @@ export default function LiveChatWidget() {
   const [humanHandoff, setHumanHandoff] = useState(false)
   const [supportTicketId, setSupportTicketId] = useState<string | null>(null)
   const [isConnectingHuman, setIsConnectingHuman] = useState(false)
+  const [aiSessionId, setAiSessionId] = useState<string | null>(null)
   const [conversationHistory, setConversationHistory] = useState<string[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -592,6 +602,67 @@ export default function LiveChatWidget() {
       return
     }
 
+    // If user is logged in, use AI chat API (memory + citations)
+    if (user) {
+      setTimeout(async () => {
+        try {
+          const res = await fetch('/api/ai/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: aiSessionId, message: trimmedText }),
+          })
+          const data = await res.json()
+
+          if (!res.ok) {
+            // Fallback to local rules
+            const responseResult = generateResponse(trimmedText, intent, conversationStage)
+            const suggestions = getSuggestions(intent, responseResult.newStage)
+            setConversationStage(responseResult.newStage)
+            setMessages(prev => [...prev, {
+              id: (Date.now() + 1).toString(),
+              text: responseResult.text,
+              sender: 'bot',
+              timestamp: new Date(),
+              suggestions,
+            }])
+            setIsTyping(false)
+            return
+          }
+
+          if (data.session_id && !aiSessionId) setAiSessionId(data.session_id)
+
+          const responseText = (data.answer || 'I can help with that. Can you share more details?') as string
+          const meta = (data.meta || {}) as Message['meta']
+          const suggestions = meta?.relatedFaqs?.slice(0, 3).map((f) => f.question) || []
+
+          setConversationStage('helped')
+          setMessages(prev => [...prev, {
+            id: (Date.now() + 1).toString(),
+            text: responseText,
+            sender: 'bot',
+            timestamp: new Date(),
+            suggestions: suggestions.length > 0 ? suggestions : getSuggestions(intent, 'helped'),
+            meta,
+          }])
+        } catch {
+          const responseResult = generateResponse(trimmedText, intent, conversationStage)
+          const suggestions = getSuggestions(intent, responseResult.newStage)
+          setConversationStage(responseResult.newStage)
+          setMessages(prev => [...prev, {
+            id: (Date.now() + 1).toString(),
+            text: responseResult.text,
+            sender: 'bot',
+            timestamp: new Date(),
+            suggestions,
+          }])
+        } finally {
+          setIsTyping(false)
+        }
+      }, 700)
+      return
+    }
+
+    // Anonymous fallback: local rules
     setTimeout(() => {
       const responseResult = generateResponse(trimmedText, intent, conversationStage)
       const suggestions = getSuggestions(intent, responseResult.newStage)
@@ -767,6 +838,22 @@ export default function LiveChatWidget() {
                     }`}>
                       <p className="text-sm leading-relaxed whitespace-pre-line">{message.text}</p>
                     </div>
+                    {message.sender === 'bot' && message.meta?.relatedFaqs && message.meta.relatedFaqs.length > 0 && (
+                      <div className="mt-2 rounded-xl border border-gray-200 bg-white px-3 py-2">
+                        <p className="text-[11px] font-semibold text-gray-600 mb-1">Sources</p>
+                        <div className="space-y-1">
+                          {message.meta.relatedFaqs.slice(0, 3).map((f) => (
+                            <Link
+                              key={f.id}
+                              href="/faqs"
+                              className="block text-[11px] text-green-700 hover:text-green-800 underline"
+                            >
+                              {f.question}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     <div className="flex items-center gap-1 mt-1">
                       <span className="text-xs text-gray-400">{formatTime(message.timestamp)}</span>
                       {message.sender === 'user' && message.status && (
