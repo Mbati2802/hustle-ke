@@ -732,6 +732,80 @@ export default function LiveChatWidget() {
     setMessages(prev => [...prev, userMessage])
     setIsTyping(true)
 
+    // PRIORITY: Check for human handoff triggers in suggestions
+    const handoffTriggers = ['human', 'agent', 'person', 'real person', 'support team', 'operator', 'live agent', 'connect me to someone', 'talk to someone', 'speak to', 'connect to', 'connect me', 'talk to agent', 'speak with', 'real human']
+    const wantsHuman = handoffTriggers.some(trigger => suggestion.toLowerCase().includes(trigger))
+
+    if (wantsHuman && user && !humanHandoff) {
+      setIsConnectingHuman(true)
+      setTimeout(async () => {
+        try {
+          const intent = analyzeIntent(suggestion)
+          const issueClassification = classifyIssue(suggestion, intent)
+
+          const res = await fetch('/api/support/tickets', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              subject: 'Live Chat Support Request',
+              category: issueClassification.category,
+              sub_category: issueClassification.subCategory,
+              urgency: intent.urgency,
+              message: suggestion,
+            }),
+          })
+          const data = await res.json()
+          const ticketId = data.ticket?.id
+
+          if (!res.ok || !ticketId) {
+            setMessages(prev => [...prev, {
+              id: (Date.now() + 2).toString(),
+              text: 'Sorry — I could not connect you to support right now. Please try again in a minute or use the Contact page.',
+              sender: 'bot',
+              timestamp: new Date(),
+            }])
+            setIsTyping(false)
+            setIsConnectingHuman(false)
+            return
+          }
+
+          setSupportTicketId(ticketId)
+          setHumanHandoff(true)
+          setMessages(prev => [...prev, {
+            id: (Date.now() + 1).toString(),
+            text: `✅ Connected to human support!\n\nTicket ID: ${ticketId}\n\nA support agent will respond shortly. You can continue chatting here.`,
+            sender: 'human',
+            timestamp: new Date(),
+          }])
+        } catch {
+          setMessages(prev => [...prev, {
+            id: (Date.now() + 2).toString(),
+            text: 'Network error while connecting to support. Please try again.',
+            sender: 'bot',
+            timestamp: new Date(),
+          }])
+        } finally {
+          setIsTyping(false)
+          setIsConnectingHuman(false)
+        }
+      }, 600)
+      return
+    }
+
+    if (wantsHuman && !user) {
+      setTimeout(() => {
+        setMessages(prev => [...prev, {
+          id: (Date.now() + 1).toString(),
+          text: 'To connect with a human support agent, please log in or sign up first. This helps us provide personalized assistance and track your support history.',
+          sender: 'bot',
+          timestamp: new Date(),
+          suggestions: ['Log in', 'Sign up', 'Continue with AI'],
+        }])
+        setIsTyping(false)
+      }, 700)
+      return
+    }
+
     const intent = analyzeIntent(suggestion)
     
     setTimeout(() => {
