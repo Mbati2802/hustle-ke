@@ -277,16 +277,16 @@ export default function TermsPage() {
           <div className="absolute inset-0 opacity-[0.03]">
             <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
           </div>
-          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 text-center">
             <div className="inline-flex items-center gap-2 bg-white/10 border border-white/10 text-gray-300 px-4 py-1.5 rounded-full text-sm font-medium mb-5">
               <Scale className="w-4 h-4" />
               Legal Agreement
             </div>
-            <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4">{content.title}</h1>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">{content.title}</h1>
             <p className="text-gray-400 text-lg max-w-xl mx-auto mb-4">
               The rules that govern your use of HustleKE. Please read carefully before using the platform.
             </p>
-            <div className="flex items-center justify-center gap-4 text-sm text-gray-500 flex-wrap">
+            <div className="flex items-center justify-center gap-x-4 gap-y-1 text-sm text-gray-500 flex-wrap">
               <span>Last updated: <strong className="text-gray-300">{content.last_updated}</strong></span>
               <span className="hidden sm:inline">|</span>
               <span>15 sections</span>

@@ -233,12 +233,12 @@ export default function PrivacyPage() {
           <div className="absolute inset-0 opacity-[0.04]">
             <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
           </div>
-          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 text-center">
             <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-400/20 text-blue-300 px-4 py-1.5 rounded-full text-sm font-medium mb-5">
               <ShieldCheck className="w-4 h-4" />
               Your Data, Your Rights
             </div>
-            <h1 className="text-4xl lg:text-5xl font-bold text-white mb-4">{content.title}</h1>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">{content.title}</h1>
             <p className="text-blue-200/70 text-lg max-w-2xl mx-auto mb-4">
               We believe in transparency. This policy explains what data we collect, how we use it, and how we protect your privacy on HustleKE.
             </p>

@@ -257,13 +257,13 @@ export default function FAQsPage() {
           <div className="absolute bottom-0 left-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />
           <div className="absolute top-40 left-1/2 w-48 h-48 bg-cyan-500/5 rounded-full blur-3xl" />
 
-          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20 text-center">
+          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 text-center">
             <div className="inline-flex items-center gap-2 bg-green-500/15 text-green-400 px-4 py-1.5 rounded-full text-sm font-medium mb-6">
               <Brain className="w-4 h-4" />
               AI-Powered Help Center
             </div>
 
-            <h1 className="text-4xl lg:text-5xl font-bold text-white mb-5 leading-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-5 leading-tight">
               {content.hero_title.split('Center')[0]}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300">Center</span>
             </h1>
@@ -291,7 +291,7 @@ export default function FAQsPage() {
             </div>
 
             {/* Quick stats */}
-            <div className="flex items-center justify-center gap-8 mt-8 text-sm text-gray-400">
+            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 mt-8 text-sm text-gray-400">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-green-400" />
                 <span>{totalFaqs}+ answers</span>
@@ -393,18 +393,6 @@ export default function FAQsPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="font-bold text-green-800 text-base">AI Assistant</h3>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
-                            aiAnswer.confidence === 'high' ? 'bg-green-200 text-green-700' :
-                            aiAnswer.confidence === 'medium' ? 'bg-amber-200 text-amber-700' :
-                            'bg-gray-200 text-gray-600'
-                          }`}>
-                            {aiAnswer.confidence === 'high' ? 'Confident match' : aiAnswer.confidence === 'medium' ? 'Best match' : 'Generated answer'}
-                          </span>
-                          {aiAnswer.source === 'ai_generated' && (
-                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-600 font-semibold flex items-center gap-1">
-                              <Sparkles className="w-2.5 h-2.5" /> Live reply
-                            </span>
-                          )}
                         </div>
                         {aiAnswer.matchedQuestion && (
                           <p className="text-xs text-green-600 mb-2 font-medium">
@@ -695,13 +683,13 @@ export default function FAQsPage() {
                   color: 'from-amber-500 to-orange-600',
                 },
               ].map((item) => (
-                <div key={item.step} className="relative bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-lg transition-shadow group">
-                  <div className="absolute -top-4 left-8">
+                <div key={item.step} className="relative bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-lg transition-shadow group text-center">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 sm:left-8 sm:translate-x-0">
                     <span className={`bg-gradient-to-r ${item.color} text-white text-xs font-bold px-3 py-1.5 rounded-full`}>
                       Step {item.step}
                     </span>
                   </div>
-                  <div className={`w-14 h-14 bg-gradient-to-br ${item.color} rounded-2xl flex items-center justify-center mb-5 mt-2 shadow-lg group-hover:scale-105 transition-transform`}>
+                  <div className={`w-14 h-14 bg-gradient-to-br ${item.color} rounded-2xl flex items-center justify-center mb-5 mt-2 shadow-lg group-hover:scale-105 transition-transform mx-auto`}>
                     <item.icon className="w-7 h-7 text-white" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
@@ -771,7 +759,7 @@ export default function FAQsPage() {
               <h2 className="text-3xl font-bold text-gray-900 mb-4">Quick Help</h2>
               <p className="text-lg text-gray-500">Jump to the most common topics</p>
             </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 { icon: Zap, title: 'Get Started', desc: 'Create profile, verify ID, find your first job', link: 'getting-started', color: 'from-blue-500/10 to-indigo-500/10', iconColor: 'text-blue-600' },
                 { icon: Wallet, title: 'Payments', desc: 'Escrow, M-Pesa, withdrawals, top-ups', link: 'payments', color: 'from-green-500/10 to-emerald-500/10', iconColor: 'text-green-600' },

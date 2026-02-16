@@ -1,6 +1,8 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { usePageContent } from '@/hooks/usePageContent'
@@ -63,10 +65,10 @@ const defaultContent = {
     { year: '2025', quarter: 'Q1', event: 'Expanded to all 47 counties with localized support' },
   ],
   team: [
-    { name: 'Founder & CEO', role: 'Visionary Leader', image: 'FC', bio: 'Passionate about unlocking Kenyan talent through technology and fair work.' },
-    { name: 'Head of Product', role: 'Product Strategy', image: 'HP', bio: 'Designing seamless experiences that connect talent with opportunity.' },
-    { name: 'Tech Lead', role: 'Engineering', image: 'TL', bio: 'Building the scalable, secure infrastructure powering HustleKE.' },
-    { name: 'Community Manager', role: 'User Success', image: 'CM', bio: 'Ensuring every user — freelancer and client — has a great experience.' },
+    { name: 'Willys Onyango', role: 'Founder & CEO', image: 'https://api.dicebear.com/7.x/notionists/svg?seed=willys&backgroundColor=c0aede', bio: 'Passionate about unlocking Kenyan talent through technology and fair work.' },
+    { name: 'Belinda Chelimo', role: 'Head of Product', image: 'https://api.dicebear.com/7.x/notionists/svg?seed=belinda&backgroundColor=b6e3f4', bio: 'Designing seamless experiences that connect talent with opportunity.' },
+    { name: 'Brian Odhiambo', role: 'Technology Lead', image: 'https://api.dicebear.com/7.x/notionists/svg?seed=brian&backgroundColor=d1d4f9', bio: 'Building the scalable, secure infrastructure powering HustleKE.' },
+    { name: 'Community Manager', role: 'User Success', image: 'https://api.dicebear.com/7.x/notionists/svg?seed=community&backgroundColor=ffd5dc', bio: 'Ensuring every user — freelancer and client — has a great experience.' },
   ],
   cta_title: 'Ready to Join the Movement?',
   cta_subtitle: "Be part of Kenya's fastest-growing community of freelancers and clients.",
@@ -74,6 +76,30 @@ const defaultContent = {
 
 export default function AboutPage() {
   const content = usePageContent('about', defaultContent)
+  const [realStats, setRealStats] = useState(content.stats)
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [usersRes, jobsRes] = await Promise.all([
+          fetch('/api/admin/stats').then(r => r.ok ? r.json() : null).catch(() => null),
+          fetch('/api/jobs?limit=1').then(r => r.ok ? r.json() : null).catch(() => null),
+        ])
+        const totalUsers = usersRes?.total_users || usersRes?.totalUsers
+        const totalJobs = usersRes?.total_jobs || usersRes?.totalJobs
+        if (totalUsers || totalJobs) {
+          setRealStats([
+            { value: totalUsers ? `${totalUsers.toLocaleString()}+` : content.stats[0].value, label: 'Active Users' },
+            { value: '47', label: 'Counties Covered' },
+            { value: totalJobs ? `${totalJobs.toLocaleString()}+` : content.stats[2].value, label: 'Jobs Posted' },
+            { value: content.stats[3].value, label: 'Average Rating' },
+          ])
+        }
+      } catch {}
+    }
+    fetchStats()
+  }, [content.stats])
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Header activeLink="/about" />
@@ -84,13 +110,13 @@ export default function AboutPage() {
           <div className="absolute top-20 left-10 w-72 h-72 bg-green-500 rounded-full blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 bg-green-400 rounded-full blur-3xl" />
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-24 lg:py-32">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-20 lg:py-28">
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-green-500/20 border border-green-500/30 rounded-full px-4 py-2 mb-6">
               <Heart className="w-4 h-4 text-green-400" />
               <span className="text-sm font-medium text-green-300">{content.hero_badge}</span>
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-6 leading-tight">
               {content.hero_title}
             </h1>
             <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
@@ -104,7 +130,7 @@ export default function AboutPage() {
       <section className="relative -mt-8 z-10 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="bg-white rounded-2xl shadow-xl border border-gray-100 grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100">
-            {content.stats.map((stat: { value: string; label: string }, i: number) => {
+            {realStats.map((stat: { value: string; label: string }, i: number) => {
               const Icon = statIcons[i] || Users
               return (
                 <div key={stat.label} className="p-6 text-center">
@@ -252,8 +278,8 @@ export default function AboutPage() {
             {content.team.map((member: { name: string; role: string; image: string; bio: string }) => (
               <div key={member.name} className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow group">
                 <div className="bg-gradient-to-br from-green-500 to-green-600 p-8 flex items-center justify-center">
-                  <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center text-white font-bold text-2xl group-hover:scale-110 transition-transform">
-                    {member.image}
+                  <div className="w-24 h-24 rounded-full overflow-hidden bg-white/20 group-hover:scale-110 transition-transform">
+                    <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
                   </div>
                 </div>
                 <div className="p-6 text-center">

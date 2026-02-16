@@ -123,14 +123,14 @@ export default function MpesaTariffsPage() {
           <div className="absolute top-10 right-20 w-72 h-72 bg-green-500/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-10 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl" />
 
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
                 <div className="inline-flex items-center gap-2 bg-green-500/10 border border-green-500/20 text-green-400 px-4 py-1.5 rounded-full text-sm font-medium mb-6">
                   <Smartphone className="w-4 h-4" />
                   Safaricom M-Pesa
                 </div>
-                <h1 className="text-4xl lg:text-5xl font-bold text-white mb-5 leading-tight">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-5 leading-tight">
                   {content.hero_title}
                 </h1>
                 <p className="text-gray-400 text-lg mb-8 leading-relaxed max-w-lg">
