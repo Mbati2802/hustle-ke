@@ -546,10 +546,11 @@ export default function LiveChatWidget() {
       setConversationStage('follow_up')
     }
 
-    const handoffTriggers = ['human', 'agent', 'person', 'real person', 'support team', 'operator', 'live agent', 'connect me to someone']
+    // PRIORITY CHECK: Human handoff triggers (check BEFORE AI call)
+    const handoffTriggers = ['human', 'agent', 'person', 'real person', 'support team', 'operator', 'live agent', 'connect me to someone', 'talk to someone', 'speak to', 'connect to']
     const wantsHuman = handoffTriggers.some(trigger => trimmedText.toLowerCase().includes(trigger))
 
-    if (wantsHuman) {
+    if (wantsHuman && user) {
       setIsConnectingHuman(true)
       setTimeout(async () => {
         try {
@@ -583,7 +584,7 @@ export default function LiveChatWidget() {
           setHumanHandoff(true)
           setMessages(prev => [...prev, {
             id: (Date.now() + 1).toString(),
-            text: `Support ticket created. A human agent will join shortly.\n\nTicket ID: ${ticketId}`,
+            text: `✅ Connected to human support!\n\nTicket ID: ${ticketId}\n\nA support agent will respond shortly. You can continue chatting here.`,
             sender: 'human',
             timestamp: new Date(),
           }])
@@ -599,6 +600,21 @@ export default function LiveChatWidget() {
           setIsConnectingHuman(false)
         }
       }, 600)
+      return
+    }
+
+    // If anonymous user wants human, prompt to log in
+    if (wantsHuman && !user) {
+      setTimeout(() => {
+        setMessages(prev => [...prev, {
+          id: (Date.now() + 1).toString(),
+          text: 'To connect with a human support agent, please log in or sign up first. This helps us provide personalized assistance and track your support history.',
+          sender: 'bot',
+          timestamp: new Date(),
+          suggestions: ['Log in', 'Sign up', 'Continue with AI'],
+        }])
+        setIsTyping(false)
+      }, 700)
       return
     }
 

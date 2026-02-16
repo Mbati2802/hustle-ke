@@ -4,6 +4,41 @@ import { jsonResponse, errorResponse, createPublicRouteClient } from '@/lib/api-
 // Stop words to ignore during matching
 const STOP_WORDS = new Set(['the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'shall', 'to', 'of', 'in', 'for', 'on', 'with', 'at', 'by', 'from', 'as', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'and', 'but', 'or', 'nor', 'not', 'so', 'yet', 'both', 'either', 'neither', 'each', 'every', 'all', 'any', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'only', 'own', 'same', 'than', 'too', 'very', 'just', 'because', 'if', 'when', 'where', 'how', 'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'i', 'me', 'my', 'we', 'our', 'you', 'your', 'it', 'its', 'they', 'them', 'their', 'he', 'she', 'him', 'her', 'his', 'about', 'up', 'out', 'then', 'there', 'here'])
 
+// Calculate Levenshtein distance for typo tolerance
+function levenshteinDistance(a: string, b: string): number {
+  if (a.length === 0) return b.length
+  if (b.length === 0) return a.length
+  const matrix: number[][] = []
+  for (let i = 0; i <= b.length; i++) {
+    matrix[i] = [i]
+  }
+  for (let j = 0; j <= a.length; j++) {
+    matrix[0][j] = j
+  }
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1]
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        )
+      }
+    }
+  }
+  return matrix[b.length][a.length]
+}
+
+// Fuzzy match with typo tolerance
+function fuzzyMatch(word1: string, word2: string): boolean {
+  if (word1 === word2) return true
+  if (word1.length < 4 || word2.length < 4) return false
+  const maxDistance = Math.floor(Math.max(word1.length, word2.length) * 0.25) // Allow 25% typos
+  return levenshteinDistance(word1, word2) <= maxDistance
+}
+
 // Synonym / alias mappings to broaden understanding
 const SYNONYMS: Record<string, string[]> = {
   'paid': ['pay', 'payment', 'payout', 'earn', 'earnings', 'income', 'money', 'receive', 'compensate', 'compensation', 'salary', 'wage', 'cash', 'get paid', 'withdraw'],
@@ -64,9 +99,11 @@ function expandWithSynonyms(word: string): string[] {
   return Array.from(new Set(expanded))
 }
 
-// Check if two words are a meaningful match (strict — no accidental substring)
+// Check if two words are a meaningful match (with typo tolerance)
 function wordsMatch(queryWord: string, targetWord: string): boolean {
   if (queryWord === targetWord) return true
+  // Fuzzy match for typos
+  if (fuzzyMatch(queryWord, targetWord)) return true
   // Only allow stem-like matching for words >= 4 chars
   if (queryWord.length >= 4 && targetWord.length >= 4) {
     // One must start with the other (e.g. "pay" matches "payment", "bid" matches "bidding")
@@ -586,14 +623,22 @@ export async function GET(req: NextRequest) {
 
   // ASK — always returns an answer, never empty
   if (action === 'ask') {
-    const query = url.searchParams.get('q') || ''
+    let query = url.searchParams.get('q') || ''
+    const originalQuery = url.searchParams.get('original_q') || query
+    
     if (!query || query.length < 2) {
       return jsonResponse({
         answer: 'Please type a question and I will do my best to help you!',
         source: 'system',
         relatedFaqs: [],
-        query,
+        query: originalQuery,
       })
+    }
+
+    // Extract just the current question if context was provided
+    if (query.includes('Current question:')) {
+      const parts = query.split('Current question:')
+      query = parts[parts.length - 1].trim()
     }
 
     // Step 0: Check for intent FIRST — if detected, generateAnswer has a precise response
@@ -625,7 +670,7 @@ export async function GET(req: NextRequest) {
           source: 'ai_generated',
           confidence: 'high',
           relatedFaqs: related,
-          query,
+          query: originalQuery,
         })
       }
     }
@@ -644,7 +689,7 @@ export async function GET(req: NextRequest) {
         source: 'knowledge_base',
         confidence: 'high',
         relatedFaqs: related,
-        query,
+        query: originalQuery,
       })
     }
 
@@ -663,7 +708,7 @@ export async function GET(req: NextRequest) {
         source: 'knowledge_base',
         confidence: top.score >= minRankedScore * 1.5 ? 'high' : 'medium',
         relatedFaqs: related,
-        query,
+        query: originalQuery,
       })
     }
 
@@ -677,7 +722,7 @@ export async function GET(req: NextRequest) {
       source: 'ai_generated',
       confidence: generated.startsWith('Thanks for your question! While I don') ? 'low' : 'high',
       relatedFaqs: relatedFromGenerated,
-      query,
+      query: originalQuery,
     })
   }
 

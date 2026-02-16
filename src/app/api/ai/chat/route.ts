@@ -41,6 +41,19 @@ export async function POST(req: NextRequest) {
 
   const now = new Date().toISOString()
 
+  // Get conversation history (last 10 messages for context)
+  const { data: history } = await auth.adminDb
+    .from('ai_chat_messages')
+    .select('sender, content')
+    .eq('session_id', session.id)
+    .order('created_at', { ascending: false })
+    .limit(10)
+
+  const conversationContext = (history || [])
+    .reverse()
+    .map(m => `${m.sender === 'user' ? 'User' : 'Bot'}: ${m.content}`)
+    .join('\n')
+
   await auth.adminDb.from('ai_chat_messages').insert({
     session_id: session.id,
     sender: 'user',
@@ -48,22 +61,42 @@ export async function POST(req: NextRequest) {
     created_at: now,
   })
 
+  // Build enhanced query with context
+  let enhancedQuery = msg
+  if (conversationContext) {
+    enhancedQuery = `Context from conversation:\n${conversationContext}\n\nCurrent question: ${msg}`
+  }
+
   // Use the existing intelligence endpoint internally
   const baseUrl = new URL(req.url)
   const askUrl = new URL('/api/faq/intelligence', baseUrl)
   askUrl.searchParams.set('action', 'ask')
-  askUrl.searchParams.set('q', msg)
+  askUrl.searchParams.set('q', enhancedQuery)
+  askUrl.searchParams.set('original_q', msg)
 
   const res = await fetch(askUrl.toString(), { headers: { 'Content-Type': 'application/json' } })
   const data = await res.json().catch(() => ({}))
 
-  const answer = (data.answer || 'Thanks! A human agent can help if this is urgent.') as string
+  let answer = (data.answer || 'Thanks! A human agent can help if this is urgent.') as string
+  
+  // Make answer more conversational and contextual
+  if (data.confidence === 'high' && !answer.includes('?')) {
+    // Add helpful follow-up for high-confidence answers
+    const followUps = [
+      '\n\nIs there anything else you\'d like to know?',
+      '\n\nDoes this help? Let me know if you need more details!',
+      '\n\nHope that clarifies things! Feel free to ask more questions.',
+    ]
+    answer += followUps[Math.floor(Math.random() * followUps.length)]
+  }
+
   const meta = {
     source: data.source,
     confidence: data.confidence,
     relatedFaqs: data.relatedFaqs || [],
     category: data.category,
     matchedQuestion: data.matchedQuestion,
+    hasContext: !!conversationContext,
   }
 
   await auth.adminDb.from('ai_chat_messages').insert({
