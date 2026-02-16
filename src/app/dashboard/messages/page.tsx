@@ -170,12 +170,25 @@ function MessagesContent() {
     const loadConversations = async () => {
       try {
         const query = orgMode && activeOrg ? `/api/messages?organization_id=${activeOrg.id}` : '/api/messages'
-        const res = await fetch(query)
+        console.log('[Messages] Fetching conversations from:', query)
+        const res = await fetch(query, { cache: 'no-store' }) // Add no-cache to prevent stale data
+        
+        if (!res.ok) {
+          throw new Error(`API returned status: ${res.status}`)
+        }
+        
         const data = await res.json()
         console.log('[Messages] API returned', data.conversations?.length || 0, 'conversations')
         const memberIds: string[] = data.org_member_ids || []
         if (memberIds.length > 0) setOrgMemberIds(memberIds)
+        
+        // Add debug logging to help diagnose conversation transformation issues
+        if (data.conversations?.length) {
+          console.log('[Messages] Sample conversation data:', data.conversations[0])
+        }
+        
         const transformed = data.conversations ? transformConversations(data.conversations, memberIds) : []
+        console.log('[Messages] Transformed conversations:', transformed.length)
         setConversations(transformed)
 
         // Auto-select first conversation if no URL param
@@ -268,19 +281,40 @@ function MessagesContent() {
     let cancelled = false
 
     // Fetch initial messages
-    const fetchInitialMessages = () => {
-      const query = orgMode && activeOrg ? `/api/messages?job_id=${activeJobId}&organization_id=${activeOrg.id}` : `/api/messages?job_id=${activeJobId}`
-      fetch(query)
-        .then(r => r.json())
-        .then(data => {
-          if (!cancelled && data.messages) setMessages(data.messages)
-        })
-        .catch(() => {})
+    const fetchInitialMessages = async () => {
+      try {
+        const query = orgMode && activeOrg ? `/api/messages?job_id=${activeJobId}&organization_id=${activeOrg.id}` : `/api/messages?job_id=${activeJobId}`
+        console.log('[Messages] Fetching messages for job:', activeJobId)
+        
+        const r = await fetch(query, { cache: 'no-store' }) // Add no-cache to prevent stale data
+        
+        if (!r.ok) {
+          throw new Error(`API returned status: ${r.status}`)
+        }
+        
+        const data = await r.json()
+        console.log('[Messages] Received messages count:', data.messages?.length || 0)
+        
+        if (!cancelled && data.messages) {
+          setMessages(data.messages)
+          // Log the first message to help debug
+          if (data.messages.length > 0) {
+            console.log('[Messages] First message sample:', {
+              id: data.messages[0].id,
+              sender_id: data.messages[0].sender_id,
+              receiver_id: data.messages[0].receiver_id,
+              content: data.messages[0].content?.substring(0, 20) + '...'
+            })
+          }
+        }
+      } catch (error) {
+        console.error('[Messages] Error fetching messages:', error)
+      }
     }
 
     fetchInitialMessages()
     return () => { cancelled = true }
-  }, [activeJobId, user])
+  }, [activeJobId, user, orgMode, activeOrg])
 
   // EFFECT 4: Realtime message updates
   const realtimeMessages = useRealtimeMessages(activeJobId || '')
