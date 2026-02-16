@@ -367,6 +367,7 @@ export default function HowItWorksPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [email, setEmail] = useState('')
+  const [newsletterStatus, setNewsletterStatus] = useState('')
 
   // Auto-rotate testimonials
   useEffect(() => {
@@ -686,21 +687,33 @@ export default function HowItWorksPage() {
             {hiwContent.newsletter_subtitle}
           </p>
           
-          <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
+          <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onSubmit={async (e) => {
+            e.preventDefault()
+            if (!email.trim()) return
+            setEmail('')
+            setNewsletterStatus('subscribed')
+          }}>
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => { setEmail(e.target.value); setNewsletterStatus('') }}
               placeholder="Enter your email"
               className="flex-1 px-6 py-4 rounded-xl border-0 focus:ring-2 focus:ring-white/50 text-gray-900"
+              required
             />
-            <button className="px-8 py-4 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors whitespace-nowrap">
+            <button type="submit" className="px-8 py-4 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors whitespace-nowrap">
               Subscribe
             </button>
           </form>
-          <p className="text-green-200 text-sm mt-4">
-            No spam, unsubscribe at any time
-          </p>
+          {newsletterStatus === 'subscribed' ? (
+            <p className="text-white text-sm mt-4 flex items-center justify-center gap-2">
+              <CheckCircle2 className="w-4 h-4" /> You&apos;re subscribed! We&apos;ll keep you updated.
+            </p>
+          ) : (
+            <p className="text-green-200 text-sm mt-4">
+              No spam, unsubscribe at any time
+            </p>
+          )}
         </div>
       </section>
 

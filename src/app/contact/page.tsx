@@ -154,12 +154,34 @@ export default function ContactPage() {
     return nairobiHour >= 8 && nairobiHour < 18 && day !== 0
   })()
 
+  const [submitError, setSubmitError] = useState('')
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    setIsSubmitting(false)
-    setIsSubmitted(true)
+    setSubmitError('')
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setSubmitError(data.error || 'Failed to send message. Please try again.')
+        setIsSubmitting(false)
+        return
+      }
+
+      setIsSubmitted(true)
+    } catch {
+      setSubmitError('Network error. Please check your connection and try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const categories = content.categories
@@ -414,6 +436,9 @@ export default function ContactPage() {
                   </div>
 
                   <div className="p-6 md:p-8">
+                    {submitError && (
+                      <div className="bg-red-50 text-red-700 p-4 rounded-xl mb-5 text-sm">{submitError}</div>
+                    )}
                     <form onSubmit={handleSubmit} className="space-y-5">
                       <div className="grid md:grid-cols-2 gap-5">
                         <div>
