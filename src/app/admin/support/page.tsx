@@ -118,10 +118,18 @@ export default function AdminSupportPage() {
       const data = await res.json()
       const newMessages = data.messages || []
       
-      // Only update if messages have actually changed to prevent constant reloading
+      // Only update if messages have actually changed (compare count and IDs)
       setMessages(prev => {
-        if (JSON.stringify(prev) === JSON.stringify(newMessages)) return prev
-        return newMessages
+        // If count is different, definitely update
+        if (prev.length !== newMessages.length) return newMessages
+        
+        // If count is same, check if all IDs match
+        const prevIds = prev.map(m => m.id).join(',')
+        const newIds = newMessages.map((m: any) => m.id).join(',')
+        if (prevIds !== newIds) return newMessages
+        
+        // No changes detected
+        return prev
       })
     } catch {
       // Don't clear messages on error, keep existing ones
