@@ -30,12 +30,14 @@ export async function POST(req: NextRequest) {
     return errorResponse('You can only dispute your own support tickets', 403)
   }
 
-  // Create support dispute (no job_id, escrow_id, or respondent_id required)
+  // Create support dispute (no job_id or escrow_id for support tickets)
   const { data: dispute, error } = await auth.supabase
     .from('disputes')
     .insert({
       initiator_id: auth.profile.id,
       respondent_id: ticket.assigned_to || null, // Dispute against assigned agent
+      job_id: null, // Support disputes don't have jobs
+      escrow_id: null, // Support disputes don't have escrow
       reason: body.title,
       description: body.description,
       evidence_urls: [], // Chat evidence is in description

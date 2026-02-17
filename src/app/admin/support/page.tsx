@@ -141,10 +141,10 @@ export default function AdminSupportPage() {
   useEffect(() => {
     if (!activeTicketId) return
     fetchMessages(activeTicketId)
-    // Poll for new messages every 3 seconds for real-time updates
+    // Poll for new messages every 1.5 seconds for faster real-time updates
     const interval = setInterval(() => {
       fetchMessages(activeTicketId)
-    }, 3000)
+    }, 1500)
     return () => clearInterval(interval)
   }, [activeTicketId, fetchMessages])
 

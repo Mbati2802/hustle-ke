@@ -249,8 +249,8 @@ export default function LiveChatWidget() {
 
     checkTicketStatus()
     fetchSupportMessages()
-    const statusInterval = setInterval(checkTicketStatus, 10000)
-    const msgInterval = setInterval(fetchSupportMessages, 5000)
+    const statusInterval = setInterval(checkTicketStatus, 5000)
+    const msgInterval = setInterval(fetchSupportMessages, 2000)
     
     // Poll for typing status
     const checkTyping = async () => {
@@ -1103,8 +1103,8 @@ export default function LiveChatWidget() {
                 </div>
                 <p className="text-sm text-gray-700 mb-3">Were you satisfied with the support you received?</p>
                 <div className="flex gap-2">
-                  <button onClick={() => { setSatisfactionRating('satisfied'); setShowReviewForm(true) }} className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition">✓ Yes</button>
-                  <button onClick={() => { setSatisfactionRating('unsatisfied'); setShowDisputeForm(true) }} className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition">✗ No</button>
+                  <button onClick={() => { setSatisfactionRating('satisfied'); setShowReviewForm(true); setShowResolutionSurvey(false) }} className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition">✓ Yes</button>
+                  <button onClick={() => { setSatisfactionRating('unsatisfied'); setShowDisputeForm(true); setShowResolutionSurvey(false) }} className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition">✗ No</button>
                 </div>
               </div>
             )}
