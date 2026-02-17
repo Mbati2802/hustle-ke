@@ -1,16 +1,13 @@
-const CACHE_NAME = 'hustleke-v2';
-// Only include public routes and static assets, not authenticated routes
+const CACHE_NAME = 'hustleke-v3';
+// Only include public routes and static assets that exist
 const STATIC_ASSETS = [
   '/',
   '/jobs',
   '/login',
   '/signup',
-  '/about',
   '/how-it-works',
   '/pricing',
   '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/badge-72x72.png',
 ];
 
 // Install event - cache static assets
