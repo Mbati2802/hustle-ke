@@ -46,7 +46,26 @@ function VerificationContent() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
 
-    const { data: { user } } = await supabase.auth.getUser()
+    let user = null
+    try {
+      const result = await supabase.auth.getUser()
+      
+      // Handle refresh token errors gracefully
+      if (result.error && result.error.message?.includes('refresh_token_not_found')) {
+        setStatus('error')
+        setMessage('Session expired. Please log in again.')
+        setTimeout(() => router.push('/login'), 2000)
+        return
+      }
+      
+      user = result.data.user
+    } catch (error) {
+      console.error('Auth error in verify-email:', error)
+      setStatus('error')
+      setMessage('Authentication error. Please log in again.')
+      setTimeout(() => router.push('/login'), 2000)
+      return
+    }
     
     if (!user) {
       setStatus('error')
