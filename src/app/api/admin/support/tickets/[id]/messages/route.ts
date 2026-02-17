@@ -31,7 +31,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   // Add sender_name to each message for agent name display
   const messagesWithName = (messages || []).map(msg => ({
     ...msg,
-    sender_name: msg.sender?.full_name || null
+    sender_name: Array.isArray(msg.sender) && msg.sender.length > 0 ? msg.sender[0].full_name : null
   }))
 
   return jsonResponse({
