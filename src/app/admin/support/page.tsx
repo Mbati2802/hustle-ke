@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import {
   LifeBuoy,
   Search,
@@ -81,6 +81,7 @@ export default function AdminSupportPage() {
   const [selectedAssignee, setSelectedAssignee] = useState<string>('')
   const [showAssignDropdown, setShowAssignDropdown] = useState(false)
   const [assigning, setAssigning] = useState(false)
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const fetchTickets = useCallback(async () => {
     setLoading(true)
@@ -379,7 +380,25 @@ export default function AdminSupportPage() {
             <form onSubmit={handleSendReply} className="p-4 border-t border-gray-100 flex gap-2">
               <input
                 value={reply}
-                onChange={(e) => setReply(e.target.value)}
+                onChange={(e) => {
+                  setReply(e.target.value)
+                  // Send typing status
+                  if (activeTicketId) {
+                    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
+                    fetch('/api/support/typing', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ ticket_id: activeTicketId, is_typing: true })
+                    }).catch(() => {})
+                    typingTimeoutRef.current = setTimeout(() => {
+                      fetch('/api/support/typing', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ticket_id: activeTicketId, is_typing: false })
+                      }).catch(() => {})
+                    }, 3000)
+                  }
+                }}
                 placeholder="Type a reply..."
                 className="flex-1 px-4 py-3 bg-gray-100 rounded-xl border-0 focus:ring-2 focus:ring-indigo-500/30 text-sm"
               />

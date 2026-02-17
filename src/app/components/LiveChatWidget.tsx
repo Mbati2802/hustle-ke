@@ -165,8 +165,10 @@ export default function LiveChatWidget() {
   const [disputeComment, setDisputeComment] = useState('')
   const [agentName, setAgentName] = useState<string | null>(null)
   const [waitingForAgent, setWaitingForAgent] = useState(false)
+  const [agentIsTyping, setAgentIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -246,9 +248,23 @@ export default function LiveChatWidget() {
     fetchSupportMessages()
     const statusInterval = setInterval(checkTicketStatus, 10000)
     const msgInterval = setInterval(fetchSupportMessages, 5000)
+    
+    // Poll for typing status
+    const checkTyping = async () => {
+      try {
+        const res = await fetch(`/api/support/typing?ticket_id=${supportTicketId}`)
+        const data = await res.json()
+        setAgentIsTyping(data.typing && data.typing.length > 0)
+      } catch {
+        // ignore
+      }
+    }
+    const typingInterval = setInterval(checkTyping, 2000)
+    
     return () => {
       clearInterval(statusInterval)
       clearInterval(msgInterval)
+      clearInterval(typingInterval)
     }
   }, [supportTicketId, user])
 
@@ -1110,7 +1126,23 @@ export default function LiveChatWidget() {
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 mb-2"><p className="text-xs text-amber-800">📋 Chat evidence will be included</p></div>
                 <div className="flex gap-2">
                   <button onClick={async () => { if (!disputeComment.trim()) return; try { await fetch(`/api/support/tickets/${supportTicketId}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ satisfaction_rating: 'unsatisfied', satisfaction_comment: disputeComment }) }); setShowDisputeForm(false); setShowResolutionSurvey(false); setDisputeComment(''); setSatisfactionRating(null); setMessages(prev => [...prev, { id: Date.now().toString(), text: '✅ Feedback submitted.', sender: 'bot', timestamp: new Date() }]) } catch { } }} className="flex-1 px-3 py-2 border rounded-lg text-sm">Feedback Only</button>
-                  <button onClick={async () => { if (!disputeComment.trim()) return; try { const msgRes = await fetch(`/api/support/tickets/${supportTicketId}/messages?limit=200`); const msgData = await msgRes.json(); const chatEvidence = (msgData.messages || []).map((m: any) => `[${m.sender_type}] ${new Date(m.created_at).toLocaleString()}: ${m.message}`).join('\n'); const disputeRes = await fetch('/api/support/disputes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticket_id: supportTicketId, title: `Support Ticket Dispute - ${supportTicketId}`, description: `${disputeComment}\n\n--- CHAT EVIDENCE ---\n${chatEvidence}`, chat_evidence: chatEvidence }) }); if (disputeRes.ok) { const disputeData = await disputeRes.json(); await fetch(`/api/support/tickets/${supportTicketId}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ satisfaction_rating: 'unsatisfied', satisfaction_comment: disputeComment }) }); setShowDisputeForm(false); setDisputeComment(''); setSatisfactionRating(null); setMessages(prev => [...prev, { id: Date.now().toString(), text: `✅ Dispute lodged! ID: ${disputeData.dispute?.id}`, sender: 'bot', timestamp: new Date() }]) } else { setMessages(prev => [...prev, { id: Date.now().toString(), text: '❌ Failed to create dispute.', sender: 'bot', timestamp: new Date() }]) } } catch (err) { console.error('Dispute error:', err); setMessages(prev => [...prev, { id: Date.now().toString(), text: '❌ Network error.', sender: 'bot', timestamp: new Date() }]) } }} className="flex-1 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium">Lodge Dispute</button>
+                  <button onClick={async () => { if (!disputeComment.trim()) return; try { const msgRes = await fetch(`/api/support/tickets/${supportTicketId}/messages?limit=200`); const msgData = await msgRes.json(); const chatEvidence = (msgData.messages || []).map((m: any) => `[${m.sender_type}] ${new Date(m.created_at).toLocaleString()}: ${m.message}`).join('\n'); const disputeRes = await fetch('/api/support/disputes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticket_id: supportTicketId, title: `Support Ticket Dispute - ${supportTicketId}`, description: `${disputeComment}\n\n--- CHAT EVIDENCE ---\n${chatEvidence}`, chat_evidence: chatEvidence }) }); if (disputeRes.ok) { const disputeData = await disputeRes.json(); await fetch(`/api/support/tickets/${supportTicketId}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ satisfaction_rating: 'unsatisfied', satisfaction_comment: disputeComment }) }); setShowDisputeForm(false); setShowResolutionSurvey(false); setDisputeComment(''); setSatisfactionRating(null); setMessages(prev => [...prev, { id: Date.now().toString(), text: `✅ Dispute lodged successfully! Dispute ID: ${disputeData.dispute?.id}. A supervisor will review your case within 24 hours.`, sender: 'bot', timestamp: new Date() }]) } else { const errorData = await disputeRes.json(); console.error('Dispute creation failed:', errorData); setMessages(prev => [...prev, { id: Date.now().toString(), text: `❌ Failed to create dispute: ${errorData.error || 'Unknown error'}`, sender: 'bot', timestamp: new Date() }]) } } catch (err) { console.error('Dispute error:', err); setMessages(prev => [...prev, { id: Date.now().toString(), text: '❌ Network error while creating dispute.', sender: 'bot', timestamp: new Date() }]) } }} className="flex-1 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium">Lodge Dispute</button>
+                </div>
+              </div>
+            )}
+            
+            {/* Agent typing indicator for human chat */}
+            {agentIsTyping && humanHandoff && (
+              <div className="flex gap-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <UserRound className="w-4 h-4 text-blue-600" />
+                </div>
+                <div className="bg-white rounded-2xl rounded-bl-md px-4 py-3 shadow-sm border border-gray-100">
+                  <div className="flex gap-1">
+                    <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                    <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                    <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                  </div>
                 </div>
               </div>
             )}
@@ -1183,7 +1215,25 @@ export default function LiveChatWidget() {
                 ref={inputRef}
                 type="text"
                 value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
+                onChange={(e) => {
+                  setInputText(e.target.value)
+                  // Send typing status for human chat
+                  if (humanHandoff && supportTicketId) {
+                    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
+                    fetch('/api/support/typing', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ ticket_id: supportTicketId, is_typing: true })
+                    }).catch(() => {})
+                    typingTimeoutRef.current = setTimeout(() => {
+                      fetch('/api/support/typing', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ticket_id: supportTicketId, is_typing: false })
+                      }).catch(() => {})
+                    }, 3000)
+                  }
+                }}
                 placeholder={humanHandoff ? "Type your message..." : "Ask about payments, jobs, account..."}
                 className="flex-1 px-4 py-3 bg-gray-100 rounded-full border-0 focus:ring-2 focus:ring-green-500 text-sm"
               />

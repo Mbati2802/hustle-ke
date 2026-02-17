@@ -75,6 +75,24 @@ export async function PUT(
       job_id: null, // Support ticket reviews don't have job_id
       created_at: new Date().toISOString(),
     })
+
+    // Send system message to admin about the review
+    await auth.adminDb.from('support_messages').insert({
+      ticket_id: ticketId,
+      sender_profile_id: auth.profile.id,
+      sender_type: 'system',
+      message: `User submitted a ${agent_review_rating}-star review${agent_review_comment ? `: "${agent_review_comment}"` : '.'}`,
+      created_at: new Date().toISOString(),
+    })
+
+    // Notify the assigned agent
+    await auth.adminDb.from('notifications').insert({
+      user_id: ticket.assigned_to,
+      type: 'support_review',
+      title: `${agent_review_rating}⭐ Review Received`,
+      message: `You received a ${agent_review_rating}-star review for ticket ${ticketId}`,
+      link: `/admin/support?ticket=${ticketId}`,
+    })
   }
 
   const { error: updateError } = await auth.adminDb
