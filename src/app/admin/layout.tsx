@@ -9,6 +9,7 @@ import {
   ChevronLeft, ChevronRight, LogOut, Menu, X, Bell, Search,
   Shield, Activity, LifeBuoy
 } from 'lucide-react'
+import AssignmentNotificationPopup from '@/app/components/AssignmentNotificationPopup'
 
 interface AdminUser {
   id: string
@@ -40,6 +41,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [user, setUser] = useState<AdminUser | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [unreadAssignments, setUnreadAssignments] = useState(0)
 
   useEffect(() => {
     async function checkAdmin() {
@@ -67,6 +69,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
     checkAdmin()
   }, [router])
+
+  // Fetch unread assignments count
+  useEffect(() => {
+    if (!user) return
+    
+    const fetchUnreadCount = async () => {
+      try {
+        const res = await fetch('/api/admin/support/assignments')
+        if (res.ok) {
+          const data = await res.json()
+          setUnreadAssignments(data.count || 0)
+        }
+      } catch {
+        // Ignore errors
+      }
+    }
+    
+    fetchUnreadCount()
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchUnreadCount, 30000)
+    return () => clearInterval(interval)
+  }, [user])
 
   const handleLogout = useCallback(async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
@@ -139,13 +163,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {navItems.map((item) => {
             const Icon = item.icon
             const active = isActive(item.href)
+            const showBadge = item.href === '/admin/support' && unreadAssignments > 0
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
                 className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-colors text-sm font-medium
+                  flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-colors text-sm font-medium relative
                   ${active
                     ? 'bg-green-600/20 text-green-400'
                     : 'text-gray-400 hover:bg-gray-800 hover:text-white'
@@ -155,6 +180,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               >
                 <Icon className="w-5 h-5 shrink-0" />
                 {!collapsed && <span>{item.label}</span>}
+                {showBadge && (
+                  <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                    {unreadAssignments > 99 ? '99+' : unreadAssignments}
+                  </span>
+                )}
+                {showBadge && collapsed && (
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-gray-900" />
+                )}
               </Link>
             )
           })}
@@ -223,6 +256,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {children}
         </main>
       </div>
+      
+      {/* Assignment notification popup */}
+      {user && <AssignmentNotificationPopup />}
     </div>
   )
 }
