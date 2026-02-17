@@ -67,14 +67,19 @@ export async function POST(req: NextRequest) {
     enhancedQuery = `Context from conversation:\n${conversationContext}\n\nCurrent question: ${msg}`
   }
 
-  // Use the existing intelligence endpoint internally
-  const baseUrl = new URL(req.url)
-  const askUrl = new URL('/api/faq/intelligence', baseUrl)
+  // Use the existing intelligence endpoint internally (use localhost for internal calls to avoid SSL issues)
+  const internalUrl = `http://localhost:${process.env.PORT || 10000}/api/faq/intelligence`
+  const askUrl = new URL(internalUrl)
   askUrl.searchParams.set('action', 'ask')
   askUrl.searchParams.set('q', enhancedQuery)
   askUrl.searchParams.set('original_q', msg)
 
-  const res = await fetch(askUrl.toString(), { headers: { 'Content-Type': 'application/json' } })
+  const res = await fetch(askUrl.toString(), { 
+    headers: { 
+      'Content-Type': 'application/json',
+      'Cookie': req.headers.get('cookie') || '' // Forward auth cookies for internal call
+    } 
+  })
   const data = await res.json().catch(() => ({}))
 
   let answer = (data.answer || 'Thanks! A human agent can help if this is urgent.') as string
