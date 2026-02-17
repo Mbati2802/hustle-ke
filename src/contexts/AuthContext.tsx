@@ -204,8 +204,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {}
 
     // Fast path: getSession resolves faster than onAuthStateChange
-    supabase.auth.getSession().then(async ({ data: { session: s } }: { data: { session: Session | null } }) => {
+    supabase.auth.getSession().then(async ({ data: { session: s }, error }: { data: { session: Session | null }, error: any }) => {
       if (!isMounted) return
+      
+      // Handle refresh token errors gracefully
+      if (error && error.message?.includes('refresh_token_not_found')) {
+        setSession(null)
+        setUser(null)
+        setProfile(null)
+        try { sessionStorage.removeItem('hk_profile') } catch {}
+        resolve()
+        return
+      }
+      
       setSession(s)
       setUser(s?.user ?? null)
       if (s?.user) {
@@ -214,6 +225,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setProfile(null)
         try { sessionStorage.removeItem('hk_profile') } catch {}
       }
+      resolve()
+    }).catch((error: any) => {
+      // Catch any other auth errors
+      console.error('Auth session error:', error)
       resolve()
     })
 

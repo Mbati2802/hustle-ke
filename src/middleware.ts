@@ -7,7 +7,22 @@ const ADMIN_ROUTES = ['/admin']
 
 export async function middleware(req: NextRequest) {
   const { supabase, res } = createMiddlewareClient(req)
-  const { data: { user } } = await supabase.auth.getUser()
+  
+  // Handle auth errors gracefully (e.g., expired refresh tokens)
+  let user = null
+  try {
+    const { data, error } = await supabase.auth.getUser()
+    if (error && error.message?.includes('refresh_token_not_found')) {
+      // Clear invalid session cookies
+      res.cookies.delete('sb-access-token')
+      res.cookies.delete('sb-refresh-token')
+    } else {
+      user = data.user
+    }
+  } catch (error) {
+    // Silently handle auth errors in production
+    console.error('Auth error in middleware:', error)
+  }
 
   const path = req.nextUrl.pathname
 
