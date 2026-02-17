@@ -121,17 +121,24 @@ export default function AdminSupportPage() {
       // Only update if messages have actually changed (compare count and IDs)
       setMessages(prev => {
         // If count is different, definitely update
-        if (prev.length !== newMessages.length) return newMessages
+        if (prev.length !== newMessages.length) {
+          console.log(`[Admin] Message count changed: ${prev.length} -> ${newMessages.length}`)
+          return newMessages
+        }
         
         // If count is same, check if all IDs match
         const prevIds = prev.map(m => m.id).join(',')
         const newIds = newMessages.map((m: any) => m.id).join(',')
-        if (prevIds !== newIds) return newMessages
+        if (prevIds !== newIds) {
+          console.log(`[Admin] Message IDs changed`)
+          return newMessages
+        }
         
         // No changes detected
         return prev
       })
-    } catch {
+    } catch (err) {
+      console.error('[Admin] Error fetching messages:', err)
       // Don't clear messages on error, keep existing ones
     }
   }, [])

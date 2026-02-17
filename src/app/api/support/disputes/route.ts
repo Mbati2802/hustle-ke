@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Create support dispute (no job_id or escrow_id for support tickets)
-  const { data: dispute, error } = await auth.supabase
+  const { data, error } = await auth.supabase
     .from('disputes')
     .insert({
       initiator_id: auth.profile.id,
@@ -45,12 +45,13 @@ export async function POST(req: NextRequest) {
       category: 'Support', // Mark as support-related
     })
     .select()
-    .single()
 
-  if (error) {
+  if (error || !data || data.length === 0) {
     console.error('[Support Dispute] Create error:', error)
     return errorResponse('Failed to create dispute', 500)
   }
+
+  const dispute = data[0]
 
   // Link dispute to support ticket
   await auth.supabase
