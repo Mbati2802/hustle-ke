@@ -39,6 +39,15 @@ export async function POST(req: NextRequest) {
       return errorResponse('Failed to update password', 500)
     }
 
+    // Send security alert (async, don't wait)
+    const { sendPasswordChangeAlert, recordSecurityEvent } = await import('@/lib/security-alerts')
+    const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || undefined
+    const userAgent = req.headers.get('user-agent') || undefined
+    
+    recordSecurityEvent(auth.userId, auth.profile.id, 'password_change', {}, ipAddress, userAgent)
+      .then(() => sendPasswordChangeAlert(auth.userId, auth.profile.id, ipAddress))
+      .catch(err => console.error('[Change Password] Security alert error:', err))
+
     return jsonResponse({ message: 'Password updated successfully' })
   } catch (err) {
     return errorResponse('Failed to change password', 500)

@@ -16,6 +16,7 @@ export type NotificationType =
   | 'system'
   | 'info'
   | 'review_request'
+  | 'security'
 
 export type NotificationChannel = 'site' | 'email' | 'sms'
 
@@ -66,6 +67,7 @@ const TYPE_TO_CATEGORY: Record<NotificationType, keyof UserPreferences | null> =
   system: null, // always sent
   info: null,   // always sent
   review_request: 'job_alerts',
+  security: null, // always sent (critical security alerts)
 }
 
 // ============================================

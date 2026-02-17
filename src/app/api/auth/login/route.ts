@@ -87,6 +87,27 @@ export async function POST(req: NextRequest) {
     .eq('user_id', data.user.id)
     .single()
 
+  // Track login for security alerts (async, don't wait)
+  if (profile) {
+    const { recordLogin, sendNewDeviceAlert, parseDeviceInfo, recordSecurityEvent } = await import('@/lib/security-alerts')
+    const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || undefined
+    const userAgent = req.headers.get('user-agent') || undefined
+    
+    recordLogin({
+      userId: data.user.id,
+      profileId: profile.id,
+      ipAddress,
+      userAgent,
+      loginSuccessful: true,
+    }).then(({ isNewDevice }) => {
+      if (isNewDevice) {
+        const deviceInfo = parseDeviceInfo(userAgent)
+        recordSecurityEvent(data.user.id, profile.id, 'new_device', { deviceInfo, ipAddress }, ipAddress, userAgent)
+        sendNewDeviceAlert(data.user.id, profile.id, deviceInfo, ipAddress)
+      }
+    }).catch(err => console.error('[Login] Security alert error:', err))
+  }
+
   return jsonResponse({
     message: 'Logged in successfully',
     user: {
