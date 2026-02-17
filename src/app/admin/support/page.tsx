@@ -34,6 +34,7 @@ interface SupportMessage {
   sender_type: 'user' | 'admin' | 'system'
   message: string
   created_at: string
+  sender_name?: string
   sender?: { id: string; full_name: string; avatar_url?: string } | null
 }
 
@@ -111,15 +112,19 @@ export default function AdminSupportPage() {
   }, [tickets, search])
 
   const fetchMessages = useCallback(async (ticketId: string) => {
-    setMsgLoading(true)
     try {
       const res = await fetch(`/api/admin/support/tickets/${ticketId}/messages?limit=200`)
       const data = await res.json()
-      setMessages(data.messages || [])
+      const newMessages = data.messages || []
+      
+      // Only update if messages have actually changed to prevent constant reloading
+      setMessages(prev => {
+        if (JSON.stringify(prev) === JSON.stringify(newMessages)) return prev
+        return newMessages
+      })
     } catch {
-      setMessages([])
+      // Don't clear messages on error, keep existing ones
     }
-    setMsgLoading(false)
   }, [])
 
   useEffect(() => { fetchTickets() }, [fetchTickets])

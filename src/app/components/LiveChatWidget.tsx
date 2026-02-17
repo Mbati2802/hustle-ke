@@ -623,7 +623,7 @@ export default function LiveChatWidget() {
 
       setMessages((prev) => [...prev, userMessage])
       setInputText('')
-      setIsTyping(true)
+      // Don't show typing indicator during human handoff
 
       try {
         const res = await fetch(`/api/support/tickets/${supportTicketId}/messages`, {
@@ -631,13 +631,8 @@ export default function LiveChatWidget() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: trimmedText }),
         })
-        if (!res.ok) {
-          setMessages((prev) => [...prev, {
-            id: (Date.now() + 1).toString(),
-            text: 'Failed to send message to support. Please try again.',
-            sender: 'bot',
-            timestamp: new Date(),
-          }])
+        if (res.ok) {
+          // Message sent successfully, will be fetched via polling
         }
       } catch {
         setMessages((prev) => [...prev, {
@@ -1083,8 +1078,8 @@ export default function LiveChatWidget() {
                 </div>
                 <p className="text-sm text-gray-700 mb-3">Were you satisfied with the support you received?</p>
                 <div className="flex gap-2">
-                  <button onClick={() => { setSatisfactionRating('satisfied'); setShowResolutionSurvey(false); setShowReviewForm(true) }} className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition">✓ Yes</button>
-                  <button onClick={() => { setSatisfactionRating('unsatisfied'); setShowResolutionSurvey(false); setShowDisputeForm(true) }} className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition">✗ No</button>
+                  <button onClick={() => { setSatisfactionRating('satisfied'); setShowReviewForm(true) }} className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition">✓ Yes</button>
+                  <button onClick={() => { setSatisfactionRating('unsatisfied'); setShowDisputeForm(true) }} className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition">✗ No</button>
                 </div>
               </div>
             )}
@@ -1101,8 +1096,8 @@ export default function LiveChatWidget() {
                 {reviewRating > 0 && <p className="text-center text-xs text-gray-600 mb-2">{reviewRating === 5 ? '⭐ Excellent!' : reviewRating === 4 ? '⭐ Great!' : reviewRating === 3 ? '⭐ Good' : reviewRating === 2 ? '⭐ Fair' : '⭐ Poor'}</p>}
                 <textarea value={reviewComment} onChange={(e) => setReviewComment(e.target.value)} placeholder="Comments (optional)..." rows={2} className="w-full px-3 py-2 border rounded-lg text-sm mb-2" />
                 <div className="flex gap-2">
-                  <button onClick={() => { setShowReviewForm(false); setReviewRating(0); setReviewComment(''); setSatisfactionRating(null) }} className="flex-1 px-3 py-2 border rounded-lg text-sm">Skip</button>
-                  <button onClick={async () => { if (reviewRating === 0) return; try { await fetch(`/api/support/tickets/${supportTicketId}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ satisfaction_rating: 'satisfied', agent_review_rating: reviewRating, agent_review_comment: reviewComment }) }); setShowReviewForm(false); setReviewRating(0); setReviewComment(''); setSatisfactionRating(null); setMessages(prev => [...prev, { id: Date.now().toString(), text: '✅ Review submitted!', sender: 'bot', timestamp: new Date() }]) } catch { setMessages(prev => [...prev, { id: Date.now().toString(), text: '❌ Failed to submit review.', sender: 'bot', timestamp: new Date() }]) } }} disabled={reviewRating === 0} className="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white rounded-lg text-sm font-medium">Submit</button>
+                  <button onClick={() => { setShowReviewForm(false); setReviewRating(0); setReviewComment(''); setSatisfactionRating(null); setShowResolutionSurvey(false) }} className="flex-1 px-3 py-2 border rounded-lg text-sm">Skip</button>
+                  <button onClick={async () => { if (reviewRating === 0) return; try { await fetch(`/api/support/tickets/${supportTicketId}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ satisfaction_rating: 'satisfied', agent_review_rating: reviewRating, agent_review_comment: reviewComment }) }); setShowReviewForm(false); setShowResolutionSurvey(false); setReviewRating(0); setReviewComment(''); setSatisfactionRating(null); setMessages(prev => [...prev, { id: Date.now().toString(), text: '✅ Review submitted! Thank you for your feedback.', sender: 'bot', timestamp: new Date() }]) } catch { setMessages(prev => [...prev, { id: Date.now().toString(), text: '❌ Failed to submit review.', sender: 'bot', timestamp: new Date() }]) } }} disabled={reviewRating === 0} className="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white rounded-lg text-sm font-medium">Submit</button>
                 </div>
               </div>
             )}
@@ -1114,14 +1109,14 @@ export default function LiveChatWidget() {
                 <textarea value={disputeComment} onChange={(e) => setDisputeComment(e.target.value)} placeholder="Describe the issue..." rows={3} className="w-full px-3 py-2 border rounded-lg text-sm mb-2" />
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 mb-2"><p className="text-xs text-amber-800">📋 Chat evidence will be included</p></div>
                 <div className="flex gap-2">
-                  <button onClick={async () => { if (!disputeComment.trim()) return; try { await fetch(`/api/support/tickets/${supportTicketId}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ satisfaction_rating: 'unsatisfied', satisfaction_comment: disputeComment }) }); setShowDisputeForm(false); setDisputeComment(''); setSatisfactionRating(null); setMessages(prev => [...prev, { id: Date.now().toString(), text: '✅ Feedback submitted.', sender: 'bot', timestamp: new Date() }]) } catch { } }} className="flex-1 px-3 py-2 border rounded-lg text-sm">Feedback Only</button>
+                  <button onClick={async () => { if (!disputeComment.trim()) return; try { await fetch(`/api/support/tickets/${supportTicketId}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ satisfaction_rating: 'unsatisfied', satisfaction_comment: disputeComment }) }); setShowDisputeForm(false); setShowResolutionSurvey(false); setDisputeComment(''); setSatisfactionRating(null); setMessages(prev => [...prev, { id: Date.now().toString(), text: '✅ Feedback submitted.', sender: 'bot', timestamp: new Date() }]) } catch { } }} className="flex-1 px-3 py-2 border rounded-lg text-sm">Feedback Only</button>
                   <button onClick={async () => { if (!disputeComment.trim()) return; try { const msgRes = await fetch(`/api/support/tickets/${supportTicketId}/messages?limit=200`); const msgData = await msgRes.json(); const chatEvidence = (msgData.messages || []).map((m: any) => `[${m.sender_type}] ${new Date(m.created_at).toLocaleString()}: ${m.message}`).join('\n'); const disputeRes = await fetch('/api/support/disputes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticket_id: supportTicketId, title: `Support Ticket Dispute - ${supportTicketId}`, description: `${disputeComment}\n\n--- CHAT EVIDENCE ---\n${chatEvidence}`, chat_evidence: chatEvidence }) }); if (disputeRes.ok) { const disputeData = await disputeRes.json(); await fetch(`/api/support/tickets/${supportTicketId}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ satisfaction_rating: 'unsatisfied', satisfaction_comment: disputeComment }) }); setShowDisputeForm(false); setDisputeComment(''); setSatisfactionRating(null); setMessages(prev => [...prev, { id: Date.now().toString(), text: `✅ Dispute lodged! ID: ${disputeData.dispute?.id}`, sender: 'bot', timestamp: new Date() }]) } else { setMessages(prev => [...prev, { id: Date.now().toString(), text: '❌ Failed to create dispute.', sender: 'bot', timestamp: new Date() }]) } } catch (err) { console.error('Dispute error:', err); setMessages(prev => [...prev, { id: Date.now().toString(), text: '❌ Network error.', sender: 'bot', timestamp: new Date() }]) } }} className="flex-1 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium">Lodge Dispute</button>
                 </div>
               </div>
             )}
             
-            {/* Typing indicator */}
-            {isTyping && (
+            {/* Typing indicator - only show for AI, not human agents */}
+            {isTyping && !humanHandoff && (
               <div className="flex gap-3">
                 <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                   <Bot className="w-4 h-4 text-green-600" />

@@ -28,8 +28,14 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     return errorResponse('Failed to fetch messages', 500)
   }
 
+  // Add sender_name to each message for agent name display
+  const messagesWithName = (messages || []).map(msg => ({
+    ...msg,
+    sender_name: msg.sender?.full_name || null
+  }))
+
   return jsonResponse({
-    messages: messages || [],
+    messages: messagesWithName,
     pagination: { total: count || 0, limit, offset, hasMore: (count || 0) > offset + limit },
   })
 }
