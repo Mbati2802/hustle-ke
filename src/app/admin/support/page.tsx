@@ -135,7 +135,11 @@ export default function AdminSupportPage() {
   useEffect(() => {
     if (!activeTicketId) return
     fetchMessages(activeTicketId)
-    // Removed auto-refresh interval to prevent constant reloading
+    // Poll for new messages every 3 seconds for real-time updates
+    const interval = setInterval(() => {
+      fetchMessages(activeTicketId)
+    }, 3000)
+    return () => clearInterval(interval)
   }, [activeTicketId, fetchMessages])
 
   const activeTicket = useMemo(() => tickets.find(t => t.id === activeTicketId) || null, [tickets, activeTicketId])

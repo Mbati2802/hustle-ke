@@ -1214,6 +1214,7 @@ export default function LiveChatWidget() {
                     setShowReviewForm(false)
                     setReviewRating(0)
                     setReviewComment('')
+                    setSatisfactionRating(null)
                   }}
                   className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition"
                 >
@@ -1235,6 +1236,7 @@ export default function LiveChatWidget() {
                       setShowReviewForm(false)
                       setReviewRating(0)
                       setReviewComment('')
+                      setSatisfactionRating(null)
                       setMessages(prev => [...prev, {
                         id: Date.now().toString(),
                         text: 'Thank you for your feedback! Your review has been submitted.',
@@ -1293,6 +1295,7 @@ export default function LiveChatWidget() {
                       })
                       setShowDisputeForm(false)
                       setDisputeComment('')
+                      setSatisfactionRating(null)
                       setMessages(prev => [...prev, {
                         id: Date.now().toString(),
                         text: 'Thank you for your feedback. A supervisor will review your case.',
@@ -1347,6 +1350,7 @@ export default function LiveChatWidget() {
                         
                         setShowDisputeForm(false)
                         setDisputeComment('')
+                        setSatisfactionRating(null)
                         setMessages(prev => [...prev, {
                           id: Date.now().toString(),
                           text: `Dispute lodged successfully. Dispute ID: ${disputeData.dispute?.id}. A supervisor will review your case within 24 hours.`,
