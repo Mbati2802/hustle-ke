@@ -85,13 +85,16 @@ export default function AuthModal() {
     setLoginLoading(true)
     setLoginError('')
     const result = await login(loginEmail, loginPassword)
+    setLoginLoading(false)
     if (result.error) {
       setLoginError(result.error)
-      setLoginLoading(false)
     } else {
-      setLoginLoading(false)
+      // Close modal immediately on success
       closeModal()
-      if (result.redirect) router.push(result.redirect)
+      // Navigate after modal closes
+      if (result.redirect) {
+        setTimeout(() => router.push(result.redirect!), 100)
+      }
     }
   }
 

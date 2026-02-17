@@ -122,8 +122,7 @@ export default function AdminSupportPage() {
   useEffect(() => {
     if (!activeTicketId) return
     fetchMessages(activeTicketId)
-    const t = setInterval(() => fetchMessages(activeTicketId), 5000)
-    return () => clearInterval(t)
+    // Removed auto-refresh interval to prevent constant reloading
   }, [activeTicketId, fetchMessages])
 
   const activeTicket = useMemo(() => tickets.find(t => t.id === activeTicketId) || null, [tickets, activeTicketId])

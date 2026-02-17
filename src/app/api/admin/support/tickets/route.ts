@@ -58,12 +58,32 @@ export async function PUT(req: NextRequest) {
 
   const patch: Record<string, any> = { updated_at: now }
   if (action === 'assign') {
-    patch.assigned_admin_id = body.assigned_admin_id ?? auth.profile.id
+    const assignedTo = body.assigned_admin_id ?? auth.profile.id
+    patch.assigned_to = assignedTo
+    patch.assigned_at = now
     patch.status = 'Pending'
+    
+    // Create assignment record for notification tracking
+    await auth.adminDb.from('support_assignments').insert({
+      ticket_id: ticketId,
+      assigned_to: assignedTo,
+      assigned_by: auth.profile.id,
+    })
+    
+    // Send notification to assigned user
+    await auth.adminDb.from('notifications').insert({
+      user_id: assignedTo,
+      type: 'support_assignment',
+      title: 'New Support Ticket Assigned',
+      message: `You have been assigned to support ticket: ${ticketId}`,
+      link: `/admin/support?ticket=${ticketId}`,
+    })
   } else if (action === 'close') {
     patch.status = 'Closed'
   } else if (action === 'resolve') {
     patch.status = 'Resolved'
+    patch.resolved_by = auth.profile.id
+    patch.resolved_at = now
   } else if (action === 'reopen') {
     patch.status = 'Open'
   } else {
