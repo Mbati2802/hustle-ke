@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { requireAuth, jsonResponse, errorResponse, parseBody, getPagination } from '@/lib/api-utils'
+import { sanitizeHTML } from '@/lib/sanitize'
 
 interface SendMessageBody {
   message?: string
@@ -55,6 +56,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
   const msg = (body.message || '').toString().trim()
   if (!msg) return errorResponse('Message is required', 400)
+  if (msg.length > 4000) return errorResponse('Message too long (max 4000 characters)', 400)
+
+  // Sanitize message to prevent XSS
+  const sanitizedMessage = sanitizeHTML(msg)
 
   const { data: ticket } = await auth.adminDb
     .from('support_tickets')
@@ -74,7 +79,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       ticket_id: ticketId,
       sender_profile_id: auth.profile.id,
       sender_type: 'user',
-      message: msg.slice(0, 4000),
+      message: sanitizedMessage,
       created_at: now,
     })
     .select('*')

@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { requireAuth, jsonResponse, errorResponse, validationErrorResponse, parseBody } from '@/lib/api-utils'
 import { validate, reviewSchema } from '@/lib/validation'
 import { recalculateHustleScore } from '@/lib/subscription-utils'
+import { sanitizeHTML } from '@/lib/sanitize'
 
 // POST /api/reviews — Create a review
 export async function POST(req: NextRequest) {
@@ -74,10 +75,16 @@ export async function POST(req: NextRequest) {
 
   if (existing) return errorResponse('You have already reviewed this user for this job', 409)
 
+  // Sanitize comment to prevent XSS
+  const sanitizedData = {
+    ...result.data,
+    comment: result.data.comment ? sanitizeHTML(result.data.comment) : undefined,
+  }
+
   const { data: review, error } = await auth.supabase
     .from('reviews')
     .insert({
-      ...result.data,
+      ...sanitizedData,
       reviewer_id: auth.profile.id,
     })
     .select()
