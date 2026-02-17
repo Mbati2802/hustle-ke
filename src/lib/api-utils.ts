@@ -69,7 +69,24 @@ export async function requireAuth(req: NextRequest): Promise<AuthContext | NextR
   }
 
   const supabase = createRouteClient(req)
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  
+  let user = null
+  let authError = null
+  
+  try {
+    const result = await supabase.auth.getUser()
+    user = result.data.user
+    authError = result.error
+    
+    // Handle refresh token errors gracefully
+    if (authError && authError.message?.includes('refresh_token_not_found')) {
+      return errorResponse('Session expired. Please log in again.', 401)
+    }
+  } catch (error: any) {
+    // Catch any unexpected auth errors
+    console.error('Auth error in requireAuth:', error)
+    return errorResponse('Authentication error', 401)
+  }
 
   if (authError || !user) {
     return errorResponse('Unauthorized', 401)
