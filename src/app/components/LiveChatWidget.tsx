@@ -163,6 +163,8 @@ export default function LiveChatWidget() {
   const [reviewComment, setReviewComment] = useState('')
   const [showDisputeForm, setShowDisputeForm] = useState(false)
   const [disputeComment, setDisputeComment] = useState('')
+  const [agentName, setAgentName] = useState<string | null>(null)
+  const [waitingForAgent, setWaitingForAgent] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -208,7 +210,14 @@ export default function LiveChatWidget() {
       try {
         const res = await fetch(`/api/support/tickets/${supportTicketId}/messages?limit=200`)
         const data = await res.json()
-        const supMsgs = (data.messages || []) as Array<{ id: string; sender_type: string; message: string; created_at: string }>
+        const supMsgs = (data.messages || []) as Array<{ id: string; sender_type: string; message: string; created_at: string; sender_name?: string }>
+
+        // Check if admin has responded and extract agent name
+        const adminMsg = supMsgs.find(m => m.sender_type === 'admin')
+        if (adminMsg && adminMsg.sender_name && waitingForAgent) {
+          setAgentName(adminMsg.sender_name)
+          setWaitingForAgent(false)
+        }
 
         setMessages((prev) => {
           const existing = new Set(prev.map((m) => m.id))
@@ -538,12 +547,30 @@ export default function LiveChatWidget() {
 
           setSupportTicketId(ticketId)
           setHumanHandoff(true)
+          setWaitingForAgent(true)
           setMessages(prev => [...prev, {
             id: (Date.now() + 1).toString(),
             text: `✅ Connected to human support!\n\nTicket ID: ${ticketId}\n\nA support agent will respond shortly. You can continue chatting here.`,
             sender: 'human',
             timestamp: new Date(),
           }])
+          
+          // 20-second timeout for agent response
+          setTimeout(() => {
+            setMessages(prev => {
+              const lastMsg = prev[prev.length - 1]
+              if (lastMsg?.sender === 'human' && lastMsg?.text.includes('Ticket ID:')) {
+                return [...prev, {
+                  id: Date.now().toString(),
+                  text: '⏰ All our agents are currently busy. Would you like to:',
+                  sender: 'bot',
+                  timestamp: new Date(),
+                  suggestions: ['Wait for an agent', 'Continue with AI assistant']
+                }]
+              }
+              return prev
+            })
+          }, 20000)
         } catch {
           setMessages(prev => [...prev, {
             id: (Date.now() + 2).toString(),
@@ -800,12 +827,30 @@ export default function LiveChatWidget() {
 
           setSupportTicketId(ticketId)
           setHumanHandoff(true)
+          setWaitingForAgent(true)
           setMessages(prev => [...prev, {
             id: (Date.now() + 1).toString(),
             text: `✅ Connected to human support!\n\nTicket ID: ${ticketId}\n\nA support agent will respond shortly. You can continue chatting here.`,
             sender: 'human',
             timestamp: new Date(),
           }])
+          
+          // 20-second timeout for agent response
+          setTimeout(() => {
+            setMessages(prev => {
+              const lastMsg = prev[prev.length - 1]
+              if (lastMsg?.sender === 'human' && lastMsg?.text.includes('Ticket ID:')) {
+                return [...prev, {
+                  id: Date.now().toString(),
+                  text: '⏰ All our agents are currently busy. Would you like to:',
+                  sender: 'bot',
+                  timestamp: new Date(),
+                  suggestions: ['Wait for an agent', 'Continue with AI assistant']
+                }]
+              }
+              return prev
+            })
+          }, 20000)
         } catch {
           setMessages(prev => [...prev, {
             id: (Date.now() + 2).toString(),
@@ -932,12 +977,12 @@ export default function LiveChatWidget() {
               </div>
               <div>
                 <h3 className="text-white font-bold">
-                  {humanHandoff ? 'Human Support' : 'HustleKE AI'}
+                  {humanHandoff ? (agentName || 'Human Support') : 'HustleKE AI'}
                 </h3>
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                   <span className="text-green-100 text-sm">
-                    {isConnectingHuman ? 'Connecting you to an agent…' : humanHandoff ? 'Connected to support' : 'AI Assistant'}
+                    {isConnectingHuman ? 'Connecting you to an agent…' : humanHandoff ? (agentName ? 'Online' : 'Connected to support') : 'AI Assistant'}
                   </span>
                 </div>
               </div>
@@ -1099,10 +1144,10 @@ export default function LiveChatWidget() {
                 Potential FAQs: {unansweredQuestions.length}
               </div>
             )}
-          {humanHandoff && (
+          {humanHandoff && !showResolutionSurvey && !showReviewForm && !showDisputeForm && (
             <div className="bg-blue-50 border-t border-blue-100 px-4 py-2">
               <p className="text-xs text-blue-600 text-center">
-                You are now chatting with a human support agent
+                {agentName ? `You are chatting with ${agentName}` : 'You are now chatting with a human support agent'}
               </p>
             </div>
           )}
@@ -1164,258 +1209,6 @@ export default function LiveChatWidget() {
                 <ArrowRight className="w-3 h-3" />
               </Link>
             </p>
-          </div>
-        </div>
-      )}
-
-      {/* Resolution Satisfaction Survey Modal */}
-      {showResolutionSurvey && supportTicketId && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="bg-gradient-to-r from-green-600 to-green-700 p-6 text-center">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                <CheckCircle2 className="w-10 h-10 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white">Ticket Resolved</h3>
-              <p className="text-green-100 text-sm mt-1">Your support ticket has been marked as resolved</p>
-            </div>
-            <div className="p-6">
-              <p className="text-gray-900 font-semibold text-center mb-6">Were you satisfied with the support you received?</p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    setSatisfactionRating('satisfied')
-                    setShowResolutionSurvey(false)
-                    setShowReviewForm(true)
-                  }}
-                  className="flex-1 px-6 py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
-                >
-                  <CheckCircle2 className="w-5 h-5" />
-                  Yes, Satisfied
-                </button>
-                <button
-                  onClick={() => {
-                    setSatisfactionRating('unsatisfied')
-                    setShowResolutionSurvey(false)
-                    setShowDisputeForm(true)
-                  }}
-                  className="flex-1 px-6 py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition-all flex items-center justify-center gap-2"
-                >
-                  <X className="w-5 h-5" />
-                  No, Unsatisfied
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Review Form for Satisfied Users */}
-      {showReviewForm && supportTicketId && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="bg-gradient-to-r from-green-600 to-green-700 p-6">
-              <h3 className="text-xl font-bold text-white text-center">Rate Your Experience</h3>
-              <p className="text-green-100 text-sm text-center mt-1">Help us improve by rating the support agent</p>
-            </div>
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3 text-center">How would you rate the support?</label>
-                <div className="flex justify-center gap-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      onClick={() => setReviewRating(star)}
-                      className="transition-transform hover:scale-110"
-                    >
-                      <Star
-                        className={`w-10 h-10 ${
-                          star <= reviewRating
-                            ? 'fill-yellow-400 text-yellow-400'
-                            : 'text-gray-300'
-                        }`}
-                      />
-                    </button>
-                  ))}
-                </div>
-                {reviewRating > 0 && (
-                  <p className="text-center text-sm text-gray-600 mt-2">
-                    {reviewRating === 5 ? 'Excellent!' : reviewRating === 4 ? 'Great!' : reviewRating === 3 ? 'Good' : reviewRating === 2 ? 'Fair' : 'Poor'}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Additional Comments (Optional)</label>
-                <textarea
-                  value={reviewComment}
-                  onChange={(e) => setReviewComment(e.target.value)}
-                  placeholder="Tell us more about your experience..."
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm"
-                />
-              </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    setShowReviewForm(false)
-                    setReviewRating(0)
-                    setReviewComment('')
-                    setSatisfactionRating(null)
-                  }}
-                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition"
-                >
-                  Skip
-                </button>
-                <button
-                  onClick={async () => {
-                    if (reviewRating === 0) return
-                    try {
-                      await fetch(`/api/support/tickets/${supportTicketId}/status`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                          satisfaction_rating: 'satisfied',
-                          agent_review_rating: reviewRating,
-                          agent_review_comment: reviewComment,
-                        }),
-                      })
-                      setShowReviewForm(false)
-                      setReviewRating(0)
-                      setReviewComment('')
-                      setSatisfactionRating(null)
-                      setMessages(prev => [...prev, {
-                        id: Date.now().toString(),
-                        text: 'Thank you for your feedback! Your review has been submitted.',
-                        sender: 'bot',
-                        timestamp: new Date(),
-                      }])
-                    } catch {
-                      alert('Failed to submit review. Please try again.')
-                    }
-                  }}
-                  disabled={reviewRating === 0}
-                  className="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white rounded-xl font-semibold transition"
-                >
-                  Submit Review
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Dispute Form for Unsatisfied Users */}
-      {showDisputeForm && supportTicketId && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200">
-            <div className="bg-gradient-to-r from-red-600 to-red-700 p-6">
-              <h3 className="text-xl font-bold text-white text-center">We're Sorry</h3>
-              <p className="text-red-100 text-sm text-center mt-1">Let us know what went wrong</p>
-            </div>
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">What went wrong?</label>
-                <textarea
-                  value={disputeComment}
-                  onChange={(e) => setDisputeComment(e.target.value)}
-                  placeholder="Please describe the issue with the support you received..."
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm"
-                />
-              </div>
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                <p className="text-sm text-amber-800 font-semibold mb-2">📋 Chat Evidence</p>
-                <p className="text-xs text-amber-700">Your entire chat conversation will be automatically included as evidence in the dispute.</p>
-              </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={async () => {
-                    try {
-                      await fetch(`/api/support/tickets/${supportTicketId}/status`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                          satisfaction_rating: 'unsatisfied',
-                          satisfaction_comment: disputeComment,
-                        }),
-                      })
-                      setShowDisputeForm(false)
-                      setDisputeComment('')
-                      setSatisfactionRating(null)
-                      setMessages(prev => [...prev, {
-                        id: Date.now().toString(),
-                        text: 'Thank you for your feedback. A supervisor will review your case.',
-                        sender: 'bot',
-                        timestamp: new Date(),
-                      }])
-                    } catch {
-                      alert('Failed to submit feedback. Please try again.')
-                    }
-                  }}
-                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition"
-                >
-                  Submit Feedback Only
-                </button>
-                <button
-                  onClick={async () => {
-                    if (!disputeComment.trim()) {
-                      alert('Please describe the issue before lodging a dispute.')
-                      return
-                    }
-                    try {
-                      // Fetch chat messages as evidence
-                      const msgRes = await fetch(`/api/support/tickets/${supportTicketId}/messages?limit=200`)
-                      const msgData = await msgRes.json()
-                      const chatEvidence = (msgData.messages || []).map((m: any) => 
-                        `[${m.sender_type}]: ${m.message}`
-                      ).join('\n')
-
-                      // Create dispute with chat evidence
-                      const disputeRes = await fetch('/api/disputes', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                          title: `Support Ticket Dispute - ${supportTicketId}`,
-                          description: `${disputeComment}\n\n--- CHAT EVIDENCE ---\n${chatEvidence}`,
-                          category: 'Support',
-                        }),
-                      })
-                      
-                      if (disputeRes.ok) {
-                        const disputeData = await disputeRes.json()
-                        
-                        // Update ticket with dispute link
-                        await fetch(`/api/support/tickets/${supportTicketId}/status`, {
-                          method: 'PUT',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            satisfaction_rating: 'unsatisfied',
-                            satisfaction_comment: disputeComment,
-                          }),
-                        })
-                        
-                        setShowDisputeForm(false)
-                        setDisputeComment('')
-                        setSatisfactionRating(null)
-                        setMessages(prev => [...prev, {
-                          id: Date.now().toString(),
-                          text: `Dispute lodged successfully. Dispute ID: ${disputeData.dispute?.id}. A supervisor will review your case within 24 hours.`,
-                          sender: 'bot',
-                          timestamp: new Date(),
-                        }])
-                      } else {
-                        alert('Failed to create dispute. Please try again.')
-                      }
-                    } catch {
-                      alert('Failed to lodge dispute. Please try again.')
-                    }
-                  }}
-                  className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition"
-                >
-                  Lodge Formal Dispute
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       )}
