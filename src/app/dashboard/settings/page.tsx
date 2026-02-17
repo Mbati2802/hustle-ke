@@ -1320,6 +1320,16 @@ export default function SettingsPage() {
             </button>
 
             <hr className="border-gray-200" />
+            <h3 className="font-semibold text-gray-900">Active Sessions</h3>
+            <p className="text-sm text-gray-600">Manage your active sessions across different devices. View and revoke access from devices you don't recognize.</p>
+            <a 
+              href="/dashboard/settings/sessions"
+              className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-colors"
+            >
+              <Shield className="w-4 h-4" /> Manage Sessions
+            </a>
+
+            <hr className="border-gray-200" />
             <h3 className="font-semibold text-gray-900">Two-Factor Authentication</h3>
             <p className="text-sm text-gray-600">Add an extra layer of security to your account using M-Pesa SMS verification.</p>
             <span className="inline-block border-2 border-gray-300 text-gray-400 px-6 py-2.5 rounded-xl font-semibold cursor-not-allowed" title="2FA coming soon">Enable 2FA</span>
