@@ -202,8 +202,9 @@ export default function AdminSupportPage() {
       })
       if (res.ok) {
         setReply('')
+        // Fetch messages immediately to show the new message
         await fetchMessages(activeTicketId)
-        fetchTickets()
+        // Don't call fetchTickets() here as it causes the page to reload and clear messages
       }
     } catch {
       // ignore

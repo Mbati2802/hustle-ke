@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
+import { generateShortTicketCode } from '@/lib/ticket-utils'
 import { 
   MessageCircle, 
   X, 
@@ -129,7 +130,7 @@ const smallTalk = {
 }
 
 export default function LiveChatWidget() {
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -216,9 +217,11 @@ export default function LiveChatWidget() {
 
         // Check if admin has responded and extract agent name
         const adminMsg = supMsgs.find(m => m.sender_type === 'admin')
-        if (adminMsg && adminMsg.sender_name && waitingForAgent) {
+        if (adminMsg && adminMsg.sender_name) {
           setAgentName(adminMsg.sender_name)
-          setWaitingForAgent(false)
+          if (waitingForAgent) {
+            setWaitingForAgent(false)
+          }
         }
 
         setMessages((prev) => {
@@ -564,18 +567,21 @@ export default function LiveChatWidget() {
           setSupportTicketId(ticketId)
           setHumanHandoff(true)
           setWaitingForAgent(true)
+          const shortCode = profile?.full_name ? generateShortTicketCode(ticketId, profile.full_name) : ticketId.substring(0, 8)
           setMessages(prev => [...prev, {
             id: (Date.now() + 1).toString(),
-            text: `✅ Connected to human support!\n\nTicket ID: ${ticketId}\n\nA support agent will respond shortly. You can continue chatting here.`,
+            text: `✅ Connected to human support!\n\nTicket: ${shortCode}\n\nA support agent will respond shortly. You can continue chatting here.`,
             sender: 'human',
             timestamp: new Date(),
           }])
           
           // 20-second timeout for agent response
           setTimeout(() => {
+            // Only show timeout message if agent hasn't responded yet
             setMessages(prev => {
-              const lastMsg = prev[prev.length - 1]
-              if (lastMsg?.sender === 'human' && lastMsg?.text.includes('Ticket ID:')) {
+              // Check if there's any actual agent message (not the connection message)
+              const hasAgentReply = prev.some(m => m.sender === 'human' && !m.text.includes('Ticket:'))
+              if (!hasAgentReply) {
                 return [...prev, {
                   id: Date.now().toString(),
                   text: '⏰ All our agents are currently busy. Would you like to:',
@@ -839,18 +845,21 @@ export default function LiveChatWidget() {
           setSupportTicketId(ticketId)
           setHumanHandoff(true)
           setWaitingForAgent(true)
+          const shortCode = profile?.full_name ? generateShortTicketCode(ticketId, profile.full_name) : ticketId.substring(0, 8)
           setMessages(prev => [...prev, {
             id: (Date.now() + 1).toString(),
-            text: `✅ Connected to human support!\n\nTicket ID: ${ticketId}\n\nA support agent will respond shortly. You can continue chatting here.`,
+            text: `✅ Connected to human support!\n\nTicket: ${shortCode}\n\nA support agent will respond shortly. You can continue chatting here.`,
             sender: 'human',
             timestamp: new Date(),
           }])
           
           // 20-second timeout for agent response
           setTimeout(() => {
+            // Only show timeout message if agent hasn't responded yet
             setMessages(prev => {
-              const lastMsg = prev[prev.length - 1]
-              if (lastMsg?.sender === 'human' && lastMsg?.text.includes('Ticket ID:')) {
+              // Check if there's any actual agent message (not the connection message)
+              const hasAgentReply = prev.some(m => m.sender === 'human' && !m.text.includes('Ticket:'))
+              if (!hasAgentReply) {
                 return [...prev, {
                   id: Date.now().toString(),
                   text: '⏰ All our agents are currently busy. Would you like to:',
