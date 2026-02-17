@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import LiveChatWidget from "./components/LiveChatWidget";
 import ScrollToTop from "./components/ScrollToTop";
+import CookieConsent from "./components/CookieConsent";
+import InactivityMonitor from "./components/InactivityMonitor";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AuthModalProvider } from "./components/AuthModalContext";
 import AuthModal from "./components/AuthModal";
@@ -78,6 +80,8 @@ export default function RootLayout({
                 {children}
                 <LiveChatWidget />
                 <ScrollToTop />
+                <CookieConsent />
+                <InactivityMonitor />
                 <IncompleteApplicationNotifier />
                 <ApplyJobModalWrapper />
                 <AuthModal />
