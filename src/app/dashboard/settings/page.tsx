@@ -1331,6 +1331,16 @@ export default function SettingsPage() {
             </a>
 
             <hr className="border-gray-200" />
+            <h3 className="font-semibold text-gray-900">Two-Factor Authentication</h3>
+            <p className="text-sm text-gray-600">Add an extra layer of security to your account with TOTP-based two-factor authentication.</p>
+            <a 
+              href="/dashboard/settings/mfa"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-colors"
+            >
+              <Shield className="w-4 h-4" /> Manage 2FA
+            </a>
+
+            <hr className="border-gray-200" />
             <h3 className="font-semibold text-gray-900">Blocked Users</h3>
             <p className="text-sm text-gray-600">Manage users you've blocked. Blocked users cannot send you messages or proposals.</p>
             <a 
