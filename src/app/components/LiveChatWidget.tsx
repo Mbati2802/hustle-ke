@@ -154,6 +154,13 @@ export default function LiveChatWidget() {
   const [isConnectingHuman, setIsConnectingHuman] = useState(false)
   const [aiSessionId, setAiSessionId] = useState<string | null>(null)
   const [conversationHistory, setConversationHistory] = useState<string[]>([])
+  const [showResolutionSurvey, setShowResolutionSurvey] = useState(false)
+  const [satisfactionRating, setSatisfactionRating] = useState<'satisfied' | 'unsatisfied' | null>(null)
+  const [showReviewForm, setShowReviewForm] = useState(false)
+  const [reviewRating, setReviewRating] = useState(0)
+  const [reviewComment, setReviewComment] = useState('')
+  const [showDisputeForm, setShowDisputeForm] = useState(false)
+  const [disputeComment, setDisputeComment] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -178,7 +185,22 @@ export default function LiveChatWidget() {
   }, [])
 
   useEffect(() => {
-    if (!supportTicketId) return
+    if (!supportTicketId || !user) return
+
+    // Check ticket status for resolution
+    const checkTicketStatus = async () => {
+      try {
+        const res = await fetch(`/api/support/tickets/${supportTicketId}/status`)
+        if (res.ok) {
+          const data = await res.json()
+          if (data.ticket.status === 'Resolved' && !data.ticket.satisfaction_rating) {
+            setShowResolutionSurvey(true)
+          }
+        }
+      } catch {
+        // Ignore errors
+      }
+    }
 
     const fetchSupportMessages = async () => {
       try {
@@ -209,10 +231,15 @@ export default function LiveChatWidget() {
       }
     }
 
+    checkTicketStatus()
     fetchSupportMessages()
-    const interval = setInterval(fetchSupportMessages, 5000)
-    return () => clearInterval(interval)
-  }, [supportTicketId])
+    const statusInterval = setInterval(checkTicketStatus, 10000)
+    const msgInterval = setInterval(fetchSupportMessages, 5000)
+    return () => {
+      clearInterval(statusInterval)
+      clearInterval(msgInterval)
+    }
+  }, [supportTicketId, user])
 
   const analyzeIntent = useCallback((text: string): { topic: string | null; confidence: number; urgency: 'low' | 'medium' | 'high' } => {
     const lowerText = text.toLowerCase()
