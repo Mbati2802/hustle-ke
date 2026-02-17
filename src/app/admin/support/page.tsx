@@ -172,22 +172,32 @@ export default function AdminSupportPage() {
 
   const handleResolve = async () => {
     if (!activeTicketId) return
-    await fetch(`/api/admin/support/tickets?id=${activeTicketId}`, {
+    const res = await fetch(`/api/admin/support/tickets?id=${activeTicketId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'resolve' }),
     })
-    fetchTickets()
+    if (res.ok) {
+      // Update ticket status locally without clearing messages
+      setTickets(prev => prev.map(t => 
+        t.id === activeTicketId ? { ...t, status: 'Resolved' as const } : t
+      ))
+    }
   }
 
   const handleClose = async () => {
     if (!activeTicketId) return
-    await fetch(`/api/admin/support/tickets?id=${activeTicketId}`, {
+    const res = await fetch(`/api/admin/support/tickets?id=${activeTicketId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'close' }),
     })
-    fetchTickets()
+    if (res.ok) {
+      // Update ticket status locally without clearing messages
+      setTickets(prev => prev.map(t => 
+        t.id === activeTicketId ? { ...t, status: 'Closed' as const } : t
+      ))
+    }
   }
 
   const handleSendReply = async (e: React.FormEvent) => {
