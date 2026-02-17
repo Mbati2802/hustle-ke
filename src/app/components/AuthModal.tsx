@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useAuthModal } from './AuthModalContext'
 import { useRouter } from 'next/navigation'
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 import {
   X,
   Eye,
@@ -46,6 +47,7 @@ export default function AuthModal() {
   const { isOpen, view, closeModal, setView, signupType, setSignupType } = useAuthModal()
   const { login, signup } = useAuth()
   const router = useRouter()
+  const { executeRecaptcha } = useGoogleReCaptcha()
 
   // Login state
   const [loginEmail, setLoginEmail] = useState('')
@@ -84,7 +86,18 @@ export default function AuthModal() {
     e.preventDefault()
     setLoginLoading(true)
     setLoginError('')
-    const result = await login(loginEmail, loginPassword)
+
+    // Get reCAPTCHA token
+    let recaptchaToken = ''
+    if (executeRecaptcha) {
+      try {
+        recaptchaToken = await executeRecaptcha('login')
+      } catch (error) {
+        console.error('reCAPTCHA error:', error)
+      }
+    }
+
+    const result = await login(loginEmail, loginPassword, recaptchaToken)
     setLoginLoading(false)
     if (result.error) {
       setLoginError(result.error)
@@ -102,6 +115,17 @@ export default function AuthModal() {
     e.preventDefault()
     setSignupLoading(true)
     setSignupError('')
+
+    // Get reCAPTCHA token
+    let recaptchaToken = ''
+    if (executeRecaptcha) {
+      try {
+        recaptchaToken = await executeRecaptcha('signup')
+      } catch (error) {
+        console.error('reCAPTCHA error:', error)
+      }
+    }
+
     const result = await signup({
       email: signupForm.email,
       password: signupForm.password,
@@ -112,6 +136,7 @@ export default function AuthModal() {
       skills: signupForm.skills,
       title: signupForm.title,
       bio: signupForm.bio,
+      recaptchaToken,
     })
     if (result.error) {
       setSignupError(result.error)

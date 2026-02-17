@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase'
 import { validate, signupSchema } from '@/lib/validation'
 import { jsonResponse, errorResponse, validationErrorResponse, checkAuthRateLimit, parseBody } from '@/lib/api-utils'
+import { verifyRecaptcha } from '@/lib/recaptcha'
 
 export async function POST(req: NextRequest) {
   const rateLimited = checkAuthRateLimit(req)
@@ -9,6 +10,15 @@ export async function POST(req: NextRequest) {
 
   const body = await parseBody(req)
   if (!body) return errorResponse('Invalid request body')
+
+  // Verify reCAPTCHA if token provided
+  const recaptchaToken = (body as { recaptchaToken?: string }).recaptchaToken
+  if (recaptchaToken) {
+    const recaptchaResult = await verifyRecaptcha(recaptchaToken, 'signup')
+    if (!recaptchaResult.success) {
+      return errorResponse(recaptchaResult.error || 'reCAPTCHA verification failed', 400)
+    }
+  }
 
   const result = validate<{
     email: string

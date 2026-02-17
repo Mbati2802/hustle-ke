@@ -12,6 +12,7 @@ import { PostJobModalProvider } from "./components/PostJobModalContext";
 import { ApplyJobModalProvider } from "./components/ApplyJobModalContext";
 import IncompleteApplicationNotifier from "./components/IncompleteApplicationNotifier";
 import { ApplyJobModalWrapper } from "./components/ApplyJobModal";
+import { RecaptchaProvider } from "@/contexts/RecaptchaContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -73,22 +74,24 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
-          <AuthModalProvider>
-            <PostJobModalProvider>
-              <ApplyJobModalProvider>
-                {children}
-                <LiveChatWidget />
-                <ScrollToTop />
-                <CookieConsent />
-                <InactivityMonitor />
-                <IncompleteApplicationNotifier />
-                <ApplyJobModalWrapper />
-                <AuthModal />
-              </ApplyJobModalProvider>
-            </PostJobModalProvider>
-          </AuthModalProvider>
-        </AuthProvider>
+        <RecaptchaProvider>
+          <AuthProvider>
+            <AuthModalProvider>
+              <PostJobModalProvider>
+                <ApplyJobModalProvider>
+                  {children}
+                  <LiveChatWidget />
+                  <ScrollToTop />
+                  <CookieConsent />
+                  <InactivityMonitor />
+                  <IncompleteApplicationNotifier />
+                  <ApplyJobModalWrapper />
+                  <AuthModal />
+                </ApplyJobModalProvider>
+              </PostJobModalProvider>
+            </AuthModalProvider>
+          </AuthProvider>
+        </RecaptchaProvider>
         <script
           dangerouslySetInnerHTML={{
             __html: `

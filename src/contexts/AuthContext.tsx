@@ -59,7 +59,7 @@ interface AuthContextType {
   profile: Profile | null
   session: Session | null
   loading: boolean
-  login: (email: string, password: string) => Promise<{ error?: string; redirect?: string }>
+  login: (email: string, password: string, recaptchaToken?: string) => Promise<{ error?: string; redirect?: string }>
   signup: (data: SignupData) => Promise<{ error?: string }>
   logout: () => Promise<void>
   refreshProfile: () => Promise<void>
@@ -86,6 +86,7 @@ interface SignupData {
   skills?: string[]
   title?: string
   bio?: string
+  recaptchaToken?: string
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -256,13 +257,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [supabase, fetchProfile])
 
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string, recaptchaToken?: string) => {
     try {
       // Sign in on server (sets cookies for SSR)
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, recaptchaToken }),
       })
       const data = await res.json()
       if (!res.ok) return { error: data.error || 'Invalid email or password' }
@@ -301,6 +302,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           skills: signupData.skills,
           title: signupData.title,
           bio: signupData.bio,
+          recaptchaToken: signupData.recaptchaToken,
         }),
       })
       const data = await res.json()

@@ -4,6 +4,7 @@ import { validate, loginSchema } from '@/lib/validation'
 import { jsonResponse, errorResponse, validationErrorResponse, checkAuthRateLimit, parseBody } from '@/lib/api-utils'
 import { cookies } from 'next/headers'
 import { isAccountLocked, recordFailedLogin, recordSuccessfulLogin } from '@/lib/account-lockout'
+import { verifyRecaptcha } from '@/lib/recaptcha'
 
 export async function POST(req: NextRequest) {
   const rateLimited = checkAuthRateLimit(req)
@@ -11,6 +12,15 @@ export async function POST(req: NextRequest) {
 
   const body = await parseBody(req)
   if (!body) return errorResponse('Invalid request body')
+
+  // Verify reCAPTCHA if token provided
+  const recaptchaToken = (body as { recaptchaToken?: string }).recaptchaToken
+  if (recaptchaToken) {
+    const recaptchaResult = await verifyRecaptcha(recaptchaToken, 'login')
+    if (!recaptchaResult.success) {
+      return errorResponse(recaptchaResult.error || 'reCAPTCHA verification failed', 400)
+    }
+  }
 
   const result = validate<{ email: string; password: string }>(body, loginSchema)
   if (!result.success) return validationErrorResponse(result.errors)
