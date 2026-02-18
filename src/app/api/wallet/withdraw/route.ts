@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || undefined
 
   // Use idempotency to prevent duplicate withdrawals
-  return withIdempotency(req, auth.adminDb, auth.userId, async () => {
+  return withIdempotency<Record<string, unknown>>(req, auth.adminDb, auth.userId, async () => {
     const body = await parseBody<{ amount: number; mpesa_phone?: string }>(req)
     if (!body || !body.amount) {
       return { status: 400, body: { error: 'amount is required' } }

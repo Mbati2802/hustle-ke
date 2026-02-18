@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   const ipAddress = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || undefined
 
   // Use idempotency to prevent duplicate escrow creation
-  return withIdempotency(req, auth.adminDb, auth.userId, async () => {
+  return withIdempotency<Record<string, unknown>>(req, auth.adminDb, auth.userId, async () => {
     const body = await parseBody<{ proposal_id: string; amount: number }>(req)
     if (!body || !body.proposal_id || !body.amount) {
       return { status: 400, body: { error: 'proposal_id and amount are required' } }

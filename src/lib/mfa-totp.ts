@@ -3,7 +3,8 @@
  * Generate TOTP secrets, QR codes, verify tokens, manage backup codes
  */
 
-import { TOTP } from 'otplib'
+import { TOTP, NobleCryptoPlugin, ScureBase32Plugin } from 'otplib'
+// @ts-expect-error -- @types/qrcode not installed
 import QRCode from 'qrcode'
 import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
@@ -14,11 +15,11 @@ const adminClient = createClient(supabaseUrl, supabaseServiceKey)
 
 const APP_NAME = 'HustleKE'
 
-// Create TOTP instance
-const totp = new TOTP()
-totp.options = {
-  window: 1, // Allow 1 step before/after current time
-}
+// Create TOTP instance with required plugins for otplib v13
+const totp = new TOTP({
+  crypto: new NobleCryptoPlugin(),
+  base32: new ScureBase32Plugin(),
+})
 
 /**
  * Generate a new TOTP secret
@@ -38,9 +39,10 @@ export async function generateQRCode(email: string, secret: string): Promise<str
 /**
  * Verify a TOTP token
  */
-export function verifyTOTPToken(token: string, secret: string): boolean {
+export async function verifyTOTPToken(token: string, secret: string): Promise<boolean> {
   try {
-    return totp.verify({ token, secret })
+    const result = await totp.verify(token, { secret, epochTolerance: 30 })
+    return result.valid
   } catch (error) {
     console.error('[MFA] TOTP verification error:', error)
     return false
@@ -180,7 +182,7 @@ export async function verifyMFAToken(
     let method: 'totp' | 'backup_code' = 'totp'
 
     // Try TOTP first
-    if (verifyTOTPToken(token, settings.totp_secret)) {
+    if (await verifyTOTPToken(token, settings.totp_secret)) {
       success = true
       method = 'totp'
     }
