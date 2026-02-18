@@ -295,11 +295,15 @@ export default function Header({ activeLink }: HeaderProps) {
       label: 'About',
       items: [
         { href: '/about', label: 'About Us', desc: 'Our mission and story', icon: Heart },
-        { href: '/faqs', label: 'FAQs', desc: 'Common questions answered', icon: HelpCircle },
+        { href: '/blog', label: 'Blog', desc: 'Guides, tips & industry insights', icon: BookOpen },
+        { href: '/help', label: 'Help Center', desc: 'FAQs and support articles', icon: HelpCircle },
+        { href: '/categories', label: 'Categories', desc: 'Browse freelance skill categories', icon: Briefcase },
+        { href: '/faqs', label: 'FAQs', desc: 'Common questions answered', icon: FileText },
         { href: '/contact', label: 'Contact Us', desc: 'Get in touch with our team', icon: Phone },
         { href: '/mpesa-tariffs', label: 'M-Pesa Tariffs', desc: 'Transaction fees breakdown', icon: Wallet },
         { href: '/terms', label: 'Terms of Service', desc: 'Platform rules & legal agreement', icon: Scale },
       ],
+      featured: { title: 'HustleKE Blog', desc: 'Expert tips on freelancing in Kenya, getting paid via M-Pesa, and growing your career.', href: '/blog', cta: 'Read Blog' },
     },
   ]
 
