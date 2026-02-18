@@ -3,9 +3,10 @@
  * 
  * Implements Cross-Site Request Forgery protection for all state-changing operations.
  * Uses double-submit cookie pattern with cryptographically secure tokens.
+ * 
+ * IMPORTANT: Uses Web Crypto API (not Node.js crypto) for Edge Runtime compatibility.
  */
 
-import { randomBytes, timingSafeEqual } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 
 const CSRF_TOKEN_LENGTH = 32
@@ -13,15 +14,37 @@ const CSRF_COOKIE_NAME = 'csrf-token'
 const CSRF_HEADER_NAME = 'x-csrf-token'
 
 /**
- * Generate a cryptographically secure CSRF token
+ * Convert a Uint8Array to hex string
+ */
+function toHex(bytes: Uint8Array): string {
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+/**
+ * Generate a cryptographically secure CSRF token using Web Crypto API
  */
 export function generateCSRFToken(): string {
-  return randomBytes(CSRF_TOKEN_LENGTH).toString('hex')
+  const bytes = new Uint8Array(CSRF_TOKEN_LENGTH)
+  crypto.getRandomValues(bytes)
+  return toHex(bytes)
+}
+
+/**
+ * Constant-time string comparison to prevent timing attacks.
+ * Uses XOR comparison — runs in constant time regardless of where strings differ.
+ */
+function constantTimeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let result = 0
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return result === 0
 }
 
 /**
  * Validate CSRF token from request
- * Uses timing-safe comparison to prevent timing attacks
+ * Uses constant-time comparison to prevent timing attacks
  */
 export function validateCSRFToken(req: NextRequest): boolean {
   const headerToken = req.headers.get(CSRF_HEADER_NAME)
@@ -32,20 +55,13 @@ export function validateCSRFToken(req: NextRequest): boolean {
     return false
   }
 
-  // Use timing-safe comparison to prevent timing attacks
-  try {
-    const headerBuffer = Buffer.from(headerToken, 'hex')
-    const cookieBuffer = Buffer.from(cookieToken, 'hex')
-
-    // Tokens must be same length
-    if (headerBuffer.length !== cookieBuffer.length) {
-      return false
-    }
-
-    return timingSafeEqual(headerBuffer, cookieBuffer)
-  } catch {
+  // Validate hex format and matching length
+  if (headerToken.length !== CSRF_TOKEN_LENGTH * 2 || cookieToken.length !== CSRF_TOKEN_LENGTH * 2) {
     return false
   }
+
+  // Constant-time comparison
+  return constantTimeEqual(headerToken, cookieToken)
 }
 
 /**

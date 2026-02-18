@@ -4,49 +4,15 @@ import { enforceCSRF, getOrGenerateCSRFToken, setCSRFCookie } from '@/lib/csrf'
 
 const PROTECTED_ROUTES = ['/dashboard', '/post-job']
 const AUTH_ROUTES = ['/login', '/signup', '/forgot-password']
-const ADMIN_ROUTES = ['/admin']
 
-export async function middleware(req: NextRequest) {
-  const { supabase, res } = createMiddlewareClient(req)
-  
-  // CSRF Protection: Enforce for state-changing operations
-  const csrfError = enforceCSRF(req)
-  if (csrfError) {
-    return csrfError
-  }
-  
-  // CSRF Protection: Generate or refresh token
-  const csrfToken = getOrGenerateCSRFToken(req)
-  setCSRFCookie(res, csrfToken)
-  
-  // Handle auth errors gracefully (e.g., expired refresh tokens)
-  let user = null
-  try {
-    const { data, error } = await supabase.auth.getUser()
-    if (error && error.message?.includes('refresh_token_not_found')) {
-      // Clear invalid session cookies
-      res.cookies.delete('sb-access-token')
-      res.cookies.delete('sb-refresh-token')
-    } else {
-      user = data.user
-    }
-  } catch (error) {
-    // Silently handle auth errors in production
-    console.error('Auth error in middleware:', error)
-  }
+// Security headers applied to every response
+function applySecurityHeaders(response: NextResponse): void {
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.set('X-Frame-Options', 'DENY')
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
 
-  const path = req.nextUrl.pathname
-
-  // Security headers
-  res.headers.set('X-Content-Type-Options', 'nosniff')
-  res.headers.set('X-Frame-Options', 'DENY')
-  res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  res.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
-  
-  // HSTS - Force HTTPS for 1 year, include subdomains
-  res.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
-  
-  // Content Security Policy
   const csp = [
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://vercel.live",
@@ -61,24 +27,59 @@ export async function middleware(req: NextRequest) {
     "frame-ancestors 'none'",
     "upgrade-insecure-requests"
   ].join('; ')
-  res.headers.set('Content-Security-Policy', csp)
+  response.headers.set('Content-Security-Policy', csp)
+}
+
+// Helper: create a redirect with security headers + CSRF cookie
+function secureRedirect(url: URL, req: NextRequest): NextResponse {
+  const redirect = NextResponse.redirect(url)
+  applySecurityHeaders(redirect)
+  const csrfToken = getOrGenerateCSRFToken(req)
+  setCSRFCookie(redirect, csrfToken)
+  return redirect
+}
+
+export async function middleware(req: NextRequest) {
+  const { supabase, res } = createMiddlewareClient(req)
+  
+  // CSRF Protection: Enforce for state-changing operations
+  const csrfError = enforceCSRF(req)
+  if (csrfError) {
+    return csrfError
+  }
+  
+  // Handle auth errors gracefully (e.g., expired refresh tokens)
+  let user = null
+  try {
+    const { data, error } = await supabase.auth.getUser()
+    if (error && error.message?.includes('refresh_token_not_found')) {
+      res.cookies.delete('sb-access-token')
+      res.cookies.delete('sb-refresh-token')
+    } else {
+      user = data.user
+    }
+  } catch (error) {
+    console.error('Auth error in middleware:', error)
+  }
+
+  const path = req.nextUrl.pathname
 
   // Redirect authenticated users away from auth pages
   if (user && AUTH_ROUTES.some((r) => path.startsWith(r))) {
-    return NextResponse.redirect(new URL('/dashboard', req.url))
+    return secureRedirect(new URL('/dashboard', req.url), req)
   }
 
   // Redirect unauthenticated users away from protected pages
   if (!user && PROTECTED_ROUTES.some((r) => path.startsWith(r))) {
     const redirectUrl = new URL('/login', req.url)
     redirectUrl.searchParams.set('redirect', path)
-    return NextResponse.redirect(redirectUrl)
+    return secureRedirect(redirectUrl, req)
   }
 
   // Admin route protection
   if (path.startsWith('/admin')) {
     if (!user) {
-      return NextResponse.redirect(new URL('/login', req.url))
+      return secureRedirect(new URL('/login', req.url), req)
     }
     const { data: profile } = await supabase
       .from('profiles')
@@ -87,9 +88,14 @@ export async function middleware(req: NextRequest) {
       .single()
 
     if (!profile || profile.role !== 'Admin') {
-      return NextResponse.redirect(new URL('/', req.url))
+      return secureRedirect(new URL('/', req.url), req)
     }
   }
+
+  // Apply security headers and CSRF cookie to the normal response
+  applySecurityHeaders(res)
+  const csrfToken = getOrGenerateCSRFToken(req)
+  setCSRFCookie(res, csrfToken)
 
   return res
 }
