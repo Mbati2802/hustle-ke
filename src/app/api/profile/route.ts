@@ -2,13 +2,20 @@ import { NextRequest } from 'next/server'
 import { requireAuth, jsonResponse, errorResponse, validationErrorResponse, parseBody } from '@/lib/api-utils'
 import { validate, profileUpdateSchema } from '@/lib/validation'
 import { recalculateHustleScore } from '@/lib/subscription-utils'
+import { encryptPhone, safeDecrypt } from '@/lib/encryption'
 
 // GET /api/profile — Get current authenticated user's profile
 export async function GET(req: NextRequest) {
   const auth = await requireAuth(req)
   if (auth instanceof Response) return auth
 
-  return jsonResponse({ profile: auth.profile })
+  // Decrypt sensitive fields before sending to client
+  const profile = { ...auth.profile }
+  if (profile.mpesa_phone) {
+    profile.mpesa_phone = safeDecrypt(profile.mpesa_phone)
+  }
+
+  return jsonResponse({ profile })
 }
 
 // PUT /api/profile — Update current user's profile
@@ -27,7 +34,12 @@ export async function PUT(req: NextRequest) {
   const updateData: Record<string, unknown> = {}
   for (const key of allowedFields) {
     if (result.data[key] !== undefined) {
-      updateData[key] = result.data[key]
+      // Encrypt sensitive fields
+      if (key === 'mpesa_phone' && result.data[key]) {
+        updateData[key] = encryptPhone(result.data[key] as string)
+      } else {
+        updateData[key] = result.data[key]
+      }
     }
   }
 
@@ -57,6 +69,11 @@ export async function PUT(req: NextRequest) {
   if (scoreFields.some(f => f in updateData)) {
     const newScore = await recalculateHustleScore(auth.adminDb, auth.profile.id, 'profile_updated')
     if (updated) updated.hustle_score = newScore
+  }
+
+  // Decrypt sensitive fields before sending to client
+  if (updated && updated.mpesa_phone) {
+    updated.mpesa_phone = safeDecrypt(updated.mpesa_phone)
   }
 
   return jsonResponse({ profile: updated })

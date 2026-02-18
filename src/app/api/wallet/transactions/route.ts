@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { requireAuth, jsonResponse, errorResponse, getPagination } from '@/lib/api-utils'
+import { safeDecrypt } from '@/lib/encryption'
 
 // GET /api/wallet/transactions — List wallet transactions
 export async function GET(req: NextRequest) {
@@ -37,8 +38,14 @@ export async function GET(req: NextRequest) {
 
   if (error) return errorResponse('Failed to fetch transactions', 500)
 
+  // Decrypt sensitive fields before sending to client
+  const decryptedTransactions = transactions?.map(tx => ({
+    ...tx,
+    mpesa_phone: tx.mpesa_phone ? safeDecrypt(tx.mpesa_phone) : null,
+  }))
+
   return jsonResponse({
-    transactions,
+    transactions: decryptedTransactions,
     pagination: { total: count || 0, limit, offset, hasMore: (count || 0) > offset + limit },
   })
 }

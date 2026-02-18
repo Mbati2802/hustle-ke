@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { auditWalletOperation } from '@/lib/audit-log'
 
 // M-Pesa callback — IP whitelist verification (called by Safaricom servers)
 // Safaricom M-Pesa callback IPs (update with actual IPs from Safaricom documentation)
@@ -83,35 +84,63 @@ export async function POST(req: NextRequest) {
         (i: Record<string, unknown>) => i.Name === 'TransactionDate'
       )?.Value
 
-      // Update transaction to completed
-      await adminDb
-        .from('wallet_transactions')
-        .update({
-          status: 'Completed',
-          mpesa_receipt_number: mpesaReceipt || null,
-          metadata: {
-            ...(tx.metadata as Record<string, unknown>),
-            transaction_date: transactionDate,
-            merchant_request_id: MerchantRequestID,
-            result_desc: ResultDesc,
-          },
-        })
-        .eq('id', tx.id)
+      // Use atomic deposit function to credit wallet
+      const { data: depositResult, error: depositError } = await adminDb.rpc('deposit_funds', {
+        p_wallet_id: tx.wallet_id,
+        p_amount: tx.amount,
+        p_phone: tx.mpesa_phone,
+        p_description: 'M-Pesa deposit',
+        p_metadata: {
+          ...(tx.metadata as Record<string, unknown>),
+          transaction_date: transactionDate,
+          merchant_request_id: MerchantRequestID,
+          result_desc: ResultDesc,
+          mpesa_receipt_number: mpesaReceipt,
+        },
+      })
 
-      // Credit the wallet
-      const { data: wallet } = await adminDb
-        .from('wallets')
-        .select('balance')
-        .eq('id', tx.wallet_id)
-        .single()
-
-      if (wallet) {
+      if (depositError || !depositResult?.success) {
+        console.error('[M-Pesa Callback] Failed to credit wallet:', depositResult?.error || depositError?.message)
+        
+        // Mark transaction as failed
         await adminDb
-          .from('wallets')
-          .update({ balance: wallet.balance + tx.amount })
-          .eq('id', tx.wallet_id)
+          .from('wallet_transactions')
+          .update({
+            status: 'Failed',
+            description: `M-Pesa deposit — ${depositResult?.error || 'Failed to credit wallet'}`,
+          })
+          .eq('id', tx.id)
+      } else {
+        // Update the original pending transaction to completed
+        await adminDb
+          .from('wallet_transactions')
+          .update({
+            status: 'Completed',
+            mpesa_receipt_number: mpesaReceipt || null,
+          })
+          .eq('id', tx.id)
 
-        console.log(`[M-Pesa Callback] Credited KES ${tx.amount} to wallet ${tx.wallet_id}`)
+        // Get user_id for audit log
+        const { data: wallet } = await adminDb
+          .from('wallets')
+          .select('user_id')
+          .eq('id', tx.wallet_id)
+          .single()
+
+        if (wallet?.user_id) {
+          // Audit successful deposit
+          await auditWalletOperation(
+            adminDb,
+            wallet.user_id,
+            'wallet_deposit',
+            tx.amount,
+            tx.wallet_id,
+            true,
+            clientIP
+          )
+        }
+
+        console.log(`[M-Pesa Callback] Credited KES ${tx.amount} to wallet ${tx.wallet_id}. New balance: ${depositResult.new_balance}`)
       }
     } else {
       // Payment failed or cancelled

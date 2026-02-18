@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createMiddlewareClient } from '@/lib/supabase-middleware'
+import { enforceCSRF, getOrGenerateCSRFToken, setCSRFCookie } from '@/lib/csrf'
 
 const PROTECTED_ROUTES = ['/dashboard', '/post-job']
 const AUTH_ROUTES = ['/login', '/signup', '/forgot-password']
@@ -7,6 +8,16 @@ const ADMIN_ROUTES = ['/admin']
 
 export async function middleware(req: NextRequest) {
   const { supabase, res } = createMiddlewareClient(req)
+  
+  // CSRF Protection: Enforce for state-changing operations
+  const csrfError = enforceCSRF(req)
+  if (csrfError) {
+    return csrfError
+  }
+  
+  // CSRF Protection: Generate or refresh token
+  const csrfToken = getOrGenerateCSRFToken(req)
+  setCSRFCookie(res, csrfToken)
   
   // Handle auth errors gracefully (e.g., expired refresh tokens)
   let user = null

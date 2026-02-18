@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { cachedFetch } from '@/lib/fetch-cache'
+import { withCSRF } from '@/hooks/useCSRFToken'
 import {
   Wallet,
   ArrowUpRight,
@@ -82,7 +83,7 @@ export default function WalletPage() {
     try {
       const res = await fetch('/api/wallet/withdraw', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: withCSRF({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ amount: parseFloat(withdrawAmount) }),
       })
       const data = await res.json()
@@ -118,7 +119,7 @@ export default function WalletPage() {
     try {
       const res = await fetch('/api/wallet/deposit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: withCSRF({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ amount, phone: depositPhone }),
       })
       const data = await res.json()
