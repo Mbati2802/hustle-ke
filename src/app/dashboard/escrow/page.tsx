@@ -192,14 +192,15 @@ export default function EscrowPage() {
             </h1>
             <p className="text-sm text-gray-500 mt-1">Secure payments between clients and freelancers</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => handleDownloadReport('pdf')}
               disabled={!!downloading}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-medium text-xs transition-colors border border-red-200 disabled:opacity-50"
             >
               {downloading === 'pdf' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />}
-              PDF Report
+              <span className="hidden sm:inline">PDF Report</span>
+              <span className="sm:hidden">PDF</span>
             </button>
             <button
               onClick={() => handleDownloadReport('excel')}
@@ -207,7 +208,8 @@ export default function EscrowPage() {
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-green-50 hover:bg-green-100 text-green-700 font-medium text-xs transition-colors border border-green-200 disabled:opacity-50"
             >
               {downloading === 'excel' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileSpreadsheet className="w-3.5 h-3.5" />}
-              Excel Report
+              <span className="hidden sm:inline">Excel Report</span>
+              <span className="sm:hidden">Excel</span>
             </button>
           </div>
         </div>
@@ -394,15 +396,16 @@ export default function EscrowPage() {
                     </div>
 
                     {/* Fee Detail (expandable info) */}
-                    <div className="flex items-center justify-center gap-4 px-3 py-1.5 border-t border-gray-200 text-[10px] text-gray-400">
+                    <div className="flex flex-wrap items-center justify-center gap-2 px-3 py-1.5 border-t border-gray-200 text-[10px] text-gray-400">
                       <span>Service Fee (5%): KES {escrow.service_fee.toLocaleString()}</span>
+                      <span className="hidden sm:inline">·</span>
                       <span>VAT (16%): KES {escrow.tax_amount.toLocaleString()}</span>
                     </div>
                   </div>
 
                   {/* Timeline / Status Info */}
                   <div className="px-5 pb-4">
-                    <div className="flex items-center gap-4 text-[11px] text-gray-400 mb-3">
+                    <div className="flex flex-wrap items-center gap-3 text-[11px] text-gray-400 mb-3">
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         Created {formatDate(escrow.initiated_at)} at {formatTime(escrow.initiated_at)}

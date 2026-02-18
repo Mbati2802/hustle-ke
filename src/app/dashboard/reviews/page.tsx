@@ -249,7 +249,7 @@ export default function ReviewsPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">Overall Rating</label>
               <StarRating rating={formData.rating} onChange={r => setFormData({ ...formData, rating: r })} />
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Communication</label>
                 <StarRating rating={formData.communication_rating} onChange={r => setFormData({ ...formData, communication_rating: r })} />
@@ -298,21 +298,21 @@ export default function ReviewsPage() {
           <div className="space-y-4">
             {reviews.map((review) => (
               <div key={review.id} className="bg-white rounded-2xl p-6 border border-gray-200">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-3">
+                  <div className="flex items-center gap-3 min-w-0">
                     {review.reviewer?.avatar_url ? (
-                      <img src={review.reviewer.avatar_url} alt={review.reviewer.full_name} className="w-10 h-10 rounded-full object-cover" />
+                      <img src={review.reviewer.avatar_url} alt={review.reviewer.full_name} className="w-10 h-10 rounded-full object-cover shrink-0" />
                     ) : (
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0">
                         {review.reviewer?.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2) || '??'}
                       </div>
                     )}
-                    <div>
-                      <p className="font-semibold text-gray-900 text-sm">{review.reviewer?.full_name || 'User'}</p>
-                      {review.job?.title && <p className="text-xs text-gray-500">Re: {review.job.title}</p>}
+                    <div className="min-w-0">
+                      <p className="font-semibold text-gray-900 text-sm truncate">{review.reviewer?.full_name || 'User'}</p>
+                      {review.job?.title && <p className="text-xs text-gray-500 truncate">Re: {review.job.title}</p>}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 shrink-0">
                     <StarRating rating={review.rating} readonly />
                     <span className="text-sm font-semibold text-gray-900">{review.rating}.0</span>
                   </div>

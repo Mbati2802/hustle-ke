@@ -37,6 +37,8 @@ export interface Profile {
   role: UserRole;
   languages: string[];
   swahili_speaking: boolean;
+  referral_code?: string;
+  referred_by?: string;
   created_at: string;
   updated_at: string;
 }

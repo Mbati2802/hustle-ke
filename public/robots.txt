@@ -1,0 +1,16 @@
+# HustleKE - Kenyan Freelance Marketplace
+# https://hustleke.com
+
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /login
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /auth/
+
+# Sitemap
+Sitemap: https://hustleke.com/sitemap.xml

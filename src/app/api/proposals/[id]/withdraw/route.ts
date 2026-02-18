@@ -48,7 +48,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   // Handle escrow refund if there's an active escrow
   const { data: escrow } = await auth.adminDb
-    .from('escrow')
+    .from('escrow_transactions')
     .select('id, amount, status, wallet_id')
     .eq('job_id', job.id)
     .eq('status', 'Held')
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
     // Update escrow status to Refunded
     await auth.adminDb
-      .from('escrow')
+      .from('escrow_transactions')
       .update({ 
         status: 'Refunded',
         updated_at: new Date().toISOString()

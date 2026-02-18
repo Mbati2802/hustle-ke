@@ -447,7 +447,7 @@ export default function EnterpriseDashboard() {
       )}
 
       {/* Tabs */}
-      <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1 mb-8 w-fit">
+      <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1 mb-8 overflow-x-auto scrollbar-hide">
         {tabs.map(t => (
           <button
             key={t.key}
@@ -551,7 +551,7 @@ export default function EnterpriseDashboard() {
           </div>
 
           {/* Enterprise advantage banner */}
-          <div className="mt-6 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-5 flex items-center justify-between">
+          <div className="mt-6 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-green-600" />
@@ -568,13 +568,13 @@ export default function EnterpriseDashboard() {
       {/* ═══ TEAM TAB ═══ */}
       {activeTab === 'team' && (
         <div>
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
             <div>
               <h2 className="text-lg font-bold text-gray-900">Team Members</h2>
               <p className="text-sm text-gray-500">{members.length} of {org.max_seats || 10} seats used</p>
             </div>
             {isAdmin && (
-              <button onClick={() => setShowInviteModal(true)} className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold">
+              <button onClick={() => setShowInviteModal(true)} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold">
                 <UserPlus className="w-4 h-4" /> Invite
               </button>
             )}
@@ -592,8 +592,8 @@ export default function EnterpriseDashboard() {
           </div>
 
           {/* Members list */}
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="grid grid-cols-[1fr_auto_auto_auto] gap-4 px-5 py-3 bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b">
+          <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
+            <div className="grid grid-cols-[1fr_auto_auto_auto] gap-4 px-5 py-3 bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b min-w-[500px]">
               <span>Member</span>
               <span>Role</span>
               <span>Joined</span>
@@ -610,7 +610,7 @@ export default function EnterpriseDashboard() {
                 viewer: 'bg-gray-100 text-gray-500',
               }
               return (
-                <div key={m.id} className="grid grid-cols-[1fr_auto_auto_auto] gap-4 items-center px-5 py-3.5 border-b border-gray-50 hover:bg-gray-50/50">
+                <div key={m.id} className="grid grid-cols-[1fr_auto_auto_auto] gap-4 items-center px-5 py-3.5 border-b border-gray-50 hover:bg-gray-50/50 min-w-[500px]">
                   <div className="flex items-center gap-3">
                     {p?.avatar_url ? (
                       <img src={p.avatar_url} alt="" className="w-9 h-9 rounded-full object-cover" />
@@ -666,12 +666,12 @@ export default function EnterpriseDashboard() {
       {/* ═══ BENCH TAB ═══ */}
       {activeTab === 'bench' && (
         <div>
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
             <div>
               <h2 className="text-lg font-bold text-gray-900">Freelancer Bench</h2>
               <p className="text-sm text-gray-500">{bench.length} freelancers saved • Quick re-hire your best talent</p>
             </div>
-            <button onClick={() => setShowBrowseTalent(true)} className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold">
+            <button onClick={() => setShowBrowseTalent(true)} className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold">
               <Search className="w-4 h-4" /> Find & Save Talent
             </button>
           </div>
@@ -802,7 +802,7 @@ export default function EnterpriseDashboard() {
           <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 mb-6 text-white">
             <p className="text-sm text-slate-400 mb-1">Available Balance</p>
             <p className="text-3xl font-bold">KES {(orgWallet?.balance || 0).toLocaleString()}</p>
-            <div className="flex items-center gap-6 mt-4 pt-4 border-t border-slate-700">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 mt-4 pt-4 border-t border-slate-700">
               <div>
                 <p className="text-[10px] text-slate-400 uppercase">Total Deposited</p>
                 <p className="text-sm font-semibold">KES {(orgWallet?.total_deposited || 0).toLocaleString()}</p>

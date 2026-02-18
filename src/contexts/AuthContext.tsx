@@ -31,6 +31,8 @@ export interface Profile {
   languages?: string[]
   education?: Array<{ school: string; degree: string; field: string; year: string }>
   certifications?: Array<{ name: string; issuer: string; year: string; url: string }>
+  referral_code?: string
+  referred_by?: string
   [key: string]: unknown
 }
 

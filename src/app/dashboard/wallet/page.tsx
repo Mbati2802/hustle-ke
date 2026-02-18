@@ -151,7 +151,7 @@ export default function WalletPage() {
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Wallet & M-Pesa</h1>
 
         {/* Balance Cards */}
-        <div className="grid md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-2xl p-6 text-white">
             <p className="text-green-100 text-sm mb-1">Available Balance</p>
             <p className="text-3xl font-bold">{loading ? '...' : `KES ${balance.toLocaleString()}`}</p>
@@ -238,7 +238,7 @@ export default function WalletPage() {
             <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <Smartphone className="w-5 h-5 text-green-600" /> Withdraw to M-Pesa
             </h3>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="number"
                 value={withdrawAmount}
@@ -247,7 +247,7 @@ export default function WalletPage() {
                 className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none"
               />
               <button onClick={handleWithdraw} disabled={withdrawing}
-                className="bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white px-6 py-3 rounded-xl font-semibold transition-colors flex items-center gap-2">
+                className="bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white px-6 py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2">
                 {withdrawing ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Withdraw'}
               </button>
             </div>
@@ -273,9 +273,9 @@ export default function WalletPage() {
           ) : (
             <div className="divide-y divide-gray-100">
               {transactions.map((tx) => (
-                <div key={tx.id} className="px-6 py-4 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                <div key={tx.id} className="px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
                       tx.type === 'Deposit' || tx.type === 'Release' ? 'bg-green-100' :
                       tx.type === 'Fee' ? 'bg-red-100' :
                       tx.type === 'Subscription' ? 'bg-amber-100' :
@@ -286,8 +286,8 @@ export default function WalletPage() {
                         tx.type === 'Escrow' || tx.type === 'Subscription' ? <ArrowUpRight className="w-5 h-5 text-amber-600" /> :
                         <ArrowUpRight className={`w-5 h-5 ${tx.type === 'Fee' ? 'text-red-600' : 'text-blue-600'}`} />}
                     </div>
-                    <div>
-                      <p className="font-medium text-gray-900 text-sm">{tx.description}</p>
+                    <div className="min-w-0">
+                      <p className="font-medium text-gray-900 text-sm truncate">{tx.description}</p>
                       <p className="text-xs text-gray-400">{new Date(tx.created_at).toLocaleDateString()}</p>
                     </div>
                   </div>

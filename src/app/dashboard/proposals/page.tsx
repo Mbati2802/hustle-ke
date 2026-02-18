@@ -195,7 +195,7 @@ export default function ProposalsPage() {
   return (
     <div className="p-4 lg:p-6 xl:p-8 pb-24 lg:pb-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-xl lg:text-2xl font-bold text-gray-900">
             {isOrgView ? 'Organization Proposals' : 'My Proposals'}
@@ -208,12 +208,12 @@ export default function ProposalsPage() {
           </p>
         </div>
         {!isOrgView && (
-          <Link href="/jobs" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 transition-colors shadow-sm">
+          <Link href="/jobs" className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition-colors shadow-sm">
             <Zap className="w-4 h-4" /> Find Jobs
           </Link>
         )}
         {isOrgView && (
-          <Link href="/dashboard/projects" className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 transition-colors shadow-sm">
+          <Link href="/dashboard/projects" className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition-colors shadow-sm">
             <Briefcase className="w-4 h-4" /> View Org Jobs
           </Link>
         )}
