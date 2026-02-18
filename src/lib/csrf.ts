@@ -86,6 +86,10 @@ export function requiresCSRFProtection(method: string): boolean {
 const CSRF_EXEMPT_PATHS = [
   '/api/wallet/deposit/callback', // M-Pesa callback
   '/api/auth/callback', // OAuth callback
+  '/api/ai/chat', // Live chat AI (auth-protected separately)
+  '/api/support/tickets', // Support ticket creation/listing (auth-protected)
+  '/api/support/typing', // Typing indicator (auth-protected)
+  '/api/support/disputes', // Dispute creation from chat (auth-protected)
 ]
 
 /**

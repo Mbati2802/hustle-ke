@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { jsonResponse, errorResponse, createPublicRouteClient } from '@/lib/api-utils'
+import { queryKnowledge, searchKnowledge, KNOWLEDGE_BASE } from '@/lib/ai-knowledge-engine'
 
 // Stop words to ignore during matching
 const STOP_WORDS = new Set(['the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'shall', 'to', 'of', 'in', 'for', 'on', 'with', 'at', 'by', 'from', 'as', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'and', 'but', 'or', 'nor', 'not', 'so', 'yet', 'both', 'either', 'neither', 'each', 'every', 'all', 'any', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'only', 'own', 'same', 'than', 'too', 'very', 'just', 'because', 'if', 'when', 'where', 'how', 'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'i', 'me', 'my', 'we', 'our', 'you', 'your', 'it', 'its', 'they', 'them', 'their', 'he', 'she', 'him', 'her', 'his', 'about', 'up', 'out', 'then', 'there', 'here'])
@@ -614,14 +615,14 @@ export async function GET(req: NextRequest) {
       return jsonResponse({ results: [], query })
     }
 
-    // Use the robust scoring engine
-    const results = matchQuestionMultiple(query, 5)
-      .map(({ keywords, score, ...rest }) => ({ ...rest, relevance: score }))
+    // Use the new knowledge engine for search
+    const results = searchKnowledge(query, 5)
+      .map(({ score, alternateQuestions, keywords, steps, links, ...rest }) => ({ ...rest, relevance: score }))
 
     return jsonResponse({ results, query })
   }
 
-  // ASK — always returns an answer, never empty
+  // ASK — always returns an answer, never empty (powered by new knowledge engine)
   if (action === 'ask') {
     let query = url.searchParams.get('q') || ''
     const originalQuery = url.searchParams.get('original_q') || query
@@ -641,87 +642,19 @@ export async function GET(req: NextRequest) {
       query = parts[parts.length - 1].trim()
     }
 
-    // Step 0: Check for intent FIRST — if detected, generateAnswer has a precise response
-    const queryIntent = detectIntent(query)
-    if (queryIntent) {
-      const generated = generateAnswer(query)
-      const isFallback = generated.startsWith('Thanks for your question! While I don')
-
-      if (!isFallback) {
-        // Intent detected and we have a direct answer — use it
-        const related = matchQuestionMultiple(query, 3)
-          .map(({ keywords, score, ...rest }) => rest)
-
-        // If intent also has a matching FAQ, include it as context
-        let matchedQuestion: string | undefined
-        let category: string | undefined
-        if (queryIntent.faqIds.length > 0) {
-          const faq = FAQ_KNOWLEDGE_BASE.find(f => f.id === queryIntent.faqIds[0])
-          if (faq) {
-            matchedQuestion = faq.question
-            category = faq.category
-          }
-        }
-
-        return jsonResponse({
-          answer: generated,
-          matchedQuestion,
-          category,
-          source: 'ai_generated',
-          confidence: 'high',
-          relatedFaqs: related,
-          query: originalQuery,
-        })
-      }
-    }
-
-    // Step 1: Try KB match (only if no intent was detected or intent had no answer)
-    const bestMatch = matchQuestion(query)
-    if (bestMatch) {
-      const related = matchQuestionMultiple(query, 4)
-        .filter(f => f.id !== bestMatch.id)
-        .map(({ keywords, score, ...rest }) => rest)
-
-      return jsonResponse({
-        answer: bestMatch.answer,
-        matchedQuestion: bestMatch.question,
-        category: bestMatch.category,
-        source: 'knowledge_base',
-        confidence: 'high',
-        relatedFaqs: related,
-        query: originalQuery,
-      })
-    }
-
-    // Step 2: Try ranked KB matches with reasonable score
-    const queryWords = extractKeywords(query)
-    const minRankedScore = Math.max(3, queryWords.length * 1.5)
-    const ranked = matchQuestionMultiple(query, 3)
-    if (ranked.length > 0 && ranked[0].score >= minRankedScore) {
-      const top = ranked[0]
-      const related = ranked.slice(1).map(({ keywords, score, ...rest }) => rest)
-
-      return jsonResponse({
-        answer: top.answer,
-        matchedQuestion: top.question,
-        category: top.category,
-        source: 'knowledge_base',
-        confidence: top.score >= minRankedScore * 1.5 ? 'high' : 'medium',
-        relatedFaqs: related,
-        query: originalQuery,
-      })
-    }
-
-    // Step 3: Generate a contextual answer (topic patterns + fallback)
-    const generated = generateAnswer(query)
-    const relatedFromGenerated = matchQuestionMultiple(query, 3)
-      .map(({ keywords, score, ...rest }) => rest)
+    // Use the new comprehensive knowledge engine
+    const result = queryKnowledge(query)
 
     return jsonResponse({
-      answer: generated,
-      source: 'ai_generated',
-      confidence: generated.startsWith('Thanks for your question! While I don') ? 'low' : 'high',
-      relatedFaqs: relatedFromGenerated,
+      answer: result.answer,
+      matchedQuestion: result.matchedQuestion,
+      category: result.category,
+      subcategory: result.subcategory,
+      source: result.source,
+      confidence: result.confidence,
+      relatedFaqs: result.relatedEntries,
+      steps: result.steps,
+      links: result.links,
       query: originalQuery,
     })
   }

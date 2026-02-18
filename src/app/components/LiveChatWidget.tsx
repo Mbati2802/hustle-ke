@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { generateShortTicketCode } from '@/lib/ticket-utils'
+import { queryKnowledge } from '@/lib/ai-knowledge-engine'
 import { 
   MessageCircle, 
   X, 
@@ -775,23 +776,57 @@ export default function LiveChatWidget() {
       return
     }
 
-    // Anonymous fallback: local rules
+    // Anonymous fallback: use knowledge engine directly (client-side)
     setTimeout(() => {
-      const responseResult = generateResponse(trimmedText, intent, conversationStage)
-      const suggestions = getSuggestions(intent, responseResult.newStage)
+      // Check small talk first
+      const smallTalkResult = checkSmallTalk(trimmedText, conversationStage)
+      if (smallTalkResult.response) {
+        const stResponse = smallTalkResult.response
+        setConversationStage(smallTalkResult.newStage)
+        setMessages(prev => [...prev, {
+          id: (Date.now() + 1).toString(),
+          text: stResponse,
+          sender: 'bot' as const,
+          timestamp: new Date(),
+          suggestions: smallTalkResult.newStage === 'closing' ? [] : ['Payment issue', 'Find work', 'Hire talent', 'Account help'],
+        }])
+        setIsTyping(false)
+        return
+      }
 
-      setConversationStage(responseResult.newStage)
+      // Use the knowledge engine for real answers
+      const result = queryKnowledge(trimmedText)
+      let responseText = result.answer
+      if (result.steps && result.steps.length > 0) {
+        // Steps are already included in the answer from queryKnowledge
+      }
 
-      const botMessage: Message = {
+      // Add login prompt for anonymous users on detailed answers
+      if (result.confidence !== 'low') {
+        responseText += '\n\n💡 *Log in for personalized help and to connect with a human agent.*'
+      }
+
+      const suggestions = result.relatedEntries.length > 0
+        ? result.relatedEntries.slice(0, 3).map(e => e.question)
+        : ['Payment issue', 'Find work', 'Account help', 'Connect to human']
+
+      setConversationStage('helped')
+      setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
-        text: responseResult.text,
+        text: responseText,
         sender: 'bot',
         timestamp: new Date(),
-        suggestions
-      }
-      setMessages(prev => [...prev, botMessage])
+        suggestions,
+        meta: {
+          source: result.source,
+          confidence: result.confidence,
+          category: result.category,
+          matchedQuestion: result.matchedQuestion,
+          relatedFaqs: result.relatedEntries.map(e => ({ id: e.id, question: e.question, answer: '', category: e.category })),
+        },
+      }])
       setIsTyping(false)
-    }, 1200 + Math.random() * 800)
+    }, 800 + Math.random() * 600)
   }
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -900,57 +935,122 @@ export default function LiveChatWidget() {
       return
     }
 
-    const intent = analyzeIntent(suggestion)
-    
+    // Check for dismissal/closing suggestions
+    const lowerSuggestion = suggestion.toLowerCase()
+    if (lowerSuggestion === 'no thanks' || lowerSuggestion === 'no') {
+      setTimeout(() => {
+        const hour = new Date().getHours()
+        let timeGreeting = ''
+        if (hour < 12) timeGreeting = 'morning'
+        else if (hour < 17) timeGreeting = 'afternoon'
+        else if (hour < 21) timeGreeting = 'evening'
+        else timeGreeting = 'night'
+        setConversationStage('closing')
+        setMessages(prev => [...prev, {
+          id: (Date.now() + 1).toString(),
+          text: `Thank you for chatting with me today! If you need any help in the future, I am always here. Have a lovely ${timeGreeting}! 🌟`,
+          sender: 'bot',
+          timestamp: new Date(),
+          suggestions: [],
+        }])
+        setIsTyping(false)
+      }, 600)
+      return
+    }
+
+    // For logged-in users, route through the AI chat API (same as handleSend)
+    if (user) {
+      setTimeout(async () => {
+        try {
+          const res = await fetch('/api/ai/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: aiSessionId, message: suggestion }),
+          })
+          const data = await res.json()
+
+          if (!res.ok) {
+            // Fallback to knowledge engine
+            const result = queryKnowledge(suggestion)
+            setConversationStage('helped')
+            setMessages(prev => [...prev, {
+              id: (Date.now() + 1).toString(),
+              text: result.answer,
+              sender: 'bot',
+              timestamp: new Date(),
+              suggestions: result.relatedEntries.length > 0
+                ? result.relatedEntries.slice(0, 3).map(e => e.question)
+                : ['Tell me more', 'Need more help', 'Connect to human'],
+            }])
+            setIsTyping(false)
+            return
+          }
+
+          if (data.session_id && !aiSessionId) setAiSessionId(data.session_id)
+
+          const responseText = (data.answer || 'I can help with that. Can you share more details?') as string
+          const meta = (data.meta || {}) as Message['meta']
+          const suggestions = meta?.relatedFaqs?.slice(0, 3).map((f) => f.question) || []
+
+          setConversationStage('helped')
+          setMessages(prev => [...prev, {
+            id: (Date.now() + 1).toString(),
+            text: responseText,
+            sender: 'bot',
+            timestamp: new Date(),
+            suggestions: suggestions.length > 0 ? suggestions : ['Tell me more', 'Need more help', 'Connect to human'],
+            meta,
+          }])
+        } catch {
+          // Fallback to knowledge engine on network error
+          const result = queryKnowledge(suggestion)
+          setConversationStage('helped')
+          setMessages(prev => [...prev, {
+            id: (Date.now() + 1).toString(),
+            text: result.answer,
+            sender: 'bot',
+            timestamp: new Date(),
+            suggestions: result.relatedEntries.length > 0
+              ? result.relatedEntries.slice(0, 3).map(e => e.question)
+              : ['Tell me more', 'Need more help', 'Connect to human'],
+          }])
+        } finally {
+          setIsTyping(false)
+        }
+      }, 700)
+      return
+    }
+
+    // Anonymous users: use knowledge engine directly
     setTimeout(() => {
-      let responseText = ''
-      let newStage: typeof conversationStage = 'helped'
-      
-      switch (suggestion) {
-        case 'Payment issue':
-          responseText = 'I can help with payment issues. Are you experiencing problems with deposits, withdrawals, or escrow payments?'
-          break
-        case 'Find work':
-          responseText = 'Great! To find work, you will need a complete profile. Have you set up your freelancer profile yet?'
-          break
-        case 'Hire talent':
-          responseText = 'Perfect! Posting a job is easy. What type of talent are you looking to hire?'
-          break
-        case 'Account help':
-          responseText = 'I can help with account issues. Are you having trouble logging in, verifying your account, or updating your profile?'
-          break
-        case 'Registration help':
-          responseText = 'I can help with registration! Are you looking to sign up as a freelancer or a client?'
-          break
-        case 'No thanks':
-        case 'No':
-          const hour = new Date().getHours()
-          let timeGreeting = ''
-          if (hour < 12) timeGreeting = 'morning'
-          else if (hour < 17) timeGreeting = 'afternoon'
-          else if (hour < 21) timeGreeting = 'evening'
-          else timeGreeting = 'night'
-          responseText = `Thank you for chatting with me today! If you need any help in the future, I am always here. Have a lovely ${timeGreeting}! 🌟`
-          newStage = 'closing'
-          break
-        default:
-          const result = generateResponse(suggestion, intent, conversationStage)
-          responseText = result.text
-          newStage = result.newStage
+      const result = queryKnowledge(suggestion)
+      let responseText = result.answer
+
+      if (result.confidence !== 'low') {
+        responseText += '\n\n💡 *Log in for personalized help and to connect with a human agent.*'
       }
 
-      setConversationStage(newStage)
+      const suggestions = result.relatedEntries.length > 0
+        ? result.relatedEntries.slice(0, 3).map(e => e.question)
+        : ['Payment issue', 'Find work', 'Account help', 'Connect to human']
 
-      const botMessage: Message = {
+      setConversationStage('helped')
+      setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         text: responseText,
         sender: 'bot',
         timestamp: new Date(),
-        suggestions: newStage === 'closing' ? [] : ['Tell me more', 'Need more help', 'Connect to human']
-      }
-      setMessages(prev => [...prev, botMessage])
+        suggestions,
+        meta: {
+          source: result.source,
+          confidence: result.confidence,
+          category: result.category,
+          matchedQuestion: result.matchedQuestion,
+          relatedFaqs: result.relatedEntries.map(e => ({ id: e.id, question: e.question, answer: '', category: e.category })),
+        },
+      }])
       setIsTyping(false)
-    }, 1000)
+    }, 800)
   }
 
   const formatTime = (date: Date) => {
@@ -959,6 +1059,87 @@ export default function LiveChatWidget() {
       minute: '2-digit',
       hour12: true 
     })
+  }
+
+  const renderMarkdown = (text: string) => {
+    // Split into lines and process each
+    const lines = text.split('\n')
+    const elements: React.ReactNode[] = []
+
+    lines.forEach((line, lineIdx) => {
+      // Process inline formatting: **bold** and *italic*
+      const processInline = (str: string): React.ReactNode[] => {
+        const parts: React.ReactNode[] = []
+        let remaining = str
+        let key = 0
+
+        while (remaining.length > 0) {
+          // Bold: **text**
+          const boldMatch = remaining.match(/\*\*(.+?)\*\*/)
+          // Italic: *text* (but not **)
+          const italicMatch = remaining.match(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/)
+
+          const firstMatch = [boldMatch, italicMatch]
+            .filter(Boolean)
+            .sort((a, b) => (a!.index || 0) - (b!.index || 0))[0]
+
+          if (!firstMatch || firstMatch.index === undefined) {
+            parts.push(remaining)
+            break
+          }
+
+          // Add text before the match
+          if (firstMatch.index > 0) {
+            parts.push(remaining.slice(0, firstMatch.index))
+          }
+
+          if (firstMatch === boldMatch) {
+            parts.push(<strong key={`b-${lineIdx}-${key++}`}>{firstMatch[1]}</strong>)
+          } else {
+            parts.push(<em key={`i-${lineIdx}-${key++}`}>{firstMatch[1]}</em>)
+          }
+
+          remaining = remaining.slice(firstMatch.index + firstMatch[0].length)
+        }
+
+        return parts
+      }
+
+      // Bullet points: • or - at start of line
+      if (/^[•\-]\s/.test(line.trim())) {
+        const content = line.trim().replace(/^[•\-]\s/, '')
+        elements.push(
+          <div key={lineIdx} className="flex gap-1.5 ml-1">
+            <span className="text-green-600 flex-shrink-0">•</span>
+            <span>{processInline(content)}</span>
+          </div>
+        )
+        return
+      }
+
+      // Numbered list: 1. or 1) at start
+      const numMatch = line.trim().match(/^(\d+)[.)]\s(.+)/)
+      if (numMatch) {
+        elements.push(
+          <div key={lineIdx} className="flex gap-1.5 ml-1">
+            <span className="text-green-600 font-medium flex-shrink-0">{numMatch[1]}.</span>
+            <span>{processInline(numMatch[2])}</span>
+          </div>
+        )
+        return
+      }
+
+      // Empty line = spacing
+      if (line.trim() === '') {
+        elements.push(<div key={lineIdx} className="h-1.5" />)
+        return
+      }
+
+      // Regular line with inline formatting
+      elements.push(<div key={lineIdx}>{processInline(line)}</div>)
+    })
+
+    return <>{elements}</>
   }
 
   return (
@@ -1044,7 +1225,9 @@ export default function LiveChatWidget() {
                         ? 'bg-blue-100 text-blue-900 rounded-bl-md'
                         : 'bg-white text-gray-800 shadow-sm rounded-bl-md border border-gray-100'
                     }`}>
-                      <p className="text-sm leading-relaxed whitespace-pre-line">{message.text}</p>
+                      <div className="text-sm leading-relaxed whitespace-pre-line chat-markdown">
+                        {message.sender !== 'user' ? renderMarkdown(message.text) : message.text}
+                      </div>
                     </div>
                     {message.sender === 'bot' && message.meta?.relatedFaqs && message.meta.relatedFaqs.length > 0 && (
                       <div className="mt-2 rounded-xl border border-gray-200 bg-white px-3 py-2">

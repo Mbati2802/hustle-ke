@@ -1,12 +1,13 @@
 import { NextRequest } from 'next/server'
 import { requireAuth, jsonResponse, errorResponse, parseBody } from '@/lib/api-utils'
+import { queryKnowledge } from '@/lib/ai-knowledge-engine'
 
 interface ChatBody {
   session_id?: string
   message?: string
 }
 
-// POST /api/ai/chat — store user message, generate response via FAQ intelligence, store bot message
+// POST /api/ai/chat — store user message, generate response via AI knowledge engine, store bot message
 export async function POST(req: NextRequest) {
   const auth = await requireAuth(req)
   if (auth instanceof Response) return auth
@@ -51,8 +52,7 @@ export async function POST(req: NextRequest) {
 
   const conversationContext = (history || [])
     .reverse()
-    .map(m => `${m.sender === 'user' ? 'User' : 'Bot'}: ${m.content}`)
-    .join('\n')
+    .map(m => m.content as string)
 
   await auth.adminDb.from('ai_chat_messages').insert({
     session_id: session.id,
@@ -61,32 +61,13 @@ export async function POST(req: NextRequest) {
     created_at: now,
   })
 
-  // Build enhanced query with context
-  let enhancedQuery = msg
-  if (conversationContext) {
-    enhancedQuery = `Context from conversation:\n${conversationContext}\n\nCurrent question: ${msg}`
-  }
+  // Use the knowledge engine directly (no internal HTTP calls)
+  const result = queryKnowledge(msg, conversationContext)
 
-  // Use the existing intelligence endpoint internally (use localhost for internal calls to avoid SSL issues)
-  const internalUrl = `http://localhost:${process.env.PORT || 10000}/api/faq/intelligence`
-  const askUrl = new URL(internalUrl)
-  askUrl.searchParams.set('action', 'ask')
-  askUrl.searchParams.set('q', enhancedQuery)
-  askUrl.searchParams.set('original_q', msg)
+  let answer = result.answer
 
-  const res = await fetch(askUrl.toString(), { 
-    headers: { 
-      'Content-Type': 'application/json',
-      'Cookie': req.headers.get('cookie') || '' // Forward auth cookies for internal call
-    } 
-  })
-  const data = await res.json().catch(() => ({}))
-
-  let answer = (data.answer || 'Thanks! A human agent can help if this is urgent.') as string
-  
-  // Make answer more conversational and contextual
-  if (data.confidence === 'high' && !answer.includes('?')) {
-    // Add helpful follow-up for high-confidence answers
+  // Make answer more conversational for high-confidence answers
+  if (result.confidence === 'high' && !answer.includes('?') && !answer.endsWith('!')) {
     const followUps = [
       '\n\nIs there anything else you\'d like to know?',
       '\n\nDoes this help? Let me know if you need more details!',
@@ -95,13 +76,28 @@ export async function POST(req: NextRequest) {
     answer += followUps[Math.floor(Math.random() * followUps.length)]
   }
 
+  // For low confidence, encourage rephrasing or human handoff
+  if (result.confidence === 'low') {
+    if (!answer.includes('Connect to human')) {
+      answer += '\n\nIf this doesn\'t answer your question, try rephrasing it or click **"Connect to human"** for live support.'
+    }
+  }
+
   const meta = {
-    source: data.source,
-    confidence: data.confidence,
-    relatedFaqs: data.relatedFaqs || [],
-    category: data.category,
-    matchedQuestion: data.matchedQuestion,
-    hasContext: !!conversationContext,
+    source: result.source,
+    confidence: result.confidence,
+    relatedFaqs: result.relatedEntries.map(e => ({
+      id: e.id,
+      question: e.question,
+      answer: '', // Don't send full answers in meta
+      category: e.category,
+    })),
+    category: result.category,
+    subcategory: result.subcategory,
+    matchedQuestion: result.matchedQuestion,
+    hasContext: conversationContext.length > 0,
+    steps: result.steps,
+    links: result.links,
   }
 
   await auth.adminDb.from('ai_chat_messages').insert({
