@@ -247,7 +247,7 @@ export const KNOWLEDGE_BASE: KnowledgeEntry[] = [
     subcategory: 'pro_savings',
     question: 'How does Pro plan save me money?',
     alternateQuestions: ['is pro worth it', 'pro plan benefits', 'should i upgrade', 'pro vs free', 'why upgrade to pro', 'pro plan value'],
-    answer: 'The Pro plan (KES 500/month) saves you money through lower fees:\n\n**Example on a KES 50,000 project:**\n• Free plan: 6% fee = KES 3,000 deducted\n• Pro plan: 4% fee = KES 2,000 deducted\n• **You save KES 1,000** on just one project!\n\nThe Pro subscription costs KES 500/month, so it **pays for itself with just one decent project**.\n\n**All Pro benefits:**\n• ✅ 4% service fee (vs 6%)\n• ✅ 20 proposals/day (vs 10)\n• ✅ Priority in job matching\n• ✅ PRO badge on your profile\n• ✅ Advanced analytics dashboard\n• ✅ Priority customer support\n\n**Try it free:** Use promo code **EARLYBIRD** for a free first month!\n\nUpgrade from Dashboard > Settings > Subscription.',
+    answer: 'The Pro plan (KES 500/month) saves you money through lower fees:\n\n**Example on a KES 50,000 project:**\n• Free plan: 6% fee = KES 3,000 deducted\n• Pro plan: 4% fee = KES 2,000 deducted\n• **You save KES 1,000** on just one project!\n\nThe Pro subscription costs KES 500/month, so it **pays for itself with just one decent project**.\n\n**All Pro benefits:**\n• 4% service fee (vs 6%)\n• 20 proposals/day (vs 10)\n• Priority in job matching\n• PRO badge on your profile\n• Advanced analytics dashboard\n• Priority customer support\n\n**Try it free:** Use promo code **EARLYBIRD** for a free first month!\n\nUpgrade from Dashboard > Settings > Subscription.',
     keywords: ['pro', 'worth', 'save', 'benefit', 'upgrade', 'value', 'compare', 'vs', 'free'],
     links: ['/pricing', '/dashboard/settings?tab=subscription'],
   },
@@ -269,7 +269,7 @@ export const KNOWLEDGE_BASE: KnowledgeEntry[] = [
     subcategory: 'proposals',
     question: 'How do I write a good proposal?',
     alternateQuestions: ['proposal tips', 'how to apply for jobs', 'winning proposal', 'how to bid', 'proposal advice', 'how to get hired', 'cover letter tips'],
-    answer: 'A great proposal is your ticket to getting hired. Here are proven tips:\n\n**Structure your proposal:**\n1. **Open with understanding** — Show you\'ve read the job description. Reference specific requirements\n2. **Showcase relevant experience** — Mention similar projects you\'ve completed\n3. **Explain your approach** — Briefly describe how you\'ll tackle the project\n4. **Set a clear timeline** — Be specific: "I can deliver in 5 business days"\n5. **Competitive pricing** — Research similar jobs and price fairly\n\n**Pro tips:**\n• 🎯 Personalize every proposal — no copy-paste templates\n• 📊 Include portfolio links or samples of similar work\n• ⚡ Apply early — first proposals get more attention\n• 🤖 Use the **AI Proposal Polisher** to optimize your writing\n• 💬 Ask a clarifying question to show genuine interest\n\n**Avoid:**\n• Generic "I can do this" proposals\n• Bidding too low just to win (clients distrust very low bids)\n• Ignoring the job requirements',
+    answer: 'A great proposal is your ticket to getting hired. Here are proven tips:\n\n**Structure your proposal:**\n1. **Open with understanding** — Show you\'ve read the job description. Reference specific requirements\n2. **Showcase relevant experience** — Mention similar projects you\'ve completed\n3. **Explain your approach** — Briefly describe how you\'ll tackle the project\n4. **Set a clear timeline** — Be specific: "I can deliver in 5 business days"\n5. **Competitive pricing** — Research similar jobs and price fairly\n\n**Pro tips:**\n• Personalize every proposal — no copy-paste templates\n• Include portfolio links or samples of similar work\n• Apply early — first proposals get more attention\n• Use the **AI Proposal Polisher** to optimize your writing\n• Ask a clarifying question to show genuine interest\n\n**Avoid:**\n• Generic "I can do this" proposals\n• Bidding too low just to win (clients distrust very low bids)\n• Ignoring the job requirements',
     keywords: ['proposal', 'write', 'apply', 'bid', 'submit', 'cover letter', 'good', 'tips', 'win', 'hired'],
   },
   {
@@ -344,7 +344,7 @@ export const KNOWLEDGE_BASE: KnowledgeEntry[] = [
     subcategory: 'hustle_score',
     question: 'What is the Hustle Score?',
     alternateQuestions: ['hustle score explained', 'trust score', 'how is score calculated', 'how to improve score', 'what affects my score', 'rating system', 'reputation score'],
-    answer: 'Hustle Score is your trust and reputation rating on HustleKE, ranging from 0 to 100.\n\n**What affects your score:**\n• ⭐ **Client reviews** — Star ratings from completed projects\n• ✅ **Completed jobs** — More completed jobs = higher score\n• ⚡ **Response time** — How quickly you reply to messages\n• 🔒 **Verification status** — Verified accounts score higher\n• 📊 **Platform activity** — Regular activity shows reliability\n• 📝 **Profile completeness** — Complete profiles rank higher\n\n**Why it matters:**\n• Higher scores appear first in search results\n• Clients prefer freelancers with scores above 70\n• Pro plan members get additional score boosts\n• Your score is visible on your public profile\n\n**How to improve:**\n• Complete projects on time with quality work\n• Respond to messages within hours, not days\n• Get your account verified\n• Fill out your entire profile including portfolio\n• Maintain consistent activity on the platform',
+    answer: 'Hustle Score is your trust and reputation rating on HustleKE, ranging from 0 to 100.\n\n**What affects your score:**\n• **Client reviews** — Star ratings from completed projects\n• **Completed jobs** — More completed jobs = higher score\n• **Response time** — How quickly you reply to messages\n• **Verification status** — Verified accounts score higher\n• **Platform activity** — Regular activity shows reliability\n• **Profile completeness** — Complete profiles rank higher\n\n**Why it matters:**\n• Higher scores appear first in search results\n• Clients prefer freelancers with scores above 70\n• Pro plan members get additional score boosts\n• Your score is visible on your public profile\n\n**How to improve:**\n• Complete projects on time with quality work\n• Respond to messages within hours, not days\n• Get your account verified\n• Fill out your entire profile including portfolio\n• Maintain consistent activity on the platform',
     keywords: ['hustle score', 'score', 'rating', 'trust', 'reputation', 'rank', 'improve', 'calculate'],
   },
   {
@@ -426,7 +426,7 @@ export const KNOWLEDGE_BASE: KnowledgeEntry[] = [
     subcategory: 'security',
     question: 'Is my data secure on HustleKE?',
     alternateQuestions: ['data security', 'is it safe', 'privacy', 'data protection', 'is my information safe', 'hacking', 'data breach'],
-    answer: 'Yes, your data is protected with enterprise-grade security:\n\n**Security measures:**\n• 🔐 **AES-256-GCM encryption** for sensitive data (phone numbers, financial info)\n• 🛡️ **Row Level Security (RLS)** — users can only access their own data\n• 🔒 **CSRF protection** — prevents cross-site request forgery\n• ⚡ **Rate limiting** — prevents brute force attacks\n• 📝 **Audit logging** — all financial operations are tracked\n• 🔑 **Secure authentication** — cookie-based sessions with Supabase Auth\n• 🏦 **Atomic transactions** — prevents race conditions in financial operations\n\n**We never:**\n• Share your personal information with third parties\n• Store passwords in plain text\n• Allow unauthorized access to your data\n\n**Your responsibilities:**\n• Use a strong, unique password\n• Don\'t share your login credentials\n• Report suspicious activity immediately',
+    answer: 'Yes, your data is protected with enterprise-grade security:\n\n**Security measures:**\n• **AES-256-GCM encryption** for sensitive data (phone numbers, financial info)\n• **Row Level Security (RLS)** — users can only access their own data\n• **CSRF protection** — prevents cross-site request forgery\n• **Rate limiting** — prevents brute force attacks\n• **Audit logging** — all financial operations are tracked\n• **Secure authentication** — cookie-based sessions with Supabase Auth\n• **Atomic transactions** — prevents race conditions in financial operations\n\n**We never:**\n• Share your personal information with third parties\n• Store passwords in plain text\n• Allow unauthorized access to your data\n\n**Your responsibilities:**\n• Use a strong, unique password\n• Don\'t share your login credentials\n• Report suspicious activity immediately',
     keywords: ['secure', 'safe', 'data', 'privacy', 'protect', 'hack', 'breach', 'encrypt', 'security'],
   },
   {
@@ -435,7 +435,7 @@ export const KNOWLEDGE_BASE: KnowledgeEntry[] = [
     subcategory: 'scam',
     question: 'Is HustleKE legit / trustworthy?',
     alternateQuestions: ['is this a scam', 'can i trust hustleke', 'is it legitimate', 'is it real', 'is it reliable', 'is it safe to use', 'will i get scammed'],
-    answer: 'Yes, HustleKE is a legitimate and trustworthy freelance marketplace. Here\'s why:\n\n**Trust & Safety:**\n• ✅ **M-Pesa escrow** — funds are held securely, not by individuals\n• ✅ **Identity verification** — all users verify with national ID\n• ✅ **Hustle Score** — transparent reputation system\n• ✅ **Dispute resolution** — dedicated team resolves issues within 48 hours\n• ✅ **Bank-level encryption** — your data is protected\n• ✅ **No upfront payments** — you only pay when work is completed\n\n**Red flags to watch for (on any platform):**\n• Never pay outside the platform\n• Don\'t share personal contacts before escrow is funded\n• Report users who ask for upfront payments outside escrow\n• If a deal seems too good to be true, it probably is\n\nHustleKE is built specifically for the Kenyan market with local payment integration and local support.',
+    answer: 'Yes, HustleKE is a legitimate and trustworthy freelance marketplace. Here\'s why:\n\n**Trust & Safety:**\n• **M-Pesa escrow** — funds are held securely, not by individuals\n• **Identity verification** — all users verify with national ID\n• **Hustle Score** — transparent reputation system\n• **Dispute resolution** — dedicated team resolves issues within 48 hours\n• **Bank-level encryption** — your data is protected\n• **No upfront payments** — you only pay when work is completed\n\n**Red flags to watch for (on any platform):**\n• Never pay outside the platform\n• Don\'t share personal contacts before escrow is funded\n• Report users who ask for upfront payments outside escrow\n• If a deal seems too good to be true, it probably is\n\nHustleKE is built specifically for the Kenyan market with local payment integration and local support.',
     keywords: ['legit', 'legitimate', 'scam', 'trust', 'real', 'reliable', 'safe', 'trustworthy', 'fake'],
   },
   {
@@ -444,7 +444,7 @@ export const KNOWLEDGE_BASE: KnowledgeEntry[] = [
     subcategory: 'contact_sharing',
     question: 'Can I share my personal contact details with clients?',
     alternateQuestions: ['share phone number', 'share email', 'exchange contacts', 'off platform', 'whatsapp', 'direct contact', 'give number'],
-    answer: 'We **strongly advise** keeping all communication on the HustleKE platform, especially before a contract is in place.\n\n**Why?**\n• 🛡️ No escrow protection for off-platform agreements\n• 📝 Platform messages serve as evidence in disputes\n• 🔒 Your personal info stays private\n• ⚖️ We can\'t help resolve issues that happen off-platform\n\n**When is it okay?**\n• After a project is completed successfully, it\'s your choice\n• For ongoing client relationships after trust is established\n• Never before escrow is funded\n\n**Safe communication:**\n• Use Dashboard > Messages for all project discussions\n• Share files through the platform\n• Keep a record of all agreements in writing',
+    answer: 'We **strongly advise** keeping all communication on the HustleKE platform, especially before a contract is in place.\n\n**Why?**\n• No escrow protection for off-platform agreements\n• Platform messages serve as evidence in disputes\n• Your personal info stays private\n• We can\'t help resolve issues that happen off-platform\n\n**When is it okay?**\n• After a project is completed successfully, it\'s your choice\n• For ongoing client relationships after trust is established\n• Never before escrow is funded\n\n**Safe communication:**\n• Use Dashboard > Messages for all project discussions\n• Share files through the platform\n• Keep a record of all agreements in writing',
     keywords: ['share', 'contact', 'phone', 'email', 'whatsapp', 'personal', 'off platform', 'direct'],
   },
 
@@ -478,7 +478,7 @@ export const KNOWLEDGE_BASE: KnowledgeEntry[] = [
     subcategory: 'rules',
     question: 'What are the platform rules?',
     alternateQuestions: ['terms of service', 'community guidelines', 'what is allowed', 'what is not allowed', 'platform policies', 'rules and regulations'],
-    answer: 'HustleKE has community guidelines to protect all users:\n\n**Do:**\n• ✅ Keep all job communication on the platform until escrow is funded\n• ✅ Deliver work as agreed in the proposal\n• ✅ Communicate clearly and professionally\n• ✅ Report suspicious activity\n• ✅ Use your real identity\n\n**Don\'t:**\n• ❌ Share personal contacts before a contract is in place\n• ❌ Create fake reviews or multiple accounts\n• ❌ Ask for payments outside the platform\n• ❌ Deliver plagiarized or AI-generated work without disclosure\n• ❌ Harass or discriminate against other users\n• ❌ Misrepresent your skills or experience\n\n**Consequences:**\n• Warnings for minor violations\n• Account suspension for repeated violations\n• Permanent ban for fraud, scams, or harassment\n\nFull terms at /terms and privacy policy at /privacy.',
+    answer: 'HustleKE has community guidelines to protect all users:\n\n**Do:**\n• Keep all job communication on the platform until escrow is funded\n• Deliver work as agreed in the proposal\n• Communicate clearly and professionally\n• Report suspicious activity\n• Use your real identity\n\n**Don\'t:**\n• Share personal contacts before a contract is in place\n• Create fake reviews or multiple accounts\n• Ask for payments outside the platform\n• Deliver plagiarized or AI-generated work without disclosure\n• Harass or discriminate against other users\n• Misrepresent your skills or experience\n\n**Consequences:**\n• Warnings for minor violations\n• Account suspension for repeated violations\n• Permanent ban for fraud, scams, or harassment\n\nFull terms at /terms and privacy policy at /privacy.',
     keywords: ['rules', 'policy', 'terms', 'guidelines', 'allowed', 'forbidden', 'prohibited', 'banned'],
     links: ['/terms', '/privacy'],
   },
@@ -501,6 +501,45 @@ export const KNOWLEDGE_BASE: KnowledgeEntry[] = [
     keywords: ['tax', 'vat', 'kra', 'income', 'invoice', 'receipt', 'declaration', 'earnings'],
   },
 
+  // ── WITHDRAWAL & WALLET RULES ──────────────────────────────────────
+  {
+    id: 'wallet-1',
+    category: 'payments',
+    subcategory: 'withdraw_rules',
+    question: 'Can I withdraw money without completing a job?',
+    alternateQuestions: ['withdraw without job', 'withdraw without completing', 'cash out without work', 'take money out without finishing', 'withdraw before project done', 'can i withdraw my deposit', 'withdraw my own money'],
+    answer: 'Yes, you can withdraw **your own deposited funds** from your wallet at any time — no job completion required.\n\n**What you CAN withdraw freely:**\n• Any money you deposited (topped up) into your wallet via M-Pesa\n• Funds from completed and approved projects\n\n**What you CANNOT withdraw:**\n• Funds locked in **escrow** — these are held until the project is completed or a dispute is resolved\n• If you\'re a client and funded an escrow, those funds are locked until you approve the work or open a dispute\n\n**How to withdraw:**\n1. Go to Dashboard > Wallet\n2. Click "Withdraw"\n3. Enter the amount (must not exceed available balance)\n4. Confirm your M-Pesa number\n5. Funds arrive in your M-Pesa within seconds\n\nEscrow funds are separate from your wallet balance — only your available balance can be withdrawn.',
+    keywords: ['withdraw', 'without', 'completing', 'job', 'before', 'done', 'own money', 'deposit', 'balance', 'escrow'],
+  },
+  {
+    id: 'wallet-2',
+    category: 'payments',
+    subcategory: 'incomplete_work',
+    question: 'What happens if I don\'t complete a project?',
+    alternateQuestions: ['incomplete work', 'abandon project', 'quit job', 'leave project unfinished', 'what if i cant finish', 'not completing work', 'drop a project', 'what happens if i fail to deliver', 'consequences of not finishing'],
+    answer: 'Not completing a project has serious consequences on HustleKE:\n\n**What happens:**\n1. **Escrow stays locked** — the client\'s money remains in escrow, not released to you\n2. **Client can open a dispute** — our team reviews and may issue a full refund to the client\n3. **Your Hustle Score drops** — incomplete projects significantly lower your trust rating\n4. **Negative review** — the client can leave a negative review visible on your profile\n5. **Account risk** — repeated abandonment can lead to account warnings or suspension\n\n**If you genuinely can\'t finish:**\n• Communicate with the client **immediately** — explain the situation\n• Offer to deliver partial work or recommend someone else\n• If you both agree, the client can request a refund from escrow\n• Open a dispute if you can\'t reach agreement — our team will mediate fairly\n\n**Prevention tips:**\n• Only accept projects you\'re confident you can complete\n• Set realistic timelines in your proposals\n• Communicate early if you foresee any delays',
+    keywords: ['incomplete', 'abandon', 'quit', 'not complete', 'fail', 'deliver', 'unfinished', 'drop', 'leave', 'consequences'],
+  },
+  {
+    id: 'wallet-3',
+    category: 'payments',
+    subcategory: 'wallet_balance',
+    question: 'How do I check my wallet balance?',
+    alternateQuestions: ['check balance', 'see my balance', 'how much money do i have', 'wallet amount', 'view balance', 'where is my money'],
+    answer: 'To check your wallet balance:\n\n1. Go to **Dashboard > Wallet**\n2. Your current available balance is shown at the top\n3. Below that, you can see your full transaction history\n\n**Balance types:**\n• **Available balance** — money you can withdraw or use for escrow\n• **Escrow balance** — money locked in active projects (shown separately)\n\nYou can also see your wallet balance in the dashboard overview on the main Dashboard page.',
+    keywords: ['check', 'balance', 'wallet', 'amount', 'money', 'view', 'see'],
+    links: ['/dashboard/wallet'],
+  },
+  {
+    id: 'wallet-4',
+    category: 'payments',
+    subcategory: 'refund_timeline',
+    question: 'How long does a refund take?',
+    alternateQuestions: ['refund time', 'how fast refund', 'when will i get refund', 'refund processing time', 'refund duration'],
+    answer: 'Refund timelines depend on the situation:\n\n**Escrow refund (client-initiated, no dispute):**\n• If the freelancer hasn\'t started work, the client can request an immediate release\n• Funds return to the client\'s wallet **instantly**\n\n**Disputed refund:**\n• Our resolution team reviews within **48 hours**\n• Once resolved, funds move instantly to the appropriate wallet\n\n**Withdrawal to M-Pesa:**\n• After funds are back in your wallet, M-Pesa withdrawal takes **seconds**\n\nAll refunds go to your HustleKE wallet first, then you can withdraw to M-Pesa.',
+    keywords: ['refund', 'time', 'how long', 'fast', 'processing', 'duration', 'timeline'],
+  },
+
   // ── MISCELLANEOUS ────────────────────────────────────────────────────
   {
     id: 'misc-1',
@@ -517,7 +556,7 @@ export const KNOWLEDGE_BASE: KnowledgeEntry[] = [
     subcategory: 'multiple_jobs',
     question: 'Can I work on multiple projects at once?',
     alternateQuestions: ['multiple projects', 'simultaneous jobs', 'how many jobs at once', 'job limit', 'take on more work'],
-    answer: 'Yes! There\'s **no limit** on how many projects you can work on simultaneously.\n\n**Tips for managing multiple projects:**\n• 📅 Set realistic deadlines for each project\n• 📋 Prioritize based on urgency and deadline\n• 💬 Communicate proactively with clients about timelines\n• ⚠️ Don\'t overcommit — poor quality leads to bad reviews\n• 📊 Use your dashboard to track all active projects\n\n**As a client:**\nYou can also post and manage multiple jobs at once. Each job has its own escrow, proposals, and messaging thread.\n\n**Warning:** Overcommitting and missing deadlines will hurt your Hustle Score and lead to negative reviews.',
+    answer: 'Yes! There\'s **no limit** on how many projects you can work on simultaneously.\n\n**Tips for managing multiple projects:**\n• Set realistic deadlines for each project\n• Prioritize based on urgency and deadline\n• Communicate proactively with clients about timelines\n• Don\'t overcommit — poor quality leads to bad reviews\n• Use your dashboard to track all active projects\n\n**As a client:**\nYou can also post and manage multiple jobs at once. Each job has its own escrow, proposals, and messaging thread.\n\n**Warning:** Overcommitting and missing deadlines will hurt your Hustle Score and lead to negative reviews.',
     keywords: ['multiple', 'projects', 'simultaneous', 'many', 'jobs', 'at once', 'limit'],
   },
   {
@@ -805,7 +844,7 @@ function generateFallbackAnswer(question: string, nearMatches: KnowledgeEntry[])
   }
 
   // Ultimate fallback — still helpful
-  return `Thanks for your question! I'm here to help with anything about HustleKE.\n\nI can answer questions about:\n• 💰 **Payments** — M-Pesa, escrow, withdrawals, fees\n• 💼 **Jobs** — Finding work, posting jobs, proposals\n• 👤 **Account** — Profile, verification, settings\n• 📋 **Plans** — Free, Pro, Enterprise pricing\n• 🛡️ **Safety** — Disputes, security, trust\n• ⭐ **Reviews** — Ratings, Hustle Score\n\nTry rephrasing your question, or click **"Connect to human"** to speak with a support agent who can help with anything!\n\nYou can also visit /faqs for our full FAQ library.`
+  return `Thanks for your question! I'm here to help with anything about HustleKE.\n\nI can answer questions about:\n• **Payments** — M-Pesa, escrow, withdrawals, fees\n• **Jobs** — Finding work, posting jobs, proposals\n• **Account** — Profile, verification, settings\n• **Plans** — Free, Pro, Enterprise pricing\n• **Safety** — Disputes, security, trust\n• **Reviews** — Ratings, Hustle Score\n\nTry rephrasing your question, or click **"Connect to human"** to speak with a support agent who can help with anything!\n\nYou can also visit /faqs for our full FAQ library.`
 }
 
 // ============================================================================

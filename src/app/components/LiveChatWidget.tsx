@@ -19,7 +19,26 @@ import {
   HelpCircle,
   ArrowRight,
   Star,
-  CheckCircle2
+  CheckCircle2,
+  Target,
+  BarChart3,
+  Zap,
+  Cpu,
+  MessageSquare,
+  Lightbulb,
+  Shield,
+  Lock,
+  CreditCard,
+  Briefcase,
+  UserCheck,
+  FileText,
+  AlertTriangle,
+  ThumbsUp,
+  Award,
+  Wallet,
+  Timer,
+  ClipboardList,
+  type LucideIcon
 } from 'lucide-react'
 
 interface Message {
@@ -95,7 +114,7 @@ const knowledgeBase = {
   fees: {
     keywords: ['fee', 'fees', 'commission', 'charge', 'charged', 'cost', 'price', 'pricing', 'expensive', 'cheap', 'subscription', 'how much', 'percentage', 'percent', 'tariff'],
     responses: [
-      'Here is how HustleKE fees work:\n\n• **Free Plan**: 6% service fee on completed projects\n• **Pro Plan** (KES 999/mo): 4% service fee + priority features\n• **Enterprise**: Custom rates for teams\n\nNo hidden charges. No signup fees. You only pay when a project is completed successfully. M-Pesa withdrawal fees are standard Safaricom rates.\n\nWould you like more details on any plan?',
+      'Here is how HustleKE fees work:\n\n• **Free Plan**: 6% service fee on completed projects\n• **Pro Plan** (KES 500/mo): 4% service fee + priority features\n• **Enterprise**: Custom rates for teams\n\nNo hidden charges. No signup fees. You only pay when a project is completed successfully. M-Pesa withdrawal fees are standard Safaricom rates.\n\nWould you like more details on any plan?',
       'Quick fee breakdown:\n• Freelancers pay 6% (or 4% on Pro) from completed project earnings\n• Clients deposit the project budget + 6% service fee into escrow\n• No monthly fees on the Free plan\n• M-Pesa withdrawals use standard Safaricom charges\n\nCompared to competitors (10-20%), HustleKE is significantly cheaper!',
       'Our pricing is simple — 6% per completed project on the Free plan, 4% on Pro. No signup fees, no hidden charges. Check /pricing for the full comparison.'
     ],
@@ -136,7 +155,7 @@ export default function LiveChatWidget() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Hello! 👋 I am HustleKE AI Assistant. I can help with payments, jobs, account issues, and more. What brings you here today?',
+      text: 'Hello! I am HustleKE AI Assistant. I can help with payments, jobs, account issues, and more. What brings you here today?',
       sender: 'bot',
       timestamp: new Date(),
       suggestions: ['Payment issue', 'Find work', 'Hire talent', 'Account help', 'Registration help']
@@ -358,7 +377,7 @@ export default function LiveChatWidget() {
       else timeGreeting = 'night'
       
       return {
-        response: `Thank you for chatting with me today! If you need any help in the future, I am always here. Have a lovely ${timeGreeting}! 🌟`,
+        response: `Thank you for chatting with me today! If you need any help in the future, I am always here. Have a lovely ${timeGreeting}!`,
         newStage: 'closing'
       }
     }
@@ -571,7 +590,7 @@ export default function LiveChatWidget() {
           const shortCode = profile?.full_name ? generateShortTicketCode(ticketId, profile.full_name) : ticketId.substring(0, 8)
           setMessages(prev => [...prev, {
             id: (Date.now() + 1).toString(),
-            text: `✅ Connected to human support!\n\nTicket: ${shortCode}\n\nA support agent will respond shortly. You can continue chatting here.`,
+            text: `Connected to human support!\n\nTicket: ${shortCode}\n\nA support agent will respond shortly. You can continue chatting here.`,
             sender: 'human',
             timestamp: new Date(),
           }])
@@ -803,7 +822,7 @@ export default function LiveChatWidget() {
 
       // Add login prompt for anonymous users on detailed answers
       if (result.confidence !== 'low') {
-        responseText += '\n\n💡 *Log in for personalized help and to connect with a human agent.*'
+        responseText += '\n\n*Log in for personalized help and to connect with a human agent.*'
       }
 
       const suggestions = result.relatedEntries.length > 0
@@ -883,7 +902,7 @@ export default function LiveChatWidget() {
           const shortCode = profile?.full_name ? generateShortTicketCode(ticketId, profile.full_name) : ticketId.substring(0, 8)
           setMessages(prev => [...prev, {
             id: (Date.now() + 1).toString(),
-            text: `✅ Connected to human support!\n\nTicket: ${shortCode}\n\nA support agent will respond shortly. You can continue chatting here.`,
+            text: `Connected to human support!\n\nTicket: ${shortCode}\n\nA support agent will respond shortly. You can continue chatting here.`,
             sender: 'human',
             timestamp: new Date(),
           }])
@@ -948,7 +967,7 @@ export default function LiveChatWidget() {
         setConversationStage('closing')
         setMessages(prev => [...prev, {
           id: (Date.now() + 1).toString(),
-          text: `Thank you for chatting with me today! If you need any help in the future, I am always here. Have a lovely ${timeGreeting}! 🌟`,
+          text: `Thank you for chatting with me today! If you need any help in the future, I am always here. Have a lovely ${timeGreeting}!`,
           sender: 'bot',
           timestamp: new Date(),
           suggestions: [],
@@ -1027,7 +1046,7 @@ export default function LiveChatWidget() {
       let responseText = result.answer
 
       if (result.confidence !== 'low') {
-        responseText += '\n\n💡 *Log in for personalized help and to connect with a human agent.*'
+        responseText += '\n\n*Log in for personalized help and to connect with a human agent.*'
       }
 
       const suggestions = result.relatedEntries.length > 0
@@ -1061,42 +1080,70 @@ export default function LiveChatWidget() {
     })
   }
 
+  // Emoji-to-Lucide-icon map for replacing emojis with flat vector icons
+  const emojiIconMap: Record<string, LucideIcon> = {
+    '👋': Sparkles, '🎯': Target, '📊': BarChart3, '⚡': Zap,
+    '🤖': Cpu, '💬': MessageSquare, '💡': Lightbulb, '🌟': Sparkles,
+    '⭐': Star, '✅': CheckCircle2, '🔐': Lock, '🛡️': Shield,
+    '🔒': Lock, '🏦': CreditCard, '📝': FileText, '🔑': Lock,
+    '💰': Wallet, '💼': Briefcase, '👤': UserCheck, '📋': ClipboardList,
+    '⚠️': AlertTriangle, '⚠': AlertTriangle, '📅': Clock, '❌': X,
+    '✓': CheckCircle2, '✗': X, '⏰': Timer, '🎉': Award,
+    '👍': ThumbsUp, '💪': Award, '🚀': Zap, '📈': BarChart3,
+  }
+
+  const replaceEmojisWithIcons = (text: string, keyPrefix: string): React.ReactNode[] => {
+    const emojiPattern = new RegExp(`(${Object.keys(emojiIconMap).map(e => e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'g')
+    const parts = text.split(emojiPattern)
+    return parts.map((part, i) => {
+      const Icon = emojiIconMap[part]
+      if (Icon) {
+        return <Icon key={`${keyPrefix}-emoji-${i}`} className="w-3.5 h-3.5 inline-block align-text-bottom text-green-600 mr-0.5" />
+      }
+      return part
+    })
+  }
+
   const renderMarkdown = (text: string) => {
     // Split into lines and process each
     const lines = text.split('\n')
     const elements: React.ReactNode[] = []
 
     lines.forEach((line, lineIdx) => {
-      // Process inline formatting: **bold** and *italic*
+      // Process inline formatting: ***bold-italic***, **bold**, and *italic*, then replace emojis
       const processInline = (str: string): React.ReactNode[] => {
         const parts: React.ReactNode[] = []
         let remaining = str
         let key = 0
 
         while (remaining.length > 0) {
+          // Bold-italic: ***text*** (must check before bold)
+          const boldItalicMatch = remaining.match(/\*\*\*(.+?)\*\*\*/)
           // Bold: **text**
           const boldMatch = remaining.match(/\*\*(.+?)\*\*/)
           // Italic: *text* (but not **)
           const italicMatch = remaining.match(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/)
 
-          const firstMatch = [boldMatch, italicMatch]
+          const firstMatch = [boldItalicMatch, boldMatch, italicMatch]
             .filter(Boolean)
             .sort((a, b) => (a!.index || 0) - (b!.index || 0))[0]
 
           if (!firstMatch || firstMatch.index === undefined) {
-            parts.push(remaining)
+            parts.push(...replaceEmojisWithIcons(remaining, `${lineIdx}-${key++}`))
             break
           }
 
           // Add text before the match
           if (firstMatch.index > 0) {
-            parts.push(remaining.slice(0, firstMatch.index))
+            parts.push(...replaceEmojisWithIcons(remaining.slice(0, firstMatch.index), `${lineIdx}-${key++}`))
           }
 
-          if (firstMatch === boldMatch) {
-            parts.push(<strong key={`b-${lineIdx}-${key++}`}>{firstMatch[1]}</strong>)
+          if (firstMatch === boldItalicMatch) {
+            parts.push(<strong key={`bi-${lineIdx}-${key++}`}><em>{replaceEmojisWithIcons(firstMatch[1], `bi-${lineIdx}-${key}`)}</em></strong>)
+          } else if (firstMatch === boldMatch) {
+            parts.push(<strong key={`b-${lineIdx}-${key++}`}>{replaceEmojisWithIcons(firstMatch[1], `b-${lineIdx}-${key}`)}</strong>)
           } else {
-            parts.push(<em key={`i-${lineIdx}-${key++}`}>{firstMatch[1]}</em>)
+            parts.push(<em key={`i-${lineIdx}-${key++}`}>{replaceEmojisWithIcons(firstMatch[1], `i-${lineIdx}-${key}`)}</em>)
           }
 
           remaining = remaining.slice(firstMatch.index + firstMatch[0].length)
@@ -1286,8 +1333,8 @@ export default function LiveChatWidget() {
                 </div>
                 <p className="text-sm text-gray-700 mb-3">Were you satisfied with the support you received?</p>
                 <div className="flex gap-2">
-                  <button onClick={() => { setSatisfactionRating('satisfied'); setShowReviewForm(true); setShowResolutionSurvey(false) }} className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition">✓ Yes</button>
-                  <button onClick={() => { setSatisfactionRating('unsatisfied'); setShowDisputeForm(true); setShowResolutionSurvey(false) }} className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition">✗ No</button>
+                  <button onClick={() => { setSatisfactionRating('satisfied'); setShowReviewForm(true); setShowResolutionSurvey(false) }} className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition flex items-center justify-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> Yes</button>
+                  <button onClick={() => { setSatisfactionRating('unsatisfied'); setShowDisputeForm(true); setShowResolutionSurvey(false) }} className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition flex items-center justify-center gap-1"><X className="w-3.5 h-3.5" /> No</button>
                 </div>
               </div>
             )}
@@ -1301,11 +1348,11 @@ export default function LiveChatWidget() {
                     <button key={star} onClick={() => setReviewRating(star)}><Star className={`w-8 h-8 ${star <= reviewRating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} /></button>
                   ))}
                 </div>
-                {reviewRating > 0 && <p className="text-center text-xs text-gray-600 mb-2">{reviewRating === 5 ? '⭐ Excellent!' : reviewRating === 4 ? '⭐ Great!' : reviewRating === 3 ? '⭐ Good' : reviewRating === 2 ? '⭐ Fair' : '⭐ Poor'}</p>}
+                {reviewRating > 0 && <p className="text-center text-xs text-gray-600 mb-2">{reviewRating === 5 ? 'Excellent!' : reviewRating === 4 ? 'Great!' : reviewRating === 3 ? 'Good' : reviewRating === 2 ? 'Fair' : 'Poor'}</p>}
                 <textarea value={reviewComment} onChange={(e) => setReviewComment(e.target.value)} placeholder="Comments (optional)..." rows={2} className="w-full px-3 py-2 border rounded-lg text-sm mb-2" />
                 <div className="flex gap-2">
                   <button onClick={() => { setShowReviewForm(false); setReviewRating(0); setReviewComment(''); setSatisfactionRating(null); setShowResolutionSurvey(false) }} className="flex-1 px-3 py-2 border rounded-lg text-sm">Skip</button>
-                  <button onClick={async () => { if (reviewRating === 0) return; try { await fetch(`/api/support/tickets/${supportTicketId}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ satisfaction_rating: 'satisfied', agent_review_rating: reviewRating, agent_review_comment: reviewComment }) }); setShowReviewForm(false); setShowResolutionSurvey(false); setReviewRating(0); setReviewComment(''); setSatisfactionRating(null); setMessages(prev => [...prev, { id: Date.now().toString(), text: '✅ Review submitted! Thank you for your feedback.', sender: 'bot', timestamp: new Date() }]) } catch { setMessages(prev => [...prev, { id: Date.now().toString(), text: '❌ Failed to submit review.', sender: 'bot', timestamp: new Date() }]) } }} disabled={reviewRating === 0} className="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white rounded-lg text-sm font-medium">Submit</button>
+                  <button onClick={async () => { if (reviewRating === 0) return; try { await fetch(`/api/support/tickets/${supportTicketId}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ satisfaction_rating: 'satisfied', agent_review_rating: reviewRating, agent_review_comment: reviewComment }) }); setShowReviewForm(false); setShowResolutionSurvey(false); setReviewRating(0); setReviewComment(''); setSatisfactionRating(null); setMessages(prev => [...prev, { id: Date.now().toString(), text: 'Review submitted! Thank you for your feedback.', sender: 'bot', timestamp: new Date() }]) } catch { setMessages(prev => [...prev, { id: Date.now().toString(), text: 'Failed to submit review.', sender: 'bot', timestamp: new Date() }]) } }} disabled={reviewRating === 0} className="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white rounded-lg text-sm font-medium">Submit</button>
                 </div>
               </div>
             )}
@@ -1315,10 +1362,10 @@ export default function LiveChatWidget() {
               <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-xl mx-4 mb-4">
                 <h4 className="font-semibold text-gray-900 mb-2">We're Sorry</h4>
                 <textarea value={disputeComment} onChange={(e) => setDisputeComment(e.target.value)} placeholder="Describe the issue..." rows={3} className="w-full px-3 py-2 border rounded-lg text-sm mb-2" />
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 mb-2"><p className="text-xs text-amber-800">📋 Chat evidence will be included</p></div>
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 mb-2"><p className="text-xs text-amber-800 flex items-center gap-1"><ClipboardList className="w-3 h-3" /> Chat evidence will be included</p></div>
                 <div className="flex gap-2">
-                  <button onClick={async () => { if (!disputeComment.trim()) return; try { await fetch(`/api/support/tickets/${supportTicketId}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ satisfaction_rating: 'unsatisfied', satisfaction_comment: disputeComment }) }); setShowDisputeForm(false); setShowResolutionSurvey(false); setDisputeComment(''); setSatisfactionRating(null); setMessages(prev => [...prev, { id: Date.now().toString(), text: '✅ Feedback submitted.', sender: 'bot', timestamp: new Date() }]) } catch { } }} className="flex-1 px-3 py-2 border rounded-lg text-sm">Feedback Only</button>
-                  <button onClick={async () => { if (!disputeComment.trim()) return; try { const msgRes = await fetch(`/api/support/tickets/${supportTicketId}/messages?limit=200`); const msgData = await msgRes.json(); const chatEvidence = (msgData.messages || []).map((m: any) => `[${m.sender_type}] ${new Date(m.created_at).toLocaleString()}: ${m.message}`).join('\n'); const disputeRes = await fetch('/api/support/disputes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticket_id: supportTicketId, title: `Support Ticket Dispute - ${supportTicketId}`, description: `${disputeComment}\n\n--- CHAT EVIDENCE ---\n${chatEvidence}`, chat_evidence: chatEvidence }) }); if (disputeRes.ok) { const disputeData = await disputeRes.json(); await fetch(`/api/support/tickets/${supportTicketId}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ satisfaction_rating: 'unsatisfied', satisfaction_comment: disputeComment }) }); setShowDisputeForm(false); setShowResolutionSurvey(false); setDisputeComment(''); setSatisfactionRating(null); setMessages(prev => [...prev, { id: Date.now().toString(), text: `✅ Dispute lodged successfully! Dispute ID: ${disputeData.dispute?.id}. A supervisor will review your case within 24 hours.`, sender: 'bot', timestamp: new Date() }]) } else { const errorData = await disputeRes.json(); console.error('Dispute creation failed:', errorData); setMessages(prev => [...prev, { id: Date.now().toString(), text: `❌ Failed to create dispute: ${errorData.error || 'Unknown error'}`, sender: 'bot', timestamp: new Date() }]) } } catch (err) { console.error('Dispute error:', err); setMessages(prev => [...prev, { id: Date.now().toString(), text: '❌ Network error while creating dispute.', sender: 'bot', timestamp: new Date() }]) } }} className="flex-1 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium">Lodge Dispute</button>
+                  <button onClick={async () => { if (!disputeComment.trim()) return; try { await fetch(`/api/support/tickets/${supportTicketId}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ satisfaction_rating: 'unsatisfied', satisfaction_comment: disputeComment }) }); setShowDisputeForm(false); setShowResolutionSurvey(false); setDisputeComment(''); setSatisfactionRating(null); setMessages(prev => [...prev, { id: Date.now().toString(), text: 'Feedback submitted.', sender: 'bot', timestamp: new Date() }]) } catch { } }} className="flex-1 px-3 py-2 border rounded-lg text-sm">Feedback Only</button>
+                  <button onClick={async () => { if (!disputeComment.trim()) return; try { const msgRes = await fetch(`/api/support/tickets/${supportTicketId}/messages?limit=200`); const msgData = await msgRes.json(); const chatEvidence = (msgData.messages || []).map((m: any) => `[${m.sender_type}] ${new Date(m.created_at).toLocaleString()}: ${m.message}`).join('\n'); const disputeRes = await fetch('/api/support/disputes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticket_id: supportTicketId, title: `Support Ticket Dispute - ${supportTicketId}`, description: `${disputeComment}\n\n--- CHAT EVIDENCE ---\n${chatEvidence}`, chat_evidence: chatEvidence }) }); if (disputeRes.ok) { const disputeData = await disputeRes.json(); await fetch(`/api/support/tickets/${supportTicketId}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ satisfaction_rating: 'unsatisfied', satisfaction_comment: disputeComment }) }); setShowDisputeForm(false); setShowResolutionSurvey(false); setDisputeComment(''); setSatisfactionRating(null); setMessages(prev => [...prev, { id: Date.now().toString(), text: `Dispute lodged successfully! Dispute ID: ${disputeData.dispute?.id}. A supervisor will review your case within 24 hours.`, sender: 'bot', timestamp: new Date() }]) } else { const errorData = await disputeRes.json(); console.error('Dispute creation failed:', errorData); setMessages(prev => [...prev, { id: Date.now().toString(), text: `Failed to create dispute: ${errorData.error || 'Unknown error'}`, sender: 'bot', timestamp: new Date() }]) } } catch (err) { console.error('Dispute error:', err); setMessages(prev => [...prev, { id: Date.now().toString(), text: 'Network error while creating dispute.', sender: 'bot', timestamp: new Date() }]) } }} className="flex-1 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium">Lodge Dispute</button>
                 </div>
               </div>
             )}
