@@ -244,7 +244,7 @@ export default function SessionsPage() {
           <div className="text-sm text-blue-900">
             <p className="font-medium mb-1">Security Tip</p>
             <p className="text-blue-700">
-              If you see any sessions you don't recognize, revoke them immediately and change your password.
+              If you see any sessions you don&apos;t recognize, revoke them immediately and change your password.
               Sessions expire automatically after 30 days of inactivity.
             </p>
           </div>

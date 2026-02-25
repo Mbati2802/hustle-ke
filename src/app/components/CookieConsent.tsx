@@ -48,7 +48,7 @@ export default function CookieConsent() {
                   We use cookies
                 </h3>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  We use essential cookies to make our site work. With your consent, we may also use non-essential cookies to improve user experience and analyze website traffic. By clicking "Accept," you agree to our website's cookie use as described in our{' '}
+                  We use essential cookies to make our site work. With your consent, we may also use non-essential cookies to improve user experience and analyze website traffic. By clicking &ldquo;Accept,&rdquo; you agree to our website&apos;s cookie use as described in our{' '}
                   <Link href="/privacy" className="text-green-600 hover:text-green-700 underline">
                     Privacy Policy
                   </Link>

@@ -11,8 +11,6 @@ import {
   Bookmark,
   ExternalLink,
   Heart,
-  Loader2,
-  Filter,
 } from 'lucide-react'
 
 interface SavedJob {
@@ -49,7 +47,7 @@ const statusConfig: Record<string, { color: string; label: string }> = {
 }
 
 export default function SavedJobsPage() {
-  const { user, profile } = useAuth()
+  const { user, profile: _profile } = useAuth()
   const [savedJobs, setSavedJobs] = useState<SavedJob[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -97,7 +95,7 @@ export default function SavedJobsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl lg:text-2xl font-bold text-gray-900">Saved Jobs</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Jobs you've bookmarked to apply later</p>
+          <p className="text-sm text-gray-500 mt-0.5">Jobs you&apos;ve bookmarked to apply later</p>
         </div>
         <Link href="/jobs" className="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 transition-colors shadow-sm">
           <Search className="w-4 h-4" /> Find Work

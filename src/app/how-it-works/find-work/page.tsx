@@ -6,12 +6,10 @@ import Footer from '../../components/Footer'
 import { 
   Search, 
   ArrowRight, 
-  CheckCircle2, 
   Zap,
   Filter,
   Bell,
   Star,
-  TrendingUp
 } from 'lucide-react'
 
 export default function FindWorkPage() {

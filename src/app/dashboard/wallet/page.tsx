@@ -10,7 +10,6 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   Smartphone,
-  TrendingUp,
   Send,
   Loader2,
   Plus,

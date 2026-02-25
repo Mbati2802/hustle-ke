@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       success: true, 
       message: 'Verification email sent. Please check your inbox.' 
     })
-  } catch (error) {
+  } catch (_error) {
     return errorResponse('Internal server error', 500)
   }
 }

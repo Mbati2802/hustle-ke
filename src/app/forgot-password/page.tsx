@@ -8,7 +8,6 @@ import {
   Mail,
   ArrowLeft,
   Loader2,
-  CheckCircle2,
   ArrowRight,
   Inbox,
 } from 'lucide-react'

@@ -196,7 +196,7 @@ export default function SubmitWorkModal({ jobId, jobTitle, onClose, onSuccess }:
   }
 
   const canProceedStep1 = description.trim().length >= 20
-  const canProceedStep2 = true // files are optional
+  const _canProceedStep2 = true // files are optional
   const canSubmit = canProceedStep1
 
   if (success) {

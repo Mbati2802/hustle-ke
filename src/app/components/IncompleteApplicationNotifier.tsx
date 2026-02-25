@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Bell, X, Clock, AlertTriangle } from 'lucide-react'
+import { X, Clock, AlertTriangle } from 'lucide-react'
 
 interface ApplicationProgress {
   jobId: string

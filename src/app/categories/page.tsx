@@ -17,15 +17,12 @@ import {
   Database,
   FileText,
   Headphones,
-  BookOpen,
   Calculator,
-  Users,
   Music,
   Shield,
   Briefcase,
   ArrowRight,
   Search,
-  TrendingUp,
 } from 'lucide-react'
 
 interface CategoryInfo {
@@ -60,7 +57,7 @@ const categories: CategoryInfo[] = [
 
 export default function CategoriesPage() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [jobCounts, setJobCounts] = useState<Record<string, number>>({})
+  const [_jobCounts, _setJobCounts] = useState<Record<string, number>>({})
 
   useEffect(() => {
     // Fetch job counts per category

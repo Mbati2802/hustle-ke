@@ -13,12 +13,8 @@ import {
   XCircle,
   Eye,
   X,
-  Briefcase,
-  User,
   Shield,
-  Loader2,
   ArrowRight,
-  MapPin,
   Tag,
 } from 'lucide-react'
 

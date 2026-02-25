@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, useCallback, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
-import { cachedFetch } from '@/lib/fetch-cache'
 import { useRealtimeMessages } from '@/hooks/useRealtimeMessages'
 import {
   MessageSquare,
@@ -18,7 +17,6 @@ import {
   Star,
   Trash2,
   X,
-  CornerUpRight,
 } from 'lucide-react'
 
 interface RawConversation {
@@ -89,7 +87,7 @@ function MessagesContent() {
   const [hoveredMsg, setHoveredMsg] = useState<string | null>(null)
   const [otherTyping, setOtherTyping] = useState(false)
   const [orgMemberIds, setOrgMemberIds] = useState<string[]>([])
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const _typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const lastTypingSentRef = useRef<number>(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)

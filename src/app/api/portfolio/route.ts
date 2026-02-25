@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { requireAuth, jsonResponse, errorResponse, parseBody, createPublicRouteClient, getPagination } from '@/lib/api-utils'
+import { requireAuth, jsonResponse, errorResponse, parseBody, createPublicRouteClient } from '@/lib/api-utils'
 
 // GET /api/portfolio?user_id=xxx — Get portfolio for a user (public)
 export async function GET(req: NextRequest) {

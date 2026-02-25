@@ -11,7 +11,7 @@ export default function ApplyJobPage({ params }: { params: { id: string } }) {
   const { openModal: openApplyModal } = useApplyJobModal()
   const { user, loading } = useAuth()
   const { openLogin } = useAuthModal()
-  const [fetching, setFetching] = useState(true)
+  const [_fetching, _setFetching] = useState(true)
 
   useEffect(() => {
     if (loading) return

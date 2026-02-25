@@ -11,7 +11,6 @@ import {
   Eye,
   Tag,
   ArrowLeft,
-  Share2,
   Copy,
   Check,
   User,

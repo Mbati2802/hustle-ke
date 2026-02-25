@@ -37,13 +37,13 @@ export async function GET(req: NextRequest) {
       .eq('user_id', profile.id)
 
     // Fetch reviews
-    const { data: reviews } = await supabase
+    const { data: _reviews } = await supabase
       .from('reviews')
       .select('rating')
       .eq('reviewee_id', profile.id)
 
     // Fetch completed jobs count
-    const { count: completedJobs } = await supabase
+    const { count: _completedJobs } = await supabase
       .from('jobs')
       .select('id', { count: 'exact', head: true })
       .eq('status', 'Completed')

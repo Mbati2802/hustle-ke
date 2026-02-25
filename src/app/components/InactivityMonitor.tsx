@@ -73,7 +73,7 @@ export default function InactivityMonitor() {
               Still there?
             </h3>
             <p className="text-sm text-gray-600 mb-4">
-              You've been inactive for a while. For your security, you'll be logged out in{' '}
+              You&apos;ve been inactive for a while. For your security, you&apos;ll be logged out in{' '}
               <span className="font-semibold text-amber-600">{countdown} minute{countdown !== 1 ? 's' : ''}</span>{' '}
               unless you continue your session.
             </p>

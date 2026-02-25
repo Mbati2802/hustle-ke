@@ -7,7 +7,6 @@ import {
   Loader2,
   Clock,
   DollarSign,
-  X,
   Shield,
 } from 'lucide-react'
 

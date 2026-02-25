@@ -178,7 +178,7 @@ export default function LiveChatWidget() {
   const [aiSessionId, setAiSessionId] = useState<string | null>(null)
   const [conversationHistory, setConversationHistory] = useState<string[]>([])
   const [showResolutionSurvey, setShowResolutionSurvey] = useState(false)
-  const [satisfactionRating, setSatisfactionRating] = useState<'satisfied' | 'unsatisfied' | null>(null)
+  const [_satisfactionRating, setSatisfactionRating] = useState<'satisfied' | 'unsatisfied' | null>(null)
   const [showReviewForm, setShowReviewForm] = useState(false)
   const [reviewRating, setReviewRating] = useState(0)
   const [reviewComment, setReviewComment] = useState('')
@@ -692,7 +692,7 @@ export default function LiveChatWidget() {
     
     // Store unanswered questions for potential FAQ addition
     const intent = analyzeIntent(trimmedText)
-    const issueClassification = classifyIssue(trimmedText, intent)
+    const _issueClassification = classifyIssue(trimmedText, intent)
     
     // If confidence is low, store as potential new FAQ
     const lowerTrimmed = trimmedText.toLowerCase()
@@ -1374,7 +1374,7 @@ export default function LiveChatWidget() {
             {/* Dispute Form - Inline */}
             {showDisputeForm && supportTicketId && (
               <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-xl mx-4 mb-4">
-                <h4 className="font-semibold text-gray-900 mb-2">We're Sorry</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">We&apos;re Sorry</h4>
                 <textarea value={disputeComment} onChange={(e) => setDisputeComment(e.target.value)} placeholder="Describe the issue..." rows={3} className="w-full px-3 py-2 border rounded-lg text-sm mb-2" />
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 mb-2"><p className="text-xs text-amber-800 flex items-center gap-1"><ClipboardList className="w-3 h-3" /> Chat evidence will be included</p></div>
                 <div className="flex gap-2">

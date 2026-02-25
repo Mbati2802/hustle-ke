@@ -5,7 +5,7 @@ import { usePostJobModal } from './components/PostJobModalContext'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import { usePageContent } from '@/hooks/usePageContent'
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { 
   Bot, 
   Smartphone, 
@@ -28,7 +28,6 @@ import {
   UserPlus,
   CheckCircle,
   Activity,
-  Radio,
   Brain,
   type LucideIcon
 } from 'lucide-react'
@@ -126,7 +125,7 @@ export default function LandingPage() {
   const [liveFeed, setLiveFeed] = useState<any[]>([])
   const [liveStats, setLiveStats] = useState<any>(null)
   const [feedLoading, setFeedLoading] = useState(true)
-  const [visibleFeedIndex, setVisibleFeedIndex] = useState(0)
+  const [_visibleFeedIndex, setVisibleFeedIndex] = useState(0)
   const feedIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const [careerSkills, setCareerSkills] = useState<any[]>([])
   const [heroIndex, setHeroIndex] = useState(0)
@@ -134,8 +133,8 @@ export default function LandingPage() {
 
   // Animated live counters
   const animatedJobs = useAnimatedCounter(liveStats?.active_jobs || 0)
-  const animatedMembers = useAnimatedCounter(liveStats?.new_members_this_week || 0)
-  const animatedPaidOut = useAnimatedCounter(liveStats?.total_paid_out || 0)
+  const _animatedMembers = useAnimatedCounter(liveStats?.new_members_this_week || 0)
+  const _animatedPaidOut = useAnimatedCounter(liveStats?.total_paid_out || 0)
   const animatedCompleted = useAnimatedCounter(liveStats?.total_completed || 0)
   const animatedTotalMembers = useAnimatedCounter(liveStats?.total_members || 0)
 

@@ -20,23 +20,17 @@ import {
   UserPlus,
   Heart,
   Trash2,
-  Edit3,
   BarChart3,
   Activity,
-  ChevronDown,
   CheckCircle2,
-  Clock,
   Globe,
   Zap,
   Award,
   Target,
   Loader2,
-  Copy,
   RefreshCw,
   Search,
   X,
-  Eye,
-  MoreVertical,
   Smartphone,
   ArrowUpRight,
   ArrowDownLeft,
@@ -46,7 +40,7 @@ import {
 type Tab = 'overview' | 'team' | 'bench' | 'wallet' | 'analytics'
 
 export default function EnterpriseDashboard() {
-  const { profile } = useAuth()
+  const { profile: _profile } = useAuth()
   const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     const tab = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('tab') : null

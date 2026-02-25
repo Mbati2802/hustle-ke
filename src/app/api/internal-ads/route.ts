@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { jsonResponse, errorResponse, createPublicRouteClient } from '@/lib/api-utils'
+import { jsonResponse, createPublicRouteClient } from '@/lib/api-utils'
 
 interface SystemAd {
   id: string
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
 }
 
 // System intelligence: scan platform data and generate contextual ads
-async function generateSystemAds(supabase: any, audience: string, maxAds: number): Promise<SystemAd[]> {
+async function generateSystemAds(supabase: any, audience: string, _maxAds: number): Promise<SystemAd[]> {
   const ads: SystemAd[] = []
 
   try {

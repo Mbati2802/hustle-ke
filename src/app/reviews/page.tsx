@@ -16,10 +16,7 @@ import {
   Quote,
   X,
   TrendingUp,
-  Award,
-  Users,
   ArrowRight,
-  ArrowLeft,
 } from 'lucide-react'
 
 interface Review {

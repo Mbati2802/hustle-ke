@@ -25,7 +25,6 @@ import {
   Loader2,
   Plus,
   FileCheck,
-  Send,
   RotateCcw,
   Eye,
   Download,
@@ -34,7 +33,6 @@ import {
   File,
   BarChart3,
   Crown,
-  ExternalLink,
 } from 'lucide-react'
 
 interface SubmissionFile {
@@ -101,7 +99,7 @@ const statusConfig: Record<string, { color: string; label: string }> = {
 }
 
 export default function ClientProjectsPage() {
-  const { user, profile, orgMode, activeOrg } = useAuth()
+  const { user, profile: _profile, orgMode, activeOrg } = useAuth()
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedJob, setExpandedJob] = useState<string | null>(null)

@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { requireAuth, jsonResponse, errorResponse } from '@/lib/api-utils'
+import { requireAuth, errorResponse } from '@/lib/api-utils'
 
 // GET /api/profile/export — Export all user data (GDPR data portability)
 export async function GET(req: NextRequest) {

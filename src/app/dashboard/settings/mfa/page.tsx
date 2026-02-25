@@ -18,7 +18,7 @@ interface SetupData {
 }
 
 export default function MFASettingsPage() {
-  const { profile } = useAuth()
+  const { profile: _profile } = useAuth()
   const [status, setStatus] = useState<MFAStatus | null>(null)
   const [loading, setLoading] = useState(true)
   const [setupData, setSetupData] = useState<SetupData | null>(null)
@@ -286,7 +286,7 @@ export default function MFASettingsPage() {
                 <img src={setupData.qrCode} alt="QR Code" className="border rounded-lg p-4" />
               </div>
               <p className="text-xs text-gray-500 text-center">
-                Can't scan? Enter this key manually: <code className="bg-gray-100 px-2 py-1 rounded">{setupData.secret}</code>
+                Can&apos;t scan? Enter this key manually: <code className="bg-gray-100 px-2 py-1 rounded">{setupData.secret}</code>
               </p>
             </div>
 

@@ -19,7 +19,6 @@ import {
   User,
   Loader2,
   Briefcase,
-  Building2,
   ChevronDown,
   ChevronUp,
   Users,

@@ -15,7 +15,6 @@ import {
   AlertCircle,
   Eye,
   Edit3,
-  Send,
   BarChart3,
   Users,
   Lightbulb,
@@ -63,11 +62,11 @@ interface ProposalDraft {
 }
 
 export default function ProposalForgePage() {
-  const { user } = useAuth()
+  const { user: _user } = useAuth()
   const [jobId, setJobId] = useState('')
   const [loading, setLoading] = useState(false)
   const [draft, setDraft] = useState<ProposalDraft | null>(null)
-  const [isExisting, setIsExisting] = useState(false)
+  const [_isExisting, setIsExisting] = useState(false)
   const [editedLetter, setEditedLetter] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [copied, setCopied] = useState(false)

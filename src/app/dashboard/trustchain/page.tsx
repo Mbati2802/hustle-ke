@@ -20,7 +20,6 @@ import {
   TrendingUp,
   FileText,
   Sparkles,
-  AlertCircle,
   Trash2,
 } from 'lucide-react'
 

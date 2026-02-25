@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { jsonResponse, errorResponse, createPublicRouteClient } from '@/lib/api-utils'
-import { queryKnowledge, searchKnowledge, KNOWLEDGE_BASE } from '@/lib/ai-knowledge-engine'
+import { queryKnowledge, searchKnowledge } from '@/lib/ai-knowledge-engine'
 
 // Stop words to ignore during matching
 const STOP_WORDS = new Set(['the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'shall', 'to', 'of', 'in', 'for', 'on', 'with', 'at', 'by', 'from', 'as', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'and', 'but', 'or', 'nor', 'not', 'so', 'yet', 'both', 'either', 'neither', 'each', 'every', 'all', 'any', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'only', 'own', 'same', 'than', 'too', 'very', 'just', 'because', 'if', 'when', 'where', 'how', 'what', 'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'i', 'me', 'my', 'we', 'our', 'you', 'your', 'it', 'its', 'they', 'them', 'their', 'he', 'she', 'him', 'her', 'his', 'about', 'up', 'out', 'then', 'there', 'here'])
@@ -268,7 +268,7 @@ function matchQuestion(text: string): typeof FAQ_KNOWLEDGE_BASE[number] | null {
 }
 
 // Get multiple ranked matches
-function matchQuestionMultiple(text: string, limit = 5): Array<typeof FAQ_KNOWLEDGE_BASE[number] & { score: number }> {
+function _matchQuestionMultiple(text: string, limit = 5): Array<typeof FAQ_KNOWLEDGE_BASE[number] & { score: number }> {
   const queryWords = extractKeywords(text)
   const minScore = Math.max(1.5, queryWords.length * 0.5)
 
@@ -280,7 +280,7 @@ function matchQuestionMultiple(text: string, limit = 5): Array<typeof FAQ_KNOWLE
 }
 
 // Platform context — used to generate answers for questions not in the KB
-const PLATFORM_CONTEXT = `HustleKE is Kenya's freelance marketplace connecting skilled freelancers with clients. Key features:
+const _PLATFORM_CONTEXT = `HustleKE is Kenya's freelance marketplace connecting skilled freelancers with clients. Key features:
 - M-Pesa escrow payments protect both freelancers and clients
 - Service fee: 6% (Free plan) or 4% (Pro plan, KES 500/month)
 - Freelancers create profiles with skills, portfolio, and get a Hustle Score (0-100)
@@ -617,7 +617,7 @@ export async function GET(req: NextRequest) {
 
     // Use the new knowledge engine for search
     const results = searchKnowledge(query, 5)
-      .map(({ score, alternateQuestions, keywords, steps, links, ...rest }) => ({ ...rest, relevance: score }))
+      .map(({ score, alternateQuestions: _aq, keywords: _kw, steps: _st, links: _ln, ...rest }) => ({ ...rest, relevance: score }))
 
     return jsonResponse({ results, query })
   }

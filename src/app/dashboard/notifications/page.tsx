@@ -14,8 +14,6 @@ import {
   Crown,
   Check,
   CheckCheck,
-  Trash2,
-  Filter,
   Loader2,
   BellOff,
   Settings,
@@ -82,7 +80,7 @@ const typeLabels: Record<string, string> = {
 }
 
 export default function NotificationsPage() {
-  const { profile } = useAuth()
+  const { profile: _profile } = useAuth()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)

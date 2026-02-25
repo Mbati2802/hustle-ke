@@ -15,14 +15,11 @@ import {
   Check,
   CheckCircle2,
   Loader2,
-  Sparkles,
   Search,
   FileText,
   Rocket,
   Star,
-  MapPin,
   DollarSign,
-  Zap,
 } from 'lucide-react'
 
 const KENYAN_COUNTIES = [
@@ -42,14 +39,14 @@ const POPULAR_SKILLS = [
   'React', 'Node.js', 'Python', 'Flutter',
 ]
 
-interface StepProps {
+interface _StepProps {
   onNext: () => void
   onBack?: () => void
 }
 
 export default function OnboardingPage() {
   const { profile, refreshProfile } = useAuth()
-  const router = useRouter()
+  const _router = useRouter()
   const [step, setStep] = useState(0)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -63,7 +60,7 @@ export default function OnboardingPage() {
   const [hourlyRate, setHourlyRate] = useState('')
   const [skills, setSkills] = useState<string[]>([])
   const [newSkill, setNewSkill] = useState('')
-  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [_avatarFile, setAvatarFile] = useState<File | null>(null)
   const [avatarPreview, setAvatarPreview] = useState('')
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const avatarRef = useRef<HTMLInputElement>(null)

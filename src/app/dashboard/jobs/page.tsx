@@ -53,7 +53,7 @@ const jobStatusConfig: Record<string, { color: string; label: string }> = {
 }
 
 export default function MyHustlesPage() {
-  const { user, profile } = useAuth()
+  const { user, profile: _profile } = useAuth()
   const [hustles, setHustles] = useState<HustleProposal[]>([])
   const [filter, setFilter] = useState('all')
   const [loading, setLoading] = useState(true)

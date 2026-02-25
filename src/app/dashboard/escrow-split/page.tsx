@@ -1,22 +1,19 @@
 'use client'
 
 import { useAuth } from '@/contexts/AuthContext'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
   Milestone,
   DollarSign,
   Clock,
   CheckCircle2,
-  AlertCircle,
   Loader2,
   Plus,
   Send,
   Eye,
-  ChevronRight,
   ArrowLeft,
   Shield,
   Timer,
-  FileText,
   RotateCcw,
   Sparkles,
   TrendingUp,
@@ -82,12 +79,12 @@ const statusConfig: Record<string, { color: string; bg: string; icon: typeof Che
 }
 
 export default function EscrowSplitPage() {
-  const { user, profile } = useAuth()
+  const { user: _user, profile: _profile } = useAuth()
   const [loading, setLoading] = useState(false)
   const [jobId, setJobId] = useState('')
   const [job, setJob] = useState<JobSummary | null>(null)
   const [milestones, setMilestones] = useState<JobMilestone[]>([])
-  const [payments, setPayments] = useState<MilestonePayment[]>([])
+  const [_payments, setPayments] = useState<MilestonePayment[]>([])
   const [summary, setSummary] = useState<MilestoneSummary | null>(null)
   const [msg, setMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [actionLoading, setActionLoading] = useState<string | null>(null)

@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       .catch(err => console.error('[Change Password] Security alert error:', err))
 
     return jsonResponse({ message: 'Password updated successfully' })
-  } catch (err) {
+  } catch (_err) {
     return errorResponse('Failed to change password', 500)
   }
 }

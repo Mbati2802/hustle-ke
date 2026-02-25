@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { jsonResponse, errorResponse, createPublicRouteClient } from '@/lib/api-utils'
+import { jsonResponse, createPublicRouteClient } from '@/lib/api-utils'
 
 export async function GET(req: NextRequest) {
   const { error: rlError, supabase } = createPublicRouteClient(req)

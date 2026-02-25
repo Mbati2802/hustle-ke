@@ -16,7 +16,6 @@ import {
   Briefcase,
   Users,
   Star,
-  TrendingUp,
   UserPlus,
   FileText,
   Send,
@@ -123,11 +122,11 @@ function isGreenish(r: number, g: number, b: number): boolean {
 
 export default function Header({ activeLink }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
+  const [_isScrolled, setIsScrolled] = useState(false)
   const [showBanner, setShowBanner] = useState(true)
   const [isDismissing, setIsDismissing] = useState(false)
   const [bannerTheme, setBannerTheme] = useState<BannerTheme>('dark')
-  const { openModal } = usePostJobModal()
+  const { openModal: _openModal } = usePostJobModal()
   const prevScrolled = useRef(false)
   const bannerRef = useRef<HTMLDivElement>(null)
   const rafRef = useRef<number>(0)
@@ -311,7 +310,7 @@ export default function Header({ activeLink }: HeaderProps) {
     },
   ]
 
-  const bannerVisible = showBanner && !isDismissing
+  const _bannerVisible = showBanner && !isDismissing
 
   return (
     <>

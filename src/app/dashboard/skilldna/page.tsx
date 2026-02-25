@@ -74,7 +74,7 @@ const typeIcons: Record<string, typeof Code> = {
 }
 
 export default function SkillDNAPage() {
-  const { user, profile } = useAuth()
+  const { user, profile: _profile } = useAuth()
   const [verifiedSkills, setVerifiedSkills] = useState<VerifiedSkill[]>([])
   const [categories, setCategories] = useState<Array<{ skill: string; difficulties: string[]; types: string[] }>>([])
   const [loading, setLoading] = useState(true)
@@ -381,7 +381,7 @@ export default function SkillDNAPage() {
           <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
             <AlertCircle className="w-10 h-10 text-gray-300 mx-auto mb-3" />
             <p className="text-gray-500 text-sm">No challenges available for this skill yet.</p>
-            <p className="text-gray-400 text-xs mt-1">We're adding new challenges regularly!</p>
+            <p className="text-gray-400 text-xs mt-1">We&apos;re adding new challenges regularly!</p>
           </div>
         ) : (
           <div className="space-y-3">

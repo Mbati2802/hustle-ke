@@ -15,15 +15,11 @@ import {
   DollarSign,
   Users,
   TrendingUp,
-  Star,
   ChevronDown,
   Lock,
   Globe,
   Briefcase,
   HeadphonesIcon,
-  BarChart3,
-  Award,
-  X,
   Smartphone,
 } from 'lucide-react'
 

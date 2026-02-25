@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
@@ -15,39 +14,22 @@ import {
   Shield, 
   Clock, 
   ArrowRight,
-  Bell,
-  Home,
   Search,
-  LayoutDashboard,
-  User,
   Wallet,
   Zap,
-  TrendingUp,
-  FileText,
-  MessageSquare,
   Award,
-  ChevronRight,
-  PlayCircle,
   Star,
   MapPin,
   Smartphone,
   ChevronDown,
-  ChevronUp,
   Mail,
   Sparkles,
-  Target,
-  Heart,
-  Globe,
   Lock,
-  Rocket,
-  ThumbsUp,
-  Quote,
-  X,
   HelpCircle
 } from 'lucide-react'
 
 // FAQ Data
-const faqs = [
+const _faqs = [
   {
     question: 'How do I get started as a freelancer?',
     answer: 'Simply create your profile, add your skills and portfolio, verify your identity, and start browsing jobs that match your expertise. Our AI will recommend the best opportunities for you.'
@@ -183,7 +165,7 @@ const features = [
   }
 ]
 
-const stats = [
+const _stats = [
   { value: '50,000+', label: 'Freelancers', icon: Users },
   { value: '100,000+', label: 'Jobs Completed', icon: Briefcase },
   { value: 'KES 500M+', label: 'Paid Out', icon: Wallet },
@@ -198,8 +180,9 @@ const trustBadges = [
   { name: 'Verified', icon: CheckCircle2 },
 ]
 
-// Typewriter Text Component
-function TypewriterText({ texts }: { texts: { text: string; color: string }[] }) {
+// Typewriter Text Component (unused, kept for future use)
+/* eslint-disable react-hooks/rules-of-hooks */
+function _TypewriterText({ texts }: { texts: { text: string; color: string }[] }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isTyping, setIsTyping] = useState(true)
   const [displayText, setDisplayText] = useState('')
@@ -238,6 +221,7 @@ function TypewriterText({ texts }: { texts: { text: string; color: string }[] })
     </span>
   )
 }
+/* eslint-enable react-hooks/rules-of-hooks */
 
 // FAQ Section Component with Tabs
 function FAQSection() {
@@ -364,7 +348,7 @@ export default function HowItWorksPage() {
   const { openModal: openPostJob } = usePostJobModal()
   const { openSignup } = useAuthModal()
   const [activeTab, setActiveTab] = useState<'freelancer' | 'client'>('freelancer')
-  const [openFaq, setOpenFaq] = useState<number | null>(0)
+  const [_openFaq, _setOpenFaq] = useState<number | null>(0)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [email, setEmail] = useState('')
   const [newsletterStatus, setNewsletterStatus] = useState('')

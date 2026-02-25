@@ -4,19 +4,12 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import {
   Star,
-  MessageSquare,
-  Clock,
   Briefcase,
   DollarSign,
-  MapPin,
-  Globe,
   Shield,
   Users,
   TrendingUp,
-  Filter,
-  ChevronDown,
   Search,
-  Loader2,
   Tag,
 } from 'lucide-react'
 
@@ -56,7 +49,7 @@ interface Review {
 }
 
 export default function OrgReviewsPage() {
-  const { user, profile, orgMode, activeOrg } = useAuth()
+  const { user: _user, profile: _profile, orgMode, activeOrg } = useAuth()
   const [reviews, setReviews] = useState<Review[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')

@@ -346,7 +346,7 @@ export default function CareerIntelligencePage() {
                       </div>
                     ))
                   ) : filteredSkills.length > 0 ? (
-                    filteredSkills.map((skill, idx) => {
+                    filteredSkills.map((skill, _idx) => {
                       const trend = TREND_CONFIG[skill.trend]
                       const competition = COMPETITION_CONFIG[skill.competitionLevel]
                       const TrendIcon = trend.icon

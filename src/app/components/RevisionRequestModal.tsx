@@ -5,7 +5,6 @@ import {
   X,
   RotateCcw,
   AlertTriangle,
-  CheckCircle2,
   Loader2,
   Plus,
   Trash2,
@@ -64,7 +63,7 @@ export default function RevisionRequestModal({ jobId, jobTitle, onClose, onSucce
 
   const filledItems = revisionItems.filter(item => item.section.trim() || item.issue.trim())
   const canProceedStep1 = overallFeedback.trim().length >= 10
-  const canProceedStep2 = filledItems.length > 0 && filledItems.every(item => item.issue.trim().length > 0)
+  const _canProceedStep2 = filledItems.length > 0 && filledItems.every(item => item.issue.trim().length > 0)
 
   const handleSubmit = async () => {
     if (!overallFeedback.trim()) {

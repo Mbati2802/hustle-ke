@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { requireAuth, jsonResponse, errorResponse, parseBody } from '@/lib/api-utils'
+import { requireAuth, parseBody } from '@/lib/api-utils'
 import { withIdempotency } from '@/lib/idempotency'
 import { auditWalletOperation } from '@/lib/audit-log'
 

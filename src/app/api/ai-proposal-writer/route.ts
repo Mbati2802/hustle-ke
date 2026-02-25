@@ -14,10 +14,10 @@ export async function POST(req: NextRequest) {
       job_skills = [] as string[],
       job_budget_min = 0,
       job_budget_max = 0,
-      job_id = '',
+      job_id: _job_id = '',
       freelancer_skills = [] as string[],
       freelancer_experience = 0,
-      freelancer_rate = 0,
+      freelancer_rate: _freelancer_rate = 0,
       freelancer_name = '',
       tone = 'professional',
     } = body

@@ -5,12 +5,10 @@ import {
   X,
   Sparkles,
   Send,
-  Clock,
   MapPin,
   Shield,
   CheckCircle2,
   Loader2,
-  Briefcase,
   AlertTriangle,
   Brain,
   Zap,
@@ -357,7 +355,7 @@ Best regards,
     try {
       const keys = Object.keys(localStorage).filter(key => key.startsWith('application_'))
       return keys.length
-    } catch (error) {
+    } catch (_error) {
       return 0
     }
   }

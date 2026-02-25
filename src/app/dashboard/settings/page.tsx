@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import {
   User,
-  MapPin,
   Lock,
   Bell,
   Shield,
@@ -350,14 +349,14 @@ export default function SettingsPage() {
         // Handle validation errors
         if (data.details && typeof data.details === 'object') {
           const errorMessages = Object.entries(data.details)
-            .map(([field, message]) => `${message}`)
+            .map(([_field, message]) => `${message}`)
             .join(', ')
           setSaveError(errorMessages)
         } else {
           setSaveError(data.error || 'Failed to save profile')
         }
       }
-    } catch (err) {
+    } catch (_err) {
       clearTimeout(timeout)
       setSaveError('Network error. Please try again.')
     }
@@ -505,7 +504,7 @@ export default function SettingsPage() {
       } else {
         setPasswordMsg(data.error || 'Failed to update password')
       }
-    } catch (err) {
+    } catch (_err) {
       setPasswordMsg('Network error. Please try again.')
     }
     setPasswordChanging(false)
@@ -1322,7 +1321,7 @@ export default function SettingsPage() {
 
             <hr className="border-gray-200" />
             <h3 className="font-semibold text-gray-900">Active Sessions</h3>
-            <p className="text-sm text-gray-600">Manage your active sessions across different devices. View and revoke access from devices you don't recognize.</p>
+            <p className="text-sm text-gray-600">Manage your active sessions across different devices. View and revoke access from devices you don&apos;t recognize.</p>
             <a 
               href="/dashboard/settings/sessions"
               className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-colors"
@@ -1342,7 +1341,7 @@ export default function SettingsPage() {
 
             <hr className="border-gray-200" />
             <h3 className="font-semibold text-gray-900">Blocked Users</h3>
-            <p className="text-sm text-gray-600">Manage users you've blocked. Blocked users cannot send you messages or proposals.</p>
+            <p className="text-sm text-gray-600">Manage users you&apos;ve blocked. Blocked users cannot send you messages or proposals.</p>
             <a 
               href="/dashboard/settings/blocked-users"
               className="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2.5 rounded-xl font-semibold transition-colors border border-gray-300"

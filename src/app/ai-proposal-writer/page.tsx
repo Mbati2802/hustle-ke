@@ -177,7 +177,7 @@ export default function AIProposalWriterPage() {
     setTimeout(() => setSavedForApply(false), 3000)
   }
 
-  const getWinColor = (score: number) => {
+  const _getWinColor = (score: number) => {
     if (score >= 70) return 'text-green-600'
     if (score >= 50) return 'text-amber-600'
     return 'text-red-500'

@@ -183,7 +183,7 @@ async function sendB2CPayment(
 }
 
 // Handle M-Pesa callback
-async function handleCallback(callbackData: any) {
+async function _handleCallback(callbackData: any) {
   const supabase = createAdminClient()
   
   try {
@@ -191,7 +191,7 @@ async function handleCallback(callbackData: any) {
     const {
       Body: {
         stkCallback: {
-          MerchantRequestID,
+          MerchantRequestID: _MerchantRequestID,
           CheckoutRequestID,
           ResultCode,
           ResultDesc,
@@ -218,7 +218,7 @@ async function handleCallback(callbackData: any) {
         (item: any) => item.Name === 'MpesaReceiptNumber'
       )?.Value
       
-      const amount = CallbackMetadata?.Item?.find(
+      const _amount = CallbackMetadata?.Item?.find(
         (item: any) => item.Name === 'Amount'
       )?.Value
       

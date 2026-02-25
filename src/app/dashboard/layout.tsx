@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
-import type { OrgContext } from '@/contexts/AuthContext'
 import { usePostJobModal } from '../components/PostJobModalContext'
 import { useEffect, useState } from 'react'
 import {
@@ -23,11 +22,8 @@ import {
   BarChart3,
   ChevronDown,
   LogOut,
-  Menu,
   X,
   Bell,
-  User,
-  CreditCard,
   Zap,
   AlertTriangle,
   Star,
@@ -156,7 +152,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ invite_id: inviteId, action: 'accept' }),
       })
-      const data = await res.json()
+      const _data = await res.json()
       if (res.ok) {
         await refreshOrg()
         await refreshInvites()

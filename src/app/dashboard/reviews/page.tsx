@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import {
   Star,
-  MessageSquare,
   Clock,
   Loader2,
 } from 'lucide-react'

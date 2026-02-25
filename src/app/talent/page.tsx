@@ -17,8 +17,6 @@ import {
   Users,
   SlidersHorizontal,
   ArrowRight,
-  Star,
-  Globe,
   Zap,
   DollarSign,
   Filter,
@@ -29,9 +27,6 @@ import {
   PenTool,
   Megaphone,
   Headphones,
-  CheckCircle2,
-  TrendingUp,
-  Eye,
 } from 'lucide-react'
 
 interface TalentProfile {

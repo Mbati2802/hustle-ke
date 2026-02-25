@@ -16,16 +16,13 @@ import {
   Lock,
   FileText,
   DollarSign,
-  TrendingUp,
   Clock,
   Star,
   Crown,
-  ChevronRight,
   Briefcase,
   Target,
   Layers,
   Settings,
-  Award,
 } from 'lucide-react'
 
 export default function EnterprisePage() {

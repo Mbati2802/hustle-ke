@@ -3,18 +3,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import {
-  FileText,
   Download,
-  Eye,
-  Calendar,
-  DollarSign,
-  Loader2,
   Receipt,
   X,
   Printer,
-  Hash,
-  Building2,
-  User,
   CheckCircle2,
 } from 'lucide-react'
 

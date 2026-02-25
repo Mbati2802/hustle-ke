@@ -3,7 +3,7 @@ import { createServerClient as createSupabaseServerClient } from '@supabase/ssr'
 import { jsonResponse, errorResponse } from '@/lib/api-utils'
 import { cookies } from 'next/headers'
 
-export async function POST(req: NextRequest) {
+export async function POST(_req: NextRequest) {
   const cookieStore = cookies()
   const supabase = createSupabaseServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

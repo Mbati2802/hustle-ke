@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { requireAuth, jsonResponse, errorResponse, parseBody } from '@/lib/api-utils'
-import { verifyTOTPToken, enableMFA, hashBackupCode } from '@/lib/mfa-totp'
+import { verifyTOTPToken, enableMFA } from '@/lib/mfa-totp'
 
 // POST /api/mfa/enable — Verify TOTP and enable MFA
 export async function POST(req: NextRequest) {

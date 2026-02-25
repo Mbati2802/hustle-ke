@@ -19,7 +19,6 @@ import {
   ArrowRight,
   Sparkles,
   CheckCircle2,
-  Phone,
   Mail,
   Clock,
   TrendingUp,
@@ -322,7 +321,7 @@ export default function HelpCenterPage() {
           <>
             <h2 className="text-xl font-bold text-gray-900 mb-6">Browse by Category</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-              {helpCategories.map((cat, catIdx) => (
+              {helpCategories.map((cat, _catIdx) => (
                 <button
                   key={cat.id}
                   onClick={() => { setExpandedCategory(expandedCategory === cat.id ? null : cat.id); setExpandedArticle(null) }}

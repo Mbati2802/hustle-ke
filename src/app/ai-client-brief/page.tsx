@@ -74,7 +74,7 @@ const EXAMPLE_DESCRIPTIONS = [
 ]
 
 export default function AIClientBriefPage() {
-  const { profile } = useAuth()
+  const { profile: _profile } = useAuth()
   const { openModal: openPostJobModal } = usePostJobModal()
 
   // Input state

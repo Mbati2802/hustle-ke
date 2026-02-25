@@ -15,7 +15,6 @@ import {
   Users,
   Wallet,
   Shield,
-  Award,
   FileText,
   Briefcase,
   DollarSign,
@@ -26,11 +25,9 @@ import {
   TrendingUp,
   Eye,
   CheckCircle2,
-  Globe,
   Cpu,
   X,
   Clock,
-  BarChart3,
   RefreshCw,
   Bot,
 } from 'lucide-react'
@@ -608,7 +605,7 @@ export default function FAQsPage() {
               ) : (
                 <div className="grid md:grid-cols-2 gap-3">
                   {trendingQuestions.slice(0, 6).map((tq, i) => {
-                    const config = categoryConfig[tq.category] || categoryConfig['getting-started']
+                    const _config = categoryConfig[tq.category] || categoryConfig['getting-started']
                     return (
                       <div key={i} className="bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl p-4 transition-all group cursor-pointer"
                         onClick={() => {

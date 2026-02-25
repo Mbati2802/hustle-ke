@@ -80,7 +80,7 @@ const COMPETITION_COLORS = {
   saturated: { text: 'text-red-600', bg: 'bg-red-100', label: 'Very High' },
 }
 
-function getScoreColor(score: number) {
+function _getScoreColor(score: number) {
   if (score >= 80) return 'text-green-600'
   if (score >= 60) return 'text-emerald-600'
   if (score >= 40) return 'text-amber-600'

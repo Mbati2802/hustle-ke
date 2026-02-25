@@ -15,10 +15,7 @@ import {
   Clock,
   Star,
   Share2,
-  Link2,
-  Mail,
   Sparkles,
-  ArrowRight,
   X,
 } from 'lucide-react'
 
@@ -50,7 +47,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: typeof 
 }
 
 export default function ReferralsPage() {
-  const { profile } = useAuth()
+  const { profile: _profile } = useAuth()
   const [loading, setLoading] = useState(true)
   const [referralCode, setReferralCode] = useState('')
   const [referralLink, setReferralLink] = useState('')

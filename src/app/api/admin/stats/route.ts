@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { requireAdmin, jsonResponse, errorResponse } from '@/lib/api-utils'
+import { requireAdmin, jsonResponse } from '@/lib/api-utils'
 
 // GET /api/admin/stats — Dashboard statistics
 export async function GET(req: NextRequest) {

@@ -15,7 +15,6 @@ import {
   FileText,
   BadgeCheck,
   TrendingUp,
-  Briefcase,
   Sparkles,
   Eye,
   Zap,
@@ -23,11 +22,8 @@ import {
   Lightbulb,
   Crown,
   MapPin,
-  Globe,
   Palette,
   Code,
-  PenTool,
-  MessageSquare,
   ChevronRight,
 } from 'lucide-react'
 

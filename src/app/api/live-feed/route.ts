@@ -111,7 +111,7 @@ export async function GET(req: NextRequest) {
     // Job posted events
     recentJobs.forEach((job: any) => {
       const firstName = anonymizeName(job.client?.full_name)
-      const skill = job.skills_required?.[0] || ''
+      const _skill = job.skills_required?.[0] || ''
       events.push({
         id: `job-${job.id}`,
         type: 'job_posted',

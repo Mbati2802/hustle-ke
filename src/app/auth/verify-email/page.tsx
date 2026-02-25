@@ -205,7 +205,7 @@ function VerificationContent() {
           {/* Footer */}
           <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
             <p className="text-center text-xs text-gray-500">
-              Didn't receive the email? Check your spam folder or click "Resend Verification Email"
+              Didn&apos;t receive the email? Check your spam folder or click &ldquo;Resend Verification Email&rdquo;
             </p>
           </div>
         </div>

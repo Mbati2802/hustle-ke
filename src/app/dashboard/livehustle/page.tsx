@@ -11,7 +11,6 @@ import {
   Play,
   MessageSquare,
   CheckCircle2,
-  XCircle,
   Loader2,
   Plus,
   Radio,
@@ -21,7 +20,6 @@ import {
   Wifi,
   WifiOff,
   ChevronRight,
-  AlertCircle,
   Sparkles,
 } from 'lucide-react'
 
@@ -124,7 +122,7 @@ export default function LiveHustlePage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [msg, setMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
-  const isClient = profile?.role === 'Client'
+  const _isClient = profile?.role === 'Client'
 
   useEffect(() => {
     if (!user) return

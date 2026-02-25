@@ -7,16 +7,8 @@ import { usePageContent } from '@/hooks/usePageContent'
 import { 
   Star, 
   Quote, 
-  TrendingUp, 
-  Users, 
   MapPin,
-  Bell,
-  Home,
-  Search,
-  LayoutDashboard,
-  User,
   ArrowRight,
-  Briefcase
 } from 'lucide-react'
 
 const defaultContent = {

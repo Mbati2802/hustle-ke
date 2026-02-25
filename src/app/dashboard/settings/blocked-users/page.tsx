@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { Ban, Shield, Trash2, User } from 'lucide-react'
+import { Ban, Shield, User } from 'lucide-react'
 import Link from 'next/link'
 
 interface BlockedUser {
@@ -83,7 +83,7 @@ export default function BlockedUsersPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Blocked Users</h1>
         <p className="text-gray-600">
-          Users you've blocked won't be able to send you messages or proposals. You can unblock them at any time.
+          Users you&apos;ve blocked won&apos;t be able to send you messages or proposals. You can unblock them at any time.
         </p>
       </div>
 
@@ -93,7 +93,7 @@ export default function BlockedUsersPage() {
             <Shield className="w-12 h-12 text-gray-400 mx-auto mb-3" />
             <p className="text-gray-600 mb-2">No blocked users</p>
             <p className="text-sm text-gray-500">
-              You haven't blocked anyone yet. You can block users from their profile page or messages.
+              You haven&apos;t blocked anyone yet. You can block users from their profile page or messages.
             </p>
           </div>
         ) : (
@@ -166,7 +166,7 @@ export default function BlockedUsersPage() {
             <p className="font-medium mb-1">About Blocking</p>
             <ul className="text-blue-700 space-y-1 list-disc list-inside">
               <li>Blocked users cannot send you messages or proposals</li>
-              <li>You won't see their content in search results</li>
+              <li>You won&apos;t see their content in search results</li>
               <li>Existing conversations will be hidden</li>
               <li>You can unblock users at any time</li>
             </ul>

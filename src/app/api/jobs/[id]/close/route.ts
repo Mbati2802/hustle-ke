@@ -8,7 +8,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   if (auth instanceof Response) return auth
 
   const jobId = params.id
-  const body = await parseBody<{ reason?: string }>(req)
+  const _body = await parseBody<{ reason?: string }>(req)
 
   // Verify the job exists and is open
   const { data: job } = await auth.adminDb

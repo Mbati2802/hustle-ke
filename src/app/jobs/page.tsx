@@ -13,23 +13,15 @@ import {
   MapPin,
   Shield,
   Clock,
-  Bookmark,
   Briefcase,
-  Loader2,
   TrendingUp,
   Zap,
   Users,
   DollarSign,
-  ChevronDown,
   ArrowRight,
-  Eye,
-  MessageSquare,
   Globe,
   Filter,
   X,
-  CheckCircle2,
-  Star,
-  Crown,
   Building2,
   Heart,
 } from 'lucide-react'
@@ -94,7 +86,7 @@ function getBudgetColor(min: number, max: number): string {
 export default function JobsPage() {
   const [activeTab, setActiveTab] = useState('All')
   const { openModal } = usePostJobModal()
-  const { openModal: openApplyModal } = useApplyJobModal()
+  const { openModal: _openApplyModal } = useApplyJobModal()
   const { user, profile } = useAuth()
   const [searchQuery, setSearchQuery] = useState('')
   const [jobs, setJobs] = useState<Job[]>([])

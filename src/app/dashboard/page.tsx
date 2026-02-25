@@ -21,7 +21,6 @@ import {
   Zap,
   Users,
   Crown,
-  BarChart3,
   Mail,
   X,
 } from 'lucide-react'
