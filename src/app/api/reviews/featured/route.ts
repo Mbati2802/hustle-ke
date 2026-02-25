@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const minRating = parseInt(url.searchParams.get('min_rating') || '4')
 
   // Fetch top reviews with reviewer + reviewee (freelancer) + job info
-  let query = supabase!
+  const query = supabase!
     .from('reviews')
     .select(`
       id,

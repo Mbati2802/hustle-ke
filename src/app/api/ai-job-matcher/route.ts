@@ -112,7 +112,7 @@ export async function GET(req: NextRequest) {
       const missingSkills = jobSkills.filter((js: string) => !matchedSkills.some(ms => js === ms || js.includes(ms) || ms.includes(js)))
 
       // Win probability
-      let winProb = Math.min(95, Math.round(score * 0.8 + (experience > 3 ? 10 : experience * 3)))
+      const winProb = Math.min(95, Math.round(score * 0.8 + (experience > 3 ? 10 : experience * 3)))
 
       return {
         ...job,

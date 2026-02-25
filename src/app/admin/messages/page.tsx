@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import {
-  MessageSquare, Search, ChevronLeft, ChevronRight, X, Eye
+  MessageSquare, Search, ChevronLeft, ChevronRight, X
 } from 'lucide-react'
 
 interface Message {

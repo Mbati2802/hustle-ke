@@ -20,8 +20,6 @@ import {
   Mail,
   ChevronRight,
   CheckCircle2,
-  Smartphone,
-  Crown,
   type LucideIcon,
 } from 'lucide-react'
 

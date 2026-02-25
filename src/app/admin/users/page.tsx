@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import {
-  Users, Search, Filter, ChevronLeft, ChevronRight,
+  Users, Search, ChevronLeft, ChevronRight,
   Shield, ShieldCheck, Star, MoreVertical, Eye, Pencil, Trash2, X,
   Plus, Loader2, CheckCircle2, XCircle
 } from 'lucide-react'

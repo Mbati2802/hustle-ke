@@ -12,7 +12,7 @@ import crypto from 'crypto'
 
 const ALGORITHM = 'aes-256-gcm'
 const IV_LENGTH = 16 // 128 bits
-const TAG_LENGTH = 16 // 128 bits
+const _TAG_LENGTH = 16 // 128 bits
 const KEY_LENGTH = 32 // 256 bits
 
 /**

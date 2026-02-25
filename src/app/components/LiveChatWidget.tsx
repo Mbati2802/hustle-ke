@@ -460,9 +460,9 @@ export default function LiveChatWidget() {
 
   const classifyIssue = useCallback((userText: string, intent: { topic: string | null; confidence: number }): { category: string; subCategory: string; details: string } => {
     const lowerText = userText.toLowerCase()
-    let category = intent.topic || 'general'
+    const category = intent.topic || 'general'
     let subCategory = 'general'
-    let details = userText
+    const details = userText
 
     // Deep classification for registration
     if (category === 'registration' || lowerText.includes('register') || lowerText.includes('sign up')) {
@@ -1119,34 +1119,48 @@ export default function LiveChatWidget() {
         while (remaining.length > 0) {
           // Bold-italic: ***text*** (must check before bold)
           const boldItalicMatch = remaining.match(/\*\*\*(.+?)\*\*\*/)
-          // Bold: **text**
+          // Bold: **text** (only if NOT part of ***) 
           const boldMatch = remaining.match(/\*\*(.+?)\*\*/)
           // Italic: *text* (but not **)
           const italicMatch = remaining.match(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/)
 
-          const firstMatch = [boldItalicMatch, boldMatch, italicMatch]
-            .filter(Boolean)
-            .sort((a, b) => (a!.index || 0) - (b!.index || 0))[0]
+          // Determine which match comes first; if boldItalic and bold share the same
+          // index, boldItalic MUST win (it's the longer, correct match)
+          type MatchEntry = { type: 'bi' | 'b' | 'i'; match: RegExpMatchArray }
+          const candidates: MatchEntry[] = []
+          if (boldItalicMatch && boldItalicMatch.index !== undefined) candidates.push({ type: 'bi', match: boldItalicMatch })
+          if (boldMatch && boldMatch.index !== undefined) candidates.push({ type: 'b', match: boldMatch })
+          if (italicMatch && italicMatch.index !== undefined) candidates.push({ type: 'i', match: italicMatch })
 
-          if (!firstMatch || firstMatch.index === undefined) {
+          // Sort by index, then by match length descending (longer match wins ties)
+          candidates.sort((a, b) => {
+            const idxDiff = (a.match.index || 0) - (b.match.index || 0)
+            if (idxDiff !== 0) return idxDiff
+            return b.match[0].length - a.match[0].length
+          })
+
+          const winner = candidates[0]
+          if (!winner) {
             parts.push(...replaceEmojisWithIcons(remaining, `${lineIdx}-${key++}`))
             break
           }
 
+          const matchIdx = winner.match.index || 0
+
           // Add text before the match
-          if (firstMatch.index > 0) {
-            parts.push(...replaceEmojisWithIcons(remaining.slice(0, firstMatch.index), `${lineIdx}-${key++}`))
+          if (matchIdx > 0) {
+            parts.push(...replaceEmojisWithIcons(remaining.slice(0, matchIdx), `${lineIdx}-${key++}`))
           }
 
-          if (firstMatch === boldItalicMatch) {
-            parts.push(<strong key={`bi-${lineIdx}-${key++}`}><em>{replaceEmojisWithIcons(firstMatch[1], `bi-${lineIdx}-${key}`)}</em></strong>)
-          } else if (firstMatch === boldMatch) {
-            parts.push(<strong key={`b-${lineIdx}-${key++}`}>{replaceEmojisWithIcons(firstMatch[1], `b-${lineIdx}-${key}`)}</strong>)
+          if (winner.type === 'bi') {
+            parts.push(<strong key={`bi-${lineIdx}-${key++}`}><em>{replaceEmojisWithIcons(winner.match[1], `bi-${lineIdx}-${key}`)}</em></strong>)
+          } else if (winner.type === 'b') {
+            parts.push(<strong key={`b-${lineIdx}-${key++}`}>{replaceEmojisWithIcons(winner.match[1], `b-${lineIdx}-${key}`)}</strong>)
           } else {
-            parts.push(<em key={`i-${lineIdx}-${key++}`}>{replaceEmojisWithIcons(firstMatch[1], `i-${lineIdx}-${key}`)}</em>)
+            parts.push(<em key={`i-${lineIdx}-${key++}`}>{replaceEmojisWithIcons(winner.match[1], `i-${lineIdx}-${key}`)}</em>)
           }
 
-          remaining = remaining.slice(firstMatch.index + firstMatch[0].length)
+          remaining = remaining.slice(matchIdx + winner.match[0].length)
         }
 
         return parts

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import {
   Briefcase, Search, ChevronLeft, ChevronRight, MoreVertical,
-  Eye, Pencil, Trash2, X, DollarSign, Users as UsersIcon,
+  Eye, Trash2, X, DollarSign, Users as UsersIcon,
   Plus, Loader2, CheckCircle2, XCircle
 } from 'lucide-react'
 

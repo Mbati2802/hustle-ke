@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import {
   Settings, Save, CheckCircle2, XCircle, DollarSign,
-  Globe, Bell, Shield, Sliders, Users
+  Globe, Shield, Sliders, Users
 } from 'lucide-react'
 
 interface Setting {

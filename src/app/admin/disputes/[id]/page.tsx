@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
   ArrowLeft, AlertTriangle, DollarSign, MessageSquare,
-  CheckCircle2, XCircle, Save, User, Clock
+  CheckCircle2, XCircle, Save
 } from 'lucide-react'
 
 interface DisputeDetail {

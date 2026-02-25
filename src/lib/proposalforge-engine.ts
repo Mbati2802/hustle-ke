@@ -114,7 +114,7 @@ function detectSkills(text: string): string[] {
   const lower = text.toLowerCase()
   const found: string[] = []
   
-  for (const [category, skills] of Object.entries(SKILL_PATTERNS)) {
+  for (const [_category, skills] of Object.entries(SKILL_PATTERNS)) {
     for (const skill of skills) {
       if (lower.includes(skill) && !found.includes(skill)) {
         found.push(skill)
@@ -290,7 +290,7 @@ export function generateStrategy(
   clientAnalysis: ClientAnalysis,
   freelancerMatch: FreelancerMatch
 ): ProposalStrategy {
-  const { budgetSignals, urgency, painPoints } = jobAnalysis
+  const { budgetSignals, urgency: _urgency, painPoints } = jobAnalysis
   
   // Bid recommendation
   let recommendedBid: number

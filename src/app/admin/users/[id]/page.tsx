@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import Link from 'next/link'
 import {
   ArrowLeft, Shield, ShieldCheck, Star, Briefcase, DollarSign,
   AlertTriangle, Save, Trash2, Mail, Phone, MapPin, Calendar,
-  CheckCircle2, XCircle, Clock
+  CheckCircle2, XCircle
 } from 'lucide-react'
 
 interface UserProfile {

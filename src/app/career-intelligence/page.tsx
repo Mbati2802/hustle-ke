@@ -1,37 +1,28 @@
 'use client'
 
-import Link from 'next/link'
 import { useState, useEffect, useMemo } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import {
   Brain,
   TrendingUp,
-  TrendingDown,
   Flame,
   Snowflake,
   Target,
   DollarSign,
   Users,
   Briefcase,
-  Star,
-  Shield,
   Zap,
-  ArrowRight,
-  ArrowUpRight,
   Search,
   Loader2,
   BarChart3,
-  PieChart,
   Lightbulb,
   Rocket,
   AlertTriangle,
   CheckCircle2,
-  ChevronDown,
   X,
   Sparkles,
   Crown,
-  type LucideIcon,
 } from 'lucide-react'
 
 interface SkillIntel {

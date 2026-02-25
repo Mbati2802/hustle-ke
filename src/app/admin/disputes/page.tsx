@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import {
-  AlertTriangle, Search, ChevronLeft, ChevronRight, X,
-  Eye, DollarSign, Clock
+  AlertTriangle, ChevronLeft, ChevronRight, X,
+  Eye, DollarSign
 } from 'lucide-react'
 
 interface Dispute {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
@@ -15,12 +15,8 @@ import {
   CheckCircle2,
   Crown,
   ExternalLink,
-  Mail,
   Calendar,
-  Award,
-  Loader2,
   Shield,
-  Dna,
 } from 'lucide-react'
 
 interface PublicProfile {
@@ -49,7 +45,6 @@ interface PublicProfile {
 
 export default function VanityProfilePage() {
   const params = useParams()
-  const router = useRouter()
   const username = params?.username as string
   const [profile, setProfile] = useState<PublicProfile | null>(null)
   const [loading, setLoading] = useState(true)

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import {
-  FileText, Search, ChevronLeft, ChevronRight, X, DollarSign, MoreVertical
+  FileText, ChevronLeft, ChevronRight, X, DollarSign
 } from 'lucide-react'
 
 interface Proposal {

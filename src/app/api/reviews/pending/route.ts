@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   const orgId = url.searchParams.get('organization_id')
 
   // Get completed jobs where user is the client (or org member)
-  let jobIds: string[] = []
+  const jobIds: string[] = []
 
   if (orgId) {
     // Verify org membership

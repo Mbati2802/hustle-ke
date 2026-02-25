@@ -68,7 +68,6 @@ function evaluateCodeChallenge(
   criteria: EvaluationCriterion[],
   challengeTitle: string
 ): EvaluationResult {
-  const lower = response.toLowerCase()
   const criteriaScores: EvaluationResult['criteriaScores'] = []
   const strengths: string[] = []
   const improvements: string[] = []
@@ -256,7 +255,7 @@ function evaluateCodeChallenge(
 function evaluateWritingChallenge(
   response: string,
   criteria: EvaluationCriterion[],
-  challengeTitle: string
+  _challengeTitle: string
 ): EvaluationResult {
   const lower = response.toLowerCase()
   const wordCount = response.split(/\s+/).filter(w => w.length > 0).length
@@ -290,7 +289,7 @@ function evaluateWritingChallenge(
 
       case 'brand voice': {
         let toneScore = 0
-        for (const [tone, words] of Object.entries(WRITING_QUALITY.brandToneWords)) {
+        for (const [_tone, words] of Object.entries(WRITING_QUALITY.brandToneWords)) {
           const matches = words.filter(w => lower.includes(w)).length
           toneScore += matches * 12
         }
@@ -381,9 +380,8 @@ function evaluateWritingChallenge(
 function evaluateAnalysisChallenge(
   response: string,
   criteria: EvaluationCriterion[],
-  challengeTitle: string
+  _challengeTitle: string
 ): EvaluationResult {
-  const lower = response.toLowerCase()
   const criteriaScores: EvaluationResult['criteriaScores'] = []
   const strengths: string[] = []
   const improvements: string[] = []

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import {
   Users, Briefcase, DollarSign, AlertTriangle, TrendingUp,
-  ArrowUpRight, ArrowDownRight, Clock, CheckCircle2, FileText, Eye
+  ArrowUpRight, Clock, CheckCircle2, FileText
 } from 'lucide-react'
 
 interface Stats {

@@ -48,7 +48,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     .eq('status', 'Accepted')
     .single()
 
-  let freelancerId = proposal?.freelancer_id
+  const freelancerId = proposal?.freelancer_id
 
   // Update job status to Cancelled
   const { error: jobError } = await auth.adminDb

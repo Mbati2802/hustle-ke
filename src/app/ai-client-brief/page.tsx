@@ -7,7 +7,6 @@ import Footer from '../components/Footer'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePostJobModal } from '../components/PostJobModalContext'
 import {
-  Sparkles,
   Loader2,
   Copy,
   CheckCircle2,
@@ -15,20 +14,16 @@ import {
   Brain,
   Target,
   DollarSign,
-  TrendingUp,
-  Users,
   Zap,
   Clock,
   FileText,
   Lightbulb,
-  Briefcase,
   ArrowRight,
   RefreshCw,
   Send,
   ChevronDown,
   ChevronUp,
   BarChart3,
-  type LucideIcon,
 } from 'lucide-react'
 
 interface BriefResult {
@@ -156,7 +151,7 @@ export default function AIClientBriefPage() {
     })
   }
 
-  const useExample = (text: string) => {
+  const applyExample = (text: string) => {
     setDescription(text)
     setResult(null)
   }
@@ -227,7 +222,7 @@ export default function AIClientBriefPage() {
                         {EXAMPLE_DESCRIPTIONS.map(ex => (
                           <button
                             key={ex.label}
-                            onClick={() => useExample(ex.text)}
+                            onClick={() => applyExample(ex.text)}
                             className="text-left p-3 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-200 border border-gray-200 rounded-xl transition-colors"
                           >
                             <p className="text-sm font-medium text-gray-900">{ex.label}</p>

@@ -28,7 +28,6 @@ import {
   ChevronRight,
   Share2,
   Heart,
-  Building2,
 } from 'lucide-react'
 
 interface PortfolioImage {

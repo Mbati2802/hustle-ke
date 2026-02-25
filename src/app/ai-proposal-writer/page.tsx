@@ -15,18 +15,12 @@ import {
   Brain,
   Target,
   DollarSign,
-  TrendingUp,
   Users,
-  Zap,
   RefreshCw,
-  ChevronDown,
   FileText,
   Lightbulb,
-  BarChart3,
-  Shield,
   Briefcase,
   ArrowRight,
-  type LucideIcon,
 } from 'lucide-react'
 
 interface ProposalResult {

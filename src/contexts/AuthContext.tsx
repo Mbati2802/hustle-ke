@@ -105,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [orgMode, setOrgMode] = useState(false)
   const [pendingInvites, setPendingInvites] = useState<OrgInvite[]>([])
   const [loggingOut, setLoggingOut] = useState(false)
-  const router = useRouter()
+  const _router = useRouter()
   const supabase = useMemo(() => createClient(), [])
   const fetchProfile = useCallback(async (userId: string) => {
     try {

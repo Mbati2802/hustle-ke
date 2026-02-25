@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   if (!member) return errorResponse('Not an organization member', 403)
 
   // Get reviews for organization jobs
-  let query = auth.supabase
+  const query = auth.supabase
     .from('reviews')
     .select(`
       id,

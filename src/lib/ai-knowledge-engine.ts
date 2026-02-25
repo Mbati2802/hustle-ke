@@ -740,7 +740,7 @@ export interface QueryResult {
   links?: string[]
 }
 
-export function queryKnowledge(question: string, conversationContext?: string[]): QueryResult {
+export function queryKnowledge(question: string, _conversationContext?: string[]): QueryResult {
   const lower = question.toLowerCase().trim()
   if (lower.length < 2) {
     return {

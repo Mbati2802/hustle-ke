@@ -165,7 +165,7 @@ export async function sendNewDeviceAlert(
 }
 
 // Send password change alert
-export async function sendPasswordChangeAlert(userId: string, profileId: string, ipAddress?: string): Promise<void> {
+export async function sendPasswordChangeAlert(userId: string, profileId: string, _ipAddress?: string): Promise<void> {
   try {
     const { data: profile } = await adminClient
       .from('profiles')

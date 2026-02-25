@@ -1,10 +1,9 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import Link from 'next/link'
 import {
-  Activity, ChevronLeft, ChevronRight, X, User,
-  FileCode, Settings, Star, AlertTriangle, Briefcase, Users, Trash2
+  Activity, ChevronLeft, ChevronRight, X,
+  FileCode, Settings, Star, AlertTriangle, Users, Trash2
 } from 'lucide-react'
 
 interface ActivityEntry {

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
   ArrowLeft, Save, Plus, Trash2, CheckCircle2, XCircle,
-  Globe, Eye, EyeOff, Type, AlignLeft, List, Image, ExternalLink
+  Globe, Eye, EyeOff, ExternalLink
 } from 'lucide-react'
 
 interface SitePage {

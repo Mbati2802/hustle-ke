@@ -74,11 +74,11 @@ export default function AdminSupportPage() {
 
   const [activeTicketId, setActiveTicketId] = useState<string | null>(null)
   const [messages, setMessages] = useState<SupportMessage[]>([])
-  const [msgLoading, setMsgLoading] = useState(false)
+  const [msgLoading, _setMsgLoading] = useState(false)
   const [reply, setReply] = useState('')
   const [sending, setSending] = useState(false)
   const [adminUsers, setAdminUsers] = useState<Array<{id: string; full_name: string; email: string}>>([])
-  const [selectedAssignee, setSelectedAssignee] = useState<string>('')
+  const [_selectedAssignee, setSelectedAssignee] = useState<string>('')
   const [showAssignDropdown, setShowAssignDropdown] = useState(false)
   const [assigning, setAssigning] = useState(false)
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
