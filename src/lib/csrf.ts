@@ -69,7 +69,7 @@ export function validateCSRFToken(req: NextRequest): boolean {
  */
 export function setCSRFCookie(res: NextResponse, token: string): void {
   res.cookies.set(CSRF_COOKIE_NAME, token, {
-    httpOnly: true,
+    httpOnly: false, // Must be readable by JS for double-submit cookie pattern
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
     path: '/',

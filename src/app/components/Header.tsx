@@ -32,6 +32,8 @@ import {
   Sparkles,
   Scale,
   FileEdit,
+  Trophy,
+  Lock,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -302,6 +304,8 @@ export default function Header({ activeLink }: HeaderProps) {
         { href: '/contact', label: 'Contact Us', desc: 'Get in touch with our team', icon: Phone },
         { href: '/mpesa-tariffs', label: 'M-Pesa Tariffs', desc: 'Transaction fees breakdown', icon: Wallet },
         { href: '/terms', label: 'Terms of Service', desc: 'Platform rules & legal agreement', icon: Scale },
+        { href: '/success-stories', label: 'Success Stories', desc: 'Real freelancer journeys on HustleKE', icon: Trophy },
+        { href: '/privacy', label: 'Privacy Policy', desc: 'How we protect your data', icon: Lock },
       ],
       featured: { title: 'HustleKE Blog', desc: 'Expert tips on freelancing in Kenya, getting paid via M-Pesa, and growing your career.', href: '/blog', cta: 'Read Blog' },
     },

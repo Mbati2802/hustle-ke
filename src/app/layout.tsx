@@ -13,6 +13,7 @@ import { ApplyJobModalProvider } from "./components/ApplyJobModalContext";
 import IncompleteApplicationNotifier from "./components/IncompleteApplicationNotifier";
 import { ApplyJobModalWrapper } from "./components/ApplyJobModal";
 import { RecaptchaProvider } from "@/contexts/RecaptchaContext";
+import CSRFProvider from "./components/CSRFProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -74,6 +75,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <CSRFProvider />
         <RecaptchaProvider>
           <AuthProvider>
             <AuthModalProvider>
