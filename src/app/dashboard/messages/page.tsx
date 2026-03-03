@@ -17,6 +17,9 @@ import {
   Star,
   Trash2,
   X,
+  Paperclip,
+  FileText,
+  Image as ImageIcon,
 } from 'lucide-react'
 
 interface RawConversation {
@@ -82,6 +85,8 @@ function MessagesContent() {
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
   const [sendError, setSendError] = useState('')
+  const [uploadingFile, setUploadingFile] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [mobileShowChat, setMobileShowChat] = useState(false)
   const [replyTo, setReplyTo] = useState<Message | null>(null)
   const [hoveredMsg, setHoveredMsg] = useState<string | null>(null)
@@ -737,6 +742,57 @@ function MessagesContent() {
             {/* Input */}
             <div className="bg-white border-t border-gray-200 p-3 lg:p-4 pb-20 lg:pb-4 sticky bottom-0">
               <div className="flex items-center gap-2 lg:gap-3">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.zip,.txt,.csv"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0]
+                    if (!file || !activeJobId) return
+                    const receiverId = activeConv?.other_user_id
+                    if (!receiverId) return
+                    if (file.size > 10 * 1024 * 1024) { setSendError('File too large. Max 10MB.'); return }
+                    setUploadingFile(true)
+                    setSendError('')
+                    try {
+                      const formData = new FormData()
+                      formData.append('file', file)
+                      formData.append('job_id', activeJobId)
+                      formData.append('receiver_id', receiverId)
+                      const res = await fetch('/api/messages/attachments', { method: 'POST', body: formData })
+                      if (res.ok) {
+                        const data = await res.json()
+                        const isImage = file.type.startsWith('image/')
+                        const attachMsg = isImage
+                          ? `📷 [Image: ${file.name}](${data.url})`
+                          : `📎 [File: ${file.name}](${data.url})`
+                        setMessages(prev => [...prev, {
+                          id: Date.now().toString(),
+                          job_id: activeJobId,
+                          sender_id: myProfileId!,
+                          receiver_id: receiverId,
+                          content: attachMsg,
+                          created_at: new Date().toISOString(),
+                          updated_at: new Date().toISOString(),
+                          sender: { id: myProfileId!, full_name: profile?.full_name || '', avatar_url: profile?.avatar_url },
+                        }])
+                      } else {
+                        const err = await res.json()
+                        setSendError(err.error || 'Failed to upload file')
+                      }
+                    } catch { setSendError('Failed to upload file') }
+                    finally { setUploadingFile(false); e.target.value = '' }
+                  }}
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingFile}
+                  className="text-gray-400 hover:text-green-600 p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
+                  title="Attach file (images, PDF, docs, up to 10MB)"
+                >
+                  {uploadingFile ? <Loader2 className="w-5 h-5 animate-spin" /> : <Paperclip className="w-5 h-5" />}
+                </button>
                 <input
                   ref={inputRef}
                   type="text"

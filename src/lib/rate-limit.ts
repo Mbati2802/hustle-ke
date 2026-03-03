@@ -1,5 +1,4 @@
-// In-memory rate limiter for API routes
-// For production at scale, swap with Redis-backed solution
+// Hybrid rate limiter: in-memory (fast) + optional DB persistence (survives deploys)
 
 interface RateLimitEntry {
   count: number
@@ -51,6 +50,54 @@ export function rateLimit(
   }
 
   return { allowed: true, remaining, resetAt: entry.resetAt }
+}
+
+// DB-backed rate limiter for critical paths (auth, payments)
+// Uses rate_limits table — persists across server restarts/deploys
+export async function rateLimitPersistent(
+  supabase: any,
+  identifier: string,
+  config: RateLimitConfig
+): Promise<RateLimitResult> {
+  const key = identifier
+  const now = new Date()
+
+  // Try to get existing entry
+  const { data: entry } = await supabase
+    .from('rate_limits')
+    .select('count, window_start, window_ms, max_requests')
+    .eq('id', key)
+    .single()
+
+  if (!entry || new Date(entry.window_start).getTime() + entry.window_ms < now.getTime()) {
+    // No entry or window expired — create/reset
+    await supabase
+      .from('rate_limits')
+      .upsert({
+        id: key,
+        count: 1,
+        window_start: now.toISOString(),
+        window_ms: config.windowMs,
+        max_requests: config.maxRequests,
+      })
+    return { allowed: true, remaining: config.maxRequests - 1, resetAt: now.getTime() + config.windowMs }
+  }
+
+  // Increment count
+  const newCount = entry.count + 1
+  await supabase
+    .from('rate_limits')
+    .update({ count: newCount })
+    .eq('id', key)
+
+  const resetAt = new Date(entry.window_start).getTime() + entry.window_ms
+  const remaining = Math.max(0, config.maxRequests - newCount)
+
+  if (newCount > config.maxRequests) {
+    return { allowed: false, remaining: 0, resetAt }
+  }
+
+  return { allowed: true, remaining, resetAt }
 }
 
 // Preset configs

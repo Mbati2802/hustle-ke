@@ -80,6 +80,15 @@ export async function middleware(req: NextRequest) {
     return secureRedirect(redirectUrl, req)
   }
 
+  // Email verification enforcement for protected routes
+  // Users without a confirmed email are redirected to verify-email page
+  if (user && PROTECTED_ROUTES.some((r) => path.startsWith(r)) && !path.startsWith('/dashboard/settings')) {
+    const emailConfirmed = user.email_confirmed_at || user.confirmed_at
+    if (!emailConfirmed && !path.includes('verify-email')) {
+      return secureRedirect(new URL('/auth/verify-email', req.url), req)
+    }
+  }
+
   // Admin route protection
   if (path.startsWith('/admin')) {
     if (!user) {

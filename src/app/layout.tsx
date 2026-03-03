@@ -14,6 +14,7 @@ import IncompleteApplicationNotifier from "./components/IncompleteApplicationNot
 import { ApplyJobModalWrapper } from "./components/ApplyJobModal";
 import { RecaptchaProvider } from "@/contexts/RecaptchaContext";
 import CSRFProvider from "./components/CSRFProvider";
+import PWAInstallPrompt from "./components/PWAInstallPrompt";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,25 +28,44 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "HustleKE - Kenyan Freelance Marketplace",
-  description: "Connect with global clients. Get paid instantly via M-Pesa. Only 6% service fee. The future of work is Kenyan.",
-  keywords: ["freelance", "Kenya", "M-Pesa", "jobs", "hustle", "remote work", "African talent"],
-  authors: [{ name: "HustleKE" }],
+  title: {
+    default: "HustleKE — Kenya's #1 Freelance Marketplace",
+    template: "%s | HustleKE",
+  },
+  description: "Kenya's #1 freelance marketplace. Find work, hire talent, and get paid via M-Pesa. Secure escrow, AI-powered matching, and verified professionals.",
+  keywords: ["freelance", "Kenya", "M-Pesa", "jobs", "hustle", "remote work", "African talent", "freelance marketplace", "hire freelancers Kenya", "gig economy Kenya"],
+  authors: [{ name: "HustleKE", url: "https://hustleke.com" }],
+  creator: "HustleKE",
+  publisher: "HustleKE",
   manifest: "/manifest.json",
   icons: {
     icon: "/icons/icon.svg",
     apple: "/icons/icon.svg",
   },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://hustleke.com"),
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large" as const, "max-snippet": -1 },
+  },
   openGraph: {
-    title: "HustleKE - Kenyan Freelance Marketplace",
-    description: "Connect with global clients. Get paid instantly via M-Pesa. Only 6% service fee.",
+    title: "HustleKE — Kenya's #1 Freelance Marketplace",
+    description: "Find work, hire talent, and get paid via M-Pesa. Secure escrow, AI-powered matching, and verified professionals.",
     type: "website",
     locale: "en_KE",
+    siteName: "HustleKE",
   },
   twitter: {
     card: "summary_large_image",
-    title: "HustleKE - Kenyan Freelance Marketplace",
-    description: "Connect with global clients. Get paid instantly via M-Pesa. Only 6% service fee.",
+    title: "HustleKE — Kenya's #1 Freelance Marketplace",
+    description: "Find work, hire talent, and get paid via M-Pesa. Secure escrow, AI-powered matching, and verified professionals.",
+    creator: "@hustleke",
+  },
+  other: {
+    "msapplication-TileColor": "#16a34a",
   },
 };
 
@@ -89,6 +109,7 @@ export default function RootLayout({
                   <IncompleteApplicationNotifier />
                   <ApplyJobModalWrapper />
                   <AuthModal />
+                  <PWAInstallPrompt />
                 </ApplyJobModalProvider>
               </PostJobModalProvider>
             </AuthModalProvider>
