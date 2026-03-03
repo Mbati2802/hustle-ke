@@ -152,15 +152,9 @@ const smallTalk = {
 export default function LiveChatWidget() {
   const { user, profile } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: 'Hello! I am HustleKE AI Assistant. I can help with payments, jobs, account issues, and more. What brings you here today?',
-      sender: 'bot',
-      timestamp: new Date(),
-      suggestions: ['Payment issue', 'Find work', 'Hire talent', 'Account help', 'Registration help']
-    }
-  ])
+  const userName = profile?.full_name?.split(' ')[0] || null
+  const [messages, setMessages] = useState<Message[]>([])
+  const [hasInitialized, setHasInitialized] = useState(false)
   const [inputText, setInputText] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [context, setContext] = useState<ConversationContext>({
@@ -198,6 +192,23 @@ export default function LiveChatWidget() {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  // Set personalized welcome message once profile is resolved
+  useEffect(() => {
+    if (hasInitialized) return
+    setHasInitialized(true)
+    const name = profile?.full_name?.split(' ')[0]
+    const greeting = name
+      ? `Hello ${name}! 👋 I'm your HustleKE AI Assistant. I can help with payments, jobs, account issues, and more. What can I do for you today?`
+      : 'Hello! 👋 I\'m your HustleKE AI Assistant. I can help with payments, jobs, account issues, and more. What brings you here today?'
+    setMessages([{
+      id: '1',
+      text: greeting,
+      sender: 'bot',
+      timestamp: new Date(),
+      suggestions: ['Payment issue', 'Find work', 'Hire talent', 'Account help', 'Registration help'],
+    }])
+  }, [hasInitialized, profile])
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -393,12 +404,27 @@ export default function LiveChatWidget() {
     // Only match greetings for short messages or messages that START with a greeting
     const isGreeting = smallTalk.greetings.some(g => lowerText.startsWith(g)) && words.length < 8
     if (isGreeting) {
-      return { response: 'Hi there! I am here to help with any HustleKE questions. What can I assist you with today?', newStage: 'initial' }
+      const hour = new Date().getHours()
+      let timeGreet = 'Hello'
+      if (hour < 12) timeGreet = 'Good morning'
+      else if (hour < 17) timeGreet = 'Good afternoon'
+      else timeGreet = 'Good evening'
+
+      const name = userName
+      if (name) {
+        return { response: `${timeGreet}, ${name}! Thank you for reaching out. I'm your HustleKE AI Assistant — I'm here to help you with anything you need. How can I assist you today?`, newStage: 'initial' }
+      }
+      return { response: `${timeGreet}! Thank you for reaching out. I'm your HustleKE AI Assistant — here to help with payments, jobs, account questions, and more. How can I assist you today?`, newStage: 'initial' }
     }
 
-    // Gratitude — only if the message is primarily a thank-you (short)
-    if (words.length < 8 && smallTalk.gratitude.some(g => matchesWholeWord(lowerText, g))) {
-      return { response: "You're welcome! I am happy to help. Is there anything else you need assistance with?", newStage: 'follow_up' }
+    // Gratitude — respond warmly and naturally like a human
+    if (words.length < 10 && smallTalk.gratitude.some(g => matchesWholeWord(lowerText, g))) {
+      const gratitudeResponses = [
+        `You're very welcome${userName ? `, ${userName}` : ''}! It was my pleasure helping you. If you ever need anything else, I'm always here for you. Have a wonderful day! 😊`,
+        `Happy to help${userName ? `, ${userName}` : ''}! That's exactly what I'm here for. Don't hesitate to come back anytime you have questions. Take care! 🙌`,
+        `Glad I could help${userName ? `, ${userName}` : ''}! If anything else comes up, just pop back in and I'll be ready. Wishing you all the best! ✨`,
+      ]
+      return { response: gratitudeResponses[Math.floor(Math.random() * gratitudeResponses.length)], newStage: 'follow_up' }
     }
 
     // Goodbye
@@ -412,7 +438,7 @@ export default function LiveChatWidget() {
     }
 
     return { response: null, newStage: stage }
-  }, [matchesWholeWord])
+  }, [matchesWholeWord, userName])
 
   const generateResponse = useCallback((userText: string, intent: { topic: string | null; confidence: number; urgency: string }, stage: typeof conversationStage): { text: string; newStage: typeof conversationStage } => {
     const smallTalkResult = checkSmallTalk(userText, stage)
@@ -421,12 +447,17 @@ export default function LiveChatWidget() {
     }
 
     if (intent.confidence < 0.1 || !intent.topic) {
-      const clarifyingQuestions = [
-        'I want to make sure I help you correctly. Are you asking about payments, jobs, your account, registration, or something else?',
-        "I didn't quite catch that. Could you tell me if this is about: 1) Payments, 2) Finding work, 3) Hiring talent, 4) Registration, or 5) Account issues?",
-        'To help you best, could you share a bit more detail? Are you having trouble with payments, job applications, registration, or account access?'
-      ]
-      return { text: clarifyingQuestions[Math.floor(Math.random() * clarifyingQuestions.length)], newStage: 'helped' }
+      // Use knowledge engine for a deep scan before giving up
+      const kbResult = queryKnowledge(userText)
+      if (kbResult.confidence !== 'low') {
+        let answer = kbResult.answer
+        if (kbResult.steps && kbResult.steps.length > 0) {
+          answer += '\n\n' + kbResult.steps.map((s, i) => `${i + 1}. ${s}`).join('\n')
+        }
+        return { text: answer, newStage: 'helped' }
+      }
+      // If knowledge engine also has low confidence, offer escalation
+      return { text: kbResult.answer, newStage: 'helped' }
     }
 
     const topicData = knowledgeBase[intent.topic as keyof typeof knowledgeBase]
@@ -766,7 +797,11 @@ export default function LiveChatWidget() {
 
           const responseText = (data.answer || 'I can help with that. Can you share more details?') as string
           const meta = (data.meta || {}) as Message['meta']
-          const suggestions = meta?.relatedFaqs?.slice(0, 3).map((f) => f.question) || []
+          const isLowConfidence = meta?.confidence === 'low'
+          const faqSuggestions = meta?.relatedFaqs?.slice(0, 3).map((f) => f.question) || []
+          const suggestions = isLowConfidence
+            ? ['Yes, connect me to human', 'No, I found what I needed', 'Let me rephrase my question']
+            : faqSuggestions.length > 0 ? faqSuggestions : getSuggestions(intent, 'helped')
 
           setConversationStage('helped')
           setMessages(prev => [...prev, {
@@ -774,7 +809,7 @@ export default function LiveChatWidget() {
             text: responseText,
             sender: 'bot',
             timestamp: new Date(),
-            suggestions: suggestions.length > 0 ? suggestions : getSuggestions(intent, 'helped'),
+            suggestions,
             meta,
           }])
         } catch {
@@ -820,14 +855,18 @@ export default function LiveChatWidget() {
         // Steps are already included in the answer from queryKnowledge
       }
 
-      // Add login prompt for anonymous users on detailed answers
-      if (result.confidence !== 'low') {
+      // Add login prompt for anonymous users
+      if (result.confidence === 'low') {
+        responseText += '\n\n*Log in to connect with a human support agent for personalized help.*'
+      } else {
         responseText += '\n\n*Log in for personalized help and to connect with a human agent.*'
       }
 
-      const suggestions = result.relatedEntries.length > 0
-        ? result.relatedEntries.slice(0, 3).map(e => e.question)
-        : ['Payment issue', 'Find work', 'Account help', 'Connect to human']
+      const suggestions = result.confidence === 'low'
+        ? ['Log in to connect with human', 'Let me rephrase my question', 'I found what I needed']
+        : result.relatedEntries.length > 0
+          ? result.relatedEntries.slice(0, 3).map(e => e.question)
+          : ['Payment issue', 'Find work', 'Account help', 'Connect to human']
 
       setConversationStage('helped')
       setMessages(prev => [...prev, {

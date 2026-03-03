@@ -723,34 +723,36 @@ export default function LandingPage() {
       </section>
 
       {/* Featured Reviews */}
-      <section className="py-12 sm:py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-end mb-8 sm:mb-12">
-            <div>
-              <div className="inline-flex items-center gap-2 bg-yellow-50 text-yellow-700 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                Client Reviews
-              </div>
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                What Clients Are Saying
-              </h2>
-              <p className="text-xl text-gray-600 max-w-2xl">
-                Real reviews from real clients about our talented freelancers
-              </p>
+      <section className="py-16 sm:py-28 bg-gradient-to-b from-gray-50 via-white to-gray-50 relative overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute top-0 left-0 w-72 h-72 bg-green-100/30 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-yellow-100/20 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="text-center mb-12 sm:mb-16">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-50 to-amber-50 text-amber-700 px-5 py-2 rounded-full text-sm font-semibold mb-5 border border-amber-100 shadow-sm">
+              <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+              Trusted by Thousands
             </div>
-            <Link
-              href="/reviews"
-              className="hidden md:flex items-center gap-2 text-green-600 hover:text-green-700 font-semibold"
-            >
-              View All Reviews
-              <ArrowRight className="w-5 h-5" />
-            </Link>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+              What Clients Are Saying
+            </h2>
+            <p className="text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto">
+              Real reviews from real clients about our talented freelancers
+            </p>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
             {reviewsLoading ? (
               Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="bg-gray-50 rounded-2xl p-5 animate-pulse">
+                <div key={i} className="bg-white rounded-2xl p-6 animate-pulse shadow-sm border border-gray-100">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-gray-200 rounded-full" />
+                    <div className="flex-1">
+                      <div className="h-3 bg-gray-200 rounded w-24 mb-2" />
+                      <div className="h-2.5 bg-gray-100 rounded w-16" />
+                    </div>
+                  </div>
                   <div className="flex gap-1 mb-3">
                     {Array.from({ length: 5 }).map((_, j) => (
                       <div key={j} className="w-4 h-4 bg-gray-200 rounded" />
@@ -758,65 +760,82 @@ export default function LandingPage() {
                   </div>
                   <div className="h-3 bg-gray-200 rounded w-full mb-2" />
                   <div className="h-3 bg-gray-200 rounded w-4/5 mb-2" />
-                  <div className="h-3 bg-gray-200 rounded w-2/3 mb-4" />
-                  <div className="flex items-center gap-2 pt-3 border-t border-gray-200">
-                    <div className="w-6 h-6 bg-gray-200 rounded-full" />
-                    <div className="h-3 bg-gray-200 rounded w-28" />
-                  </div>
+                  <div className="h-3 bg-gray-200 rounded w-2/3" />
                 </div>
               ))
             ) : featuredReviews.length > 0 ? (
-              featuredReviews.map((review) => (
+              featuredReviews.map((review, idx) => (
                 <div
                   key={review.id}
-                  className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all p-5 flex flex-col relative group"
+                  className={`group relative bg-white rounded-2xl border shadow-sm hover:shadow-xl transition-all duration-300 p-6 flex flex-col ${
+                    idx === 0 ? 'border-green-200 ring-1 ring-green-100' : 'border-gray-100 hover:border-green-200'
+                  }`}
                 >
+                  {/* Accent bar at top */}
+                  <div className={`absolute top-0 left-6 right-6 h-[3px] rounded-b-full ${
+                    review.rating === 5 ? 'bg-gradient-to-r from-green-400 to-emerald-500' : 'bg-gradient-to-r from-yellow-400 to-amber-400'
+                  }`} />
+
                   {/* Quote icon */}
-                  <Quote className="w-8 h-8 text-green-100 absolute top-4 right-4" />
+                  <Quote className="w-10 h-10 text-green-50 group-hover:text-green-100 absolute top-5 right-5 transition-colors" />
+
+                  {/* Reviewer info at top */}
+                  {review.reviewer && (
+                    <div className="flex items-center gap-3 mb-4">
+                      {review.reviewer.avatar_url ? (
+                        <img src={review.reviewer.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100" />
+                      ) : (
+                        <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm ring-2 ring-green-100">
+                          {review.reviewer.full_name?.charAt(0)?.toUpperCase() || 'C'}
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-gray-900 truncate">
+                          {review.reviewer.full_name || 'Client'}
+                        </p>
+                        {review.job?.title && (
+                          <p className="text-xs text-gray-400 truncate">{review.job.title}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Star rating */}
-                  <div className="flex items-center gap-0.5 mb-3">
+                  <div className="flex items-center gap-1 mb-3">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}`}
+                        className={`w-4 h-4 ${i < review.rating ? 'text-amber-400 fill-amber-400' : 'text-gray-200'}`}
                       />
                     ))}
                     {review.rating === 5 && (
-                      <span className="ml-1.5 text-[10px] bg-green-50 text-green-700 px-1.5 py-0.5 rounded-full font-semibold">Excellent</span>
+                      <span className="ml-2 text-[10px] bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 px-2 py-0.5 rounded-full font-bold border border-green-100">
+                        ★ Excellent
+                      </span>
                     )}
                   </div>
 
                   {/* Review text */}
-                  <p className="text-sm text-gray-600 leading-relaxed line-clamp-3 mb-4 flex-1">
+                  <p className="text-sm text-gray-600 leading-relaxed line-clamp-4 mb-4 flex-1 italic">
                     &ldquo;{review.comment}&rdquo;
                   </p>
 
-                  {/* Job tag */}
-                  {review.job?.title && (
-                    <div className="mb-3">
-                      <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full truncate inline-block max-w-full">
-                        {review.job.title}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Reviewed freelancer */}
+                  {/* Reviewed freelancer — bottom card */}
                   {review.reviewee && (
                     <Link
                       href={`/talent/${review.reviewee.id}`}
-                      className="mt-3 flex items-center gap-2 bg-green-50/50 rounded-lg px-3 py-2 hover:bg-green-50 transition-colors"
+                      className="mt-auto flex items-center gap-2.5 bg-gradient-to-r from-gray-50 to-green-50/50 rounded-xl px-3 py-2.5 hover:from-green-50 hover:to-emerald-50 transition-all border border-gray-100 hover:border-green-200"
                     >
                       {review.reviewee.avatar_url ? (
-                        <img src={review.reviewee.avatar_url} alt="" className="w-6 h-6 rounded-full object-cover" />
+                        <img src={review.reviewee.avatar_url} alt="" className="w-7 h-7 rounded-full object-cover" />
                       ) : (
-                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-[10px]">
+                        <div className="w-7 h-7 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
                           {review.reviewee.full_name?.charAt(0)?.toUpperCase() || 'F'}
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <span className="text-xs text-gray-600 truncate block">
-                          Review for <span className="font-medium text-green-700">{review.reviewee.full_name}</span>
+                        <span className="text-xs text-gray-500 block">
+                          Review for <span className="font-semibold text-green-700">{review.reviewee.full_name}</span>
                         </span>
                       </div>
                       {review.reviewee.verification_status === 'ID-Verified' && (
@@ -827,14 +846,26 @@ export default function LandingPage() {
                 </div>
               ))
             ) : (
-              <div className="col-span-full text-center py-12">
-                <MessageSquare className="w-12 h-12 text-gray-200 mx-auto mb-3" />
-                <p className="text-gray-500 font-medium">No reviews yet</p>
-                <p className="text-sm text-gray-400 mt-1">Reviews will appear here as freelancers complete jobs</p>
+              <div className="col-span-full text-center py-16">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MessageSquare className="w-8 h-8 text-gray-300" />
+                </div>
+                <p className="text-gray-500 font-semibold text-lg">No reviews yet</p>
+                <p className="text-sm text-gray-400 mt-2">Reviews will appear here as freelancers complete jobs</p>
               </div>
             )}
           </div>
 
+          {/* View all link — centered below cards */}
+          <div className="text-center mt-10">
+            <Link
+              href="/reviews"
+              className="inline-flex items-center gap-2 bg-white text-green-700 hover:text-green-800 font-semibold px-6 py-3 rounded-full border border-green-200 hover:border-green-300 shadow-sm hover:shadow-md transition-all"
+            >
+              View All Reviews
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </section>
 

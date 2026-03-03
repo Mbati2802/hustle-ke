@@ -824,7 +824,7 @@ function generateFallbackAnswer(question: string, nearMatches: KnowledgeEntry[])
   // If we have near-matches, reference them
   if (nearMatches.length > 0) {
     const suggestions = nearMatches.map(e => `• **${e.question}**`).join('\n')
-    return `I want to make sure I give you the right answer. Based on your question, you might be asking about one of these:\n\n${suggestions}\n\nCould you clarify which topic you need help with? Or if it's something else entirely, try rephrasing your question and I'll do my best to help!\n\nYou can also:\n• Click "Connect to human" to speak with a support agent\n• Visit our FAQ page at /faqs for more topics\n• Browse /contact to submit a detailed support request`
+    return `I found some topics that might be related to your question:\n\n${suggestions}\n\nIf none of these match what you're looking for, I can connect you with a human support agent who can help with anything. Just say **"Connect me to human"** or choose an option below.`
   }
 
   // Topic inference from keywords
@@ -839,12 +839,12 @@ function generateFallbackAnswer(question: string, nearMatches: KnowledgeEntry[])
 
   for (const hint of topicHints) {
     if (hint.keywords.some(k => lower.includes(k))) {
-      return `It looks like you're asking about **${hint.topic}**. I have detailed information on this topic!\n\n${hint.suggestion}\n\nOr feel free to rephrase your question and I'll find the best answer for you.`
+      return `It looks like you're asking about **${hint.topic}**. I have detailed information on this topic!\n\n${hint.suggestion}\n\nIf you'd prefer, I can connect you with a human agent who can give you a more tailored answer.`
     }
   }
 
-  // Ultimate fallback — still helpful
-  return `Thanks for your question! I'm here to help with anything about HustleKE.\n\nI can answer questions about:\n• **Payments** — M-Pesa, escrow, withdrawals, fees\n• **Jobs** — Finding work, posting jobs, proposals\n• **Account** — Profile, verification, settings\n• **Plans** — Free, Pro, Enterprise pricing\n• **Safety** — Disputes, security, trust\n• **Reviews** — Ratings, Hustle Score\n\nTry rephrasing your question, or click **"Connect to human"** to speak with a support agent who can help with anything!\n\nYou can also visit /faqs for our full FAQ library.`
+  // Ultimate fallback — offer escalation with clear options
+  return `I appreciate your question! I wasn't able to find an exact match in my knowledge base, but I don't want to leave you without help.\n\nHere's what I can do:\n• **Rephrase your question** — I understand topics like payments, jobs, proposals, account, fees, and more\n• **Connect you to a human agent** — A real person who can help with anything\n• **Browse common topics** — Payments, Jobs, Account, Plans, Safety\n\nWould you like me to connect you with a support agent?`
 }
 
 // ============================================================================

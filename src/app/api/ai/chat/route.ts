@@ -61,35 +61,67 @@ export async function POST(req: NextRequest) {
     created_at: now,
   })
 
-  // Use the knowledge engine directly (no internal HTTP calls)
-  const result = queryKnowledge(msg, conversationContext)
+  // Detect greetings and gratitude before knowledge engine
+  const lowerMsg = msg.toLowerCase().trim()
+  const firstName = auth.profile.full_name?.split(' ')[0] || ''
+  const greetings = ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening', 'greetings']
+  const gratitude = ['thanks', 'thank you', 'appreciate', 'grateful', 'thank u', 'thx', 'ty']
+  const goodbyes = ['bye', 'goodbye', 'see you', 'later', 'cya']
+  const words = lowerMsg.split(/\s+/)
 
-  let answer = result.answer
+  const isGreeting = greetings.some(g => lowerMsg.startsWith(g)) && words.length < 8
+  const isGratitude = words.length < 10 && gratitude.some(g => lowerMsg.includes(g))
+  const isGoodbye = goodbyes.some(g => lowerMsg.includes(g))
 
-  // Make answer more conversational for high-confidence answers
-  if (result.confidence === 'high' && !answer.includes('?') && !answer.endsWith('!')) {
-    const followUps = [
-      '\n\nIs there anything else you\'d like to know?',
-      '\n\nDoes this help? Let me know if you need more details!',
-      '\n\nHope that clarifies things! Feel free to ask more questions.',
+  let answer = ''
+  let result: any = null
+
+  if (isGreeting) {
+    const hour = new Date().getHours()
+    let timeGreet = 'Hello'
+    if (hour < 12) timeGreet = 'Good morning'
+    else if (hour < 17) timeGreet = 'Good afternoon'
+    else timeGreet = 'Good evening'
+    answer = `${timeGreet}, ${firstName || 'there'}! Thank you for reaching out. I'm your HustleKE AI Assistant — I'm here to help you with anything you need. How can I assist you today?`
+  } else if (isGratitude) {
+    const responses = [
+      `You're very welcome, ${firstName || 'friend'}! It was my pleasure helping you. If you ever need anything else, I'm always here for you. Have a wonderful day! 😊`,
+      `Happy to help, ${firstName || 'friend'}! That's exactly what I'm here for. Don't hesitate to come back anytime. Take care! 🙌`,
+      `Glad I could help, ${firstName || 'friend'}! If anything else comes up, just pop back in and I'll be ready. Wishing you all the best! ✨`,
     ]
-    answer += followUps[Math.floor(Math.random() * followUps.length)]
-  }
+    answer = responses[Math.floor(Math.random() * responses.length)]
+  } else if (isGoodbye) {
+    answer = `Goodbye, ${firstName || 'friend'}! It was great chatting with you. Feel free to return anytime you need help. Have a wonderful day! 👋`
+  } else {
+    // Use the knowledge engine directly (no internal HTTP calls)
+    result = queryKnowledge(msg, conversationContext)
+    answer = result.answer
 
-  // For low confidence, encourage rephrasing or human handoff
-  if (result.confidence === 'low') {
-    if (!answer.includes('Connect to human')) {
-      answer += '\n\nIf this doesn\'t answer your question, try rephrasing it or click **"Connect to human"** for live support.'
+    // Make answer more conversational for high-confidence answers
+    if (result.confidence === 'high' && !answer.includes('?') && !answer.endsWith('!')) {
+      const followUps = [
+        '\n\nIs there anything else you\'d like to know?',
+        '\n\nDoes this help? Let me know if you need more details!',
+        '\n\nHope that clarifies things! Feel free to ask more questions.',
+      ]
+      answer += followUps[Math.floor(Math.random() * followUps.length)]
+    }
+
+    // For low confidence, offer clear escalation options
+    if (result.confidence === 'low') {
+      if (!answer.includes('connect you')) {
+        answer += `\n\nI'd love to help you further, ${firstName || 'friend'}. Would you like me to connect you with a human support agent? Just say **"Connect me to human"** and I'll set that up for you right away.`
+      }
     }
   }
 
-  const meta = {
+  const meta = result ? {
     source: result.source,
     confidence: result.confidence,
-    relatedFaqs: result.relatedEntries.map(e => ({
+    relatedFaqs: result.relatedEntries.map((e: any) => ({
       id: e.id,
       question: e.question,
-      answer: '', // Don't send full answers in meta
+      answer: '',
       category: e.category,
     })),
     category: result.category,
@@ -98,6 +130,12 @@ export async function POST(req: NextRequest) {
     hasContext: conversationContext.length > 0,
     steps: result.steps,
     links: result.links,
+  } : {
+    source: 'system',
+    confidence: 'high',
+    relatedFaqs: [],
+    category: 'conversation',
+    hasContext: conversationContext.length > 0,
   }
 
   await auth.adminDb.from('ai_chat_messages').insert({
