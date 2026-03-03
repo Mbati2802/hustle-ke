@@ -105,7 +105,7 @@ CREATE POLICY "Admin bypass push_subscriptions" ON push_subscriptions
 -- 8. Financial reporting view (for admin dashboard)
 CREATE OR REPLACE VIEW admin_financial_summary AS
 SELECT
-  date_trunc('month', et.created_at) AS month,
+  date_trunc('month', et.initiated_at) AS month,
   COUNT(*) AS total_transactions,
   SUM(et.amount) AS total_volume,
   SUM(et.service_fee) AS total_fees,
@@ -115,5 +115,5 @@ SELECT
   COUNT(DISTINCT et.client_id) AS unique_clients,
   COUNT(DISTINCT et.freelancer_id) AS unique_freelancers
 FROM escrow_transactions et
-GROUP BY date_trunc('month', et.created_at)
+GROUP BY date_trunc('month', et.initiated_at)
 ORDER BY month DESC;

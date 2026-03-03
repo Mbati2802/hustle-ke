@@ -26,8 +26,8 @@ export async function GET(req: NextRequest) {
   // Escrow summary
   let escrowQuery = auth.adminDb
     .from('escrow_transactions')
-    .select('id, amount, service_fee, status, created_at, released_at')
-  if (dateFilter) escrowQuery = escrowQuery.gte('created_at', dateFilter)
+    .select('id, amount, service_fee, status, initiated_at, released_at')
+  if (dateFilter) escrowQuery = escrowQuery.gte('initiated_at', dateFilter)
   const { data: escrows } = await escrowQuery
 
   const escrowStats = {
@@ -102,7 +102,7 @@ export async function GET(req: NextRequest) {
 
     if (escrows) {
       for (const e of escrows) {
-        if (e.created_at >= monthStart && e.created_at <= monthEnd) {
+        if (e.initiated_at >= monthStart && e.initiated_at <= monthEnd) {
           ev += e.amount || 0
           fc += e.service_fee || 0
         }
