@@ -1,33 +1,67 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient as createSupabaseServerClient } from '@supabase/ssr'
-import { jsonResponse, errorResponse } from '@/lib/api-utils'
-import { cookies } from 'next/headers'
 
-export async function POST(_req: NextRequest) {
-  const cookieStore = cookies()
+export async function POST(req: NextRequest) {
+  // Build the Supabase project ref from the URL to match cookie names
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+  const projectRef = supabaseUrl.match(/https:\/\/([^.]+)/)?.[1] || ''
+
   const supabase = createSupabaseServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    supabaseUrl,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         get(name: string) {
-          return cookieStore.get(name)?.value
+          return req.cookies.get(name)?.value
         },
-        set(name: string, value: string, options: Record<string, unknown>) {
-          try { cookieStore.set({ name, value, ...options }) } catch {}
-        },
-        remove(name: string, options: Record<string, unknown>) {
-          try { cookieStore.set({ name, value: '', ...options }) } catch {}
-        },
+        set() {},
+        remove() {},
       },
     }
   )
 
-  const { error } = await supabase.auth.signOut()
+  // Attempt server-side signOut (revokes refresh token on Supabase)
+  try { await supabase.auth.signOut() } catch {}
 
-  if (error) {
-    return errorResponse('Failed to log out', 500)
+  // Build response and explicitly clear ALL auth cookies
+  const response = NextResponse.json(
+    { message: 'Logged out successfully' },
+    {
+      status: 200,
+      headers: {
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+      },
+    }
+  )
+
+  // Clear all possible Supabase auth cookie names
+  const cookieNames = [
+    `sb-${projectRef}-auth-token`,
+    `sb-${projectRef}-auth-token.0`,
+    `sb-${projectRef}-auth-token.1`,
+    'sb-access-token',
+    'sb-refresh-token',
+    'csrf-token',
+  ]
+
+  // Also clear any cookie from the request that looks like a Supabase auth cookie
+  for (const cookie of req.cookies.getAll()) {
+    if (cookie.name.startsWith('sb-') && !cookieNames.includes(cookie.name)) {
+      cookieNames.push(cookie.name)
+    }
   }
 
-  return jsonResponse({ message: 'Logged out successfully' })
+  for (const name of cookieNames) {
+    response.cookies.set(name, '', {
+      path: '/',
+      expires: new Date(0),
+      maxAge: 0,
+      httpOnly: name !== 'csrf-token',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    })
+  }
+
+  return response
 }

@@ -26,5 +26,12 @@ export function createMiddlewareClient(req: NextRequest) {
     }
   )
 
-  return { supabase, res }
+  // Return a getter so the middleware always uses the LATEST response object,
+  // even after Supabase cookie handlers replace it during token refresh.
+  return {
+    supabase,
+    get res() {
+      return res
+    },
+  }
 }

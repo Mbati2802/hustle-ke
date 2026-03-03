@@ -82,6 +82,28 @@ export function installCSRFInterceptor(): void {
       }
     }
 
-    return originalFetch(input, init)
+    const response = await originalFetch(input, init)
+
+    // Auto-retry once on CSRF failure — the 403 response sets a fresh cookie
+    if (response.status === 403 && STATE_CHANGING_METHODS.includes(method)) {
+      try {
+        const cloned = response.clone()
+        const body = await cloned.json()
+        if (body?.code === 'CSRF_FAILED') {
+          // Small delay for the browser to process the Set-Cookie from the 403 response
+          await new Promise(r => setTimeout(r, 50))
+          const freshToken = getCSRFToken()
+          if (freshToken) {
+            const retryHeaders = new Headers(init?.headers)
+            retryHeaders.set(CSRF_HEADER_NAME, freshToken)
+            return originalFetch(input, { ...init, headers: retryHeaders })
+          }
+        }
+      } catch {
+        // If retry parsing fails, return the original response
+      }
+    }
+
+    return response
   }
 }

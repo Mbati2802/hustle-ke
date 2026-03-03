@@ -102,6 +102,7 @@ export function requiresCSRFProtection(method: string): boolean {
 const CSRF_EXEMPT_PATHS = [
   '/api/wallet/deposit/callback', // M-Pesa callback
   '/api/auth/callback', // OAuth callback
+  '/api/auth/logout', // Logout must always work even with stale CSRF
   '/api/ai/chat', // Live chat AI (auth-protected separately)
   '/api/support/tickets', // Support ticket creation/listing (auth-protected)
   '/api/support/typing', // Typing indicator (auth-protected)
@@ -132,9 +133,13 @@ export function enforceCSRF(req: NextRequest): NextResponse | null {
 
   // Validate CSRF token
   if (!validateCSRFToken(req)) {
-    return new NextResponse(
+    // Generate a fresh token and set it on the error response
+    // so the client can retry without a full page refresh
+    const freshToken = getOrGenerateCSRFToken(req)
+    const errorResponse = new NextResponse(
       JSON.stringify({
-        error: 'CSRF token validation failed. Please refresh the page and try again.',
+        error: 'CSRF token validation failed. Please try again.',
+        code: 'CSRF_FAILED',
       }),
       {
         status: 403,
@@ -143,6 +148,8 @@ export function enforceCSRF(req: NextRequest): NextResponse | null {
         },
       }
     )
+    setCSRFCookie(errorResponse, freshToken)
+    return errorResponse
   }
 
   return null

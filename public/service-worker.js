@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hustleke-v3';
+const CACHE_NAME = 'hustleke-v4';
 // Only include public routes and static assets that exist
 const STATIC_ASSETS = [
   '/',
@@ -42,14 +42,37 @@ self.addEventListener('fetch', (event) => {
   // Skip API requests
   if (event.request.url.includes('/api/')) return;
 
+  // Navigation requests (HTML pages) use network-first strategy.
+  // This ensures the middleware runs on every page load to set fresh
+  // CSRF cookies and auth tokens. Only fall back to cache when offline.
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.status === 200) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          return caches.match(event.request).then((cached) => {
+            return cached || caches.match('/');
+          });
+        })
+    );
+    return;
+  }
+
+  // Static assets use cache-first strategy
   event.respondWith(
     caches.match(event.request).then((cached) => {
-      // Return cached version or fetch from network
       return (
         cached ||
         fetch(event.request)
           .then((response) => {
-            // Cache successful responses
             if (response.status === 200) {
               const responseClone = response.clone();
               caches.open(CACHE_NAME).then((cache) => {
@@ -59,10 +82,6 @@ self.addEventListener('fetch', (event) => {
             return response;
           })
           .catch(() => {
-            // Return offline fallback for navigation requests
-            if (event.request.mode === 'navigate') {
-              return caches.match('/');
-            }
             return new Response('Offline content not available');
           })
       );

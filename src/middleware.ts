@@ -40,7 +40,11 @@ function secureRedirect(url: URL, req: NextRequest): NextResponse {
 }
 
 export async function middleware(req: NextRequest) {
-  const { supabase, res } = createMiddlewareClient(req)
+  // Do NOT destructure `res` — use `client.res` each time so the getter
+  // always returns the latest response (even after Supabase replaces it
+  // during token refresh).
+  const client = createMiddlewareClient(req)
+  const { supabase } = client
   
   // CSRF Protection: Enforce for state-changing operations
   const csrfError = enforceCSRF(req)
@@ -53,8 +57,8 @@ export async function middleware(req: NextRequest) {
   try {
     const { data, error } = await supabase.auth.getUser()
     if (error && error.message?.includes('refresh_token_not_found')) {
-      res.cookies.delete('sb-access-token')
-      res.cookies.delete('sb-refresh-token')
+      client.res.cookies.delete('sb-access-token')
+      client.res.cookies.delete('sb-refresh-token')
     } else {
       user = data.user
     }
@@ -92,7 +96,8 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  // Apply security headers and CSRF cookie to the normal response
+  // Apply security headers and CSRF cookie to the LATEST response
+  const res = client.res
   applySecurityHeaders(res)
   const csrfToken = getOrGenerateCSRFToken(req)
   setCSRFCookie(res, csrfToken)

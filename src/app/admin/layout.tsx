@@ -93,9 +93,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [user])
 
   const handleLogout = useCallback(async () => {
-    await fetch('/api/auth/logout', { method: 'POST' })
-    router.push('/login')
-  }, [router])
+    try { await fetch('/api/auth/logout', { method: 'POST' }) } catch {}
+    try { sessionStorage.removeItem('hk_profile') } catch {}
+    try { sessionStorage.removeItem('hk_active_org') } catch {}
+    // Hard redirect to ensure all client-side state is cleared
+    window.location.href = '/'
+  }, [])
 
   if (loading) {
     return (
