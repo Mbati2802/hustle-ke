@@ -21,6 +21,7 @@ export interface SiteSettings {
   social_twitter: string
   social_linkedin: string
   social_facebook: string
+  social_links: Array<{ name: string; url: string; icon: string; order_index: number }>
   [key: string]: any
 }
 
@@ -42,39 +43,54 @@ const defaultSettings: SiteSettings = {
   social_twitter: 'https://twitter.com/hustleke',
   social_linkedin: 'https://linkedin.com/company/hustleke',
   social_facebook: 'https://facebook.com/hustleke',
+  social_links: []
 }
 
 /**
  * Fetches site settings from site_settings table.
  * Merges with defaults so app works even if DB is empty.
  */
-export function useSiteSettings(): SiteSettings {
+export function useSiteSettings(): SiteSettings & { refresh: () => void } {
   const [settings, setSettings] = useState<SiteSettings>(defaultSettings)
 
-  useEffect(() => {
+  const fetchSettings = async () => {
     const supabase = createClient()
-
-    supabase
+    
+    // Fetch site settings
+    const { data: settingsData, error: settingsError } = await supabase
       .from('site_settings')
       .select('key, value')
-      .then(({ data, error }) => {
-        if (!error && data) {
-          const merged = { ...defaultSettings }
-          data.forEach(setting => {
-            if (setting.key in merged) {
-              // Parse JSON value and assign
-              try {
-                const parsedValue = setting.value
-                merged[setting.key] = parsedValue
-              } catch (e) {
-                console.warn(`Failed to parse setting ${setting.key}:`, setting.value)
-              }
-            }
-          })
-          setSettings(merged)
+    
+    // Fetch social links
+    const socialResponse = await fetch('/api/social-links')
+    const socialData = socialResponse.ok ? await socialResponse.json() : { social_links: [] }
+    
+    if (!settingsError && settingsData) {
+      const merged = { ...defaultSettings }
+      settingsData.forEach(setting => {
+        if (setting.key in merged) {
+          // Parse JSON value and assign
+          try {
+            const parsedValue = JSON.parse(setting.value)
+            merged[setting.key] = parsedValue
+          } catch (e) {
+            console.warn(`Failed to parse setting ${setting.key}:`, setting.value)
+            // If parsing fails, use the raw value
+            merged[setting.key] = setting.value
+          }
         }
       })
+      
+      // Add social links
+      merged.social_links = socialData.social_links || []
+      
+      setSettings(merged)
+    }
+  }
+
+  useEffect(() => {
+    fetchSettings()
   }, [])
 
-  return settings
+  return { ...settings, refresh: fetchSettings }
 }

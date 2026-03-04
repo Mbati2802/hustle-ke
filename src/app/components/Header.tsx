@@ -123,6 +123,7 @@ function isGreenish(r: number, g: number, b: number): boolean {
 
 export default function Header({ activeLink }: HeaderProps) {
   const siteSettings = useSiteSettings()
+  const { platform_name, social_twitter, social_linkedin, social_facebook } = siteSettings
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [_isScrolled, setIsScrolled] = useState(false)
   const [showBanner, setShowBanner] = useState(true)

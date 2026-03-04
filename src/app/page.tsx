@@ -109,9 +109,10 @@ export default function LandingPage() {
   const { openModal } = usePostJobModal()
   const content = usePageContent('homepage', defaultContent)
   const siteSettings = useSiteSettings()
+  const { service_fee_percent, platform_name } = siteSettings
 
   const HERO_ROTATIONS = [
-    { line1: "Hire Kenya\u2019s Best", word: 'Designers', color: 'from-pink-400 to-rose-500', subtitle: `Get paid via M-Pesa. Escrow-protected. Only ${siteSettings.service_fee_percent}% fee. The freelance platform built for Kenya.` },
+    { line1: "Hire Kenya\u2019s Best", word: 'Designers', color: 'from-pink-400 to-rose-500', subtitle: `Get paid via M-Pesa. Escrow-protected. Only ${service_fee_percent}% fee. The freelance platform built for Kenya.` },
     { line1: 'Find World-Class', word: 'Developers', color: 'from-blue-400 to-cyan-500', subtitle: 'Post a job in 60 seconds. Get proposals within hours. Hire with confidence through secure escrow.' },
     { line1: 'Work With Top', word: 'Writers', color: 'from-amber-400 to-orange-500', subtitle: 'AI-powered matching. ID-verified talent. Instant M-Pesa payouts. No hidden fees, ever.' },
     { line1: 'Connect With Expert', word: 'Marketers', color: 'from-purple-400 to-violet-500', subtitle: 'From Nairobi to Mombasa \u2014 Kenya\u2019s top freelancers are here. Your next hire is one click away.' },

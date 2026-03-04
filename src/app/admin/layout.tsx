@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Users, Briefcase, FileText, DollarSign,
   AlertTriangle, Star, MessageSquare, Settings, FileCode,
   ChevronLeft, ChevronRight, LogOut, Menu, X, Bell, Search,
-  Shield, Activity, LifeBuoy
+  Shield, Activity, LifeBuoy, Globe
 } from 'lucide-react'
 import AssignmentNotificationPopup from '@/app/components/AssignmentNotificationPopup'
 
@@ -29,6 +29,7 @@ const navItems = [
   { href: '/admin/support', label: 'Support', icon: LifeBuoy },
   { href: '/admin/saved-searches', label: 'Job Alerts', icon: Bell },
   { href: '/admin/pages', label: 'Pages', icon: FileCode },
+  { href: '/admin/social-links', label: 'Social Links', icon: Globe },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
   { href: '/admin/activity', label: 'Activity Log', icon: Activity },
 ]
