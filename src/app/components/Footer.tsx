@@ -15,9 +15,11 @@ export default function Footer() {
           {/* Brand column */}
           <div className="col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">H</span>
-              </div>
+              <img 
+                src="/logo.png" 
+                alt={siteSettings.platform_name}
+                className="w-10 h-10 rounded-lg"
+              />
               <span className="text-xl font-bold text-white">{siteSettings.platform_name}</span>
             </div>
             <p className="max-w-sm mb-6 text-sm">

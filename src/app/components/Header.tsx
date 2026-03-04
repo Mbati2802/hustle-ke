@@ -385,10 +385,12 @@ export default function Header({ activeLink }: HeaderProps) {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-14 sm:h-16">
               <Link href="/" className="flex items-center gap-2">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-green-700 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">H</span>
-                </div>
-                <span className="text-xl font-bold text-gray-900">HustleKE</span>
+                <img 
+                  src="/logo.png" 
+                  alt={siteSettings.platform_name}
+                  className="w-10 h-10 rounded-lg"
+                />
+                <span className="text-xl font-bold text-gray-900">{siteSettings.platform_name}</span>
               </Link>
 
               <nav className="hidden md:flex items-center gap-1">
