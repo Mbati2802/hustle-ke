@@ -70,6 +70,15 @@ export function useSiteSettings(): SiteSettings & { refresh: () => void } {
     const socialResponse = await fetch('/api/social-links')
     const socialData = socialResponse.ok ? await socialResponse.json() : { social_links: [] }
     
+    // Debug logging
+    console.log('useSiteSettings Debug:', {
+      settingsError: settingsError?.message,
+      settingsCount: settingsData?.length || 0,
+      socialResponseOk: socialResponse.ok,
+      socialLinksCount: socialData.social_links?.length || 0,
+      socialLinks: socialData.social_links
+    })
+    
     if (!settingsError && settingsData) {
       const merged = { ...defaultSettings }
       settingsData.forEach((setting: DatabaseSetting) => {
@@ -89,6 +98,7 @@ export function useSiteSettings(): SiteSettings & { refresh: () => void } {
       // Add social links
       merged.social_links = socialData.social_links || []
       
+      console.log('Final merged settings social_links:', merged.social_links)
       setSettings(merged)
     }
   }
