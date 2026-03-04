@@ -45,9 +45,9 @@ const defaultSettings: SiteSettings = {
   max_proposal_per_job: 50,
   max_jobs_per_user: 20,
   contact_email: 'support@hustleke.co.ke',
-  social_twitter: 'https://twitter.com/hustleke',
+  social_twitter: 'https://x.com/Hustle_Kenya',
   social_linkedin: 'https://linkedin.com/company/hustleke',
-  social_facebook: 'https://facebook.com/hustleke',
+  social_facebook: 'https://www.facebook.com/profile.php?id=61585548811537',
   social_links: []
 }
 
