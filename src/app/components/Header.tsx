@@ -384,13 +384,12 @@ export default function Header({ activeLink }: HeaderProps) {
         <div className="bg-white border-b border-gray-200 relative z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-14 sm:h-16">
-              <Link href="/" className="flex items-center gap-2">
+              <Link href="/" className="flex items-center">
                 <img 
-                  src="/logo.png" 
+                  src="/logo-header.png" 
                   alt={siteSettings.platform_name}
-                  className="w-10 h-10 rounded-lg"
+                  className="h-10 w-auto"
                 />
-                <span className="text-xl font-bold text-gray-900">{siteSettings.platform_name}</span>
               </Link>
 
               <nav className="hidden md:flex items-center gap-1">

@@ -14,13 +14,12 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">
           {/* Brand column */}
           <div className="col-span-2">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center mb-4">
               <img 
-                src="/logo.png" 
+                src="/logo-footer.png" 
                 alt={siteSettings.platform_name}
-                className="w-10 h-10 rounded-lg"
+                className="h-10 w-auto"
               />
-              <span className="text-xl font-bold text-white">{siteSettings.platform_name}</span>
             </div>
             <p className="max-w-sm mb-6 text-sm">
               Kenya&apos;s #1 freelance marketplace. Connect with clients, get paid via M-Pesa, and build your career.
