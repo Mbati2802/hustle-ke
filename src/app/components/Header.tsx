@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { useAuthModal } from './AuthModalContext'
 import { usePostJobModal } from './PostJobModalContext'
+import { useSiteSettings } from '@/hooks/useSiteSettings'
 import {
   Menu,
   X,
@@ -121,6 +122,7 @@ function isGreenish(r: number, g: number, b: number): boolean {
 }
 
 export default function Header({ activeLink }: HeaderProps) {
+  const siteSettings = useSiteSettings()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [_isScrolled, setIsScrolled] = useState(false)
   const [showBanner, setShowBanner] = useState(true)

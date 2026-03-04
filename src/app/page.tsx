@@ -5,6 +5,7 @@ import { usePostJobModal } from './components/PostJobModalContext'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import { usePageContent } from '@/hooks/usePageContent'
+import { useSiteSettings } from '@/hooks/useSiteSettings'
 import { useState, useEffect, useRef } from 'react'
 import { 
   Bot, 
@@ -104,18 +105,19 @@ function useAnimatedCounter(target: number, duration = 1800) {
   return count
 }
 
-const HERO_ROTATIONS = [
-  { line1: "Hire Kenya\u2019s Best", word: 'Designers', color: 'from-pink-400 to-rose-500', subtitle: 'Get paid via M-Pesa. Escrow-protected. Only 6% fee. The freelance platform built for Kenya.' },
-  { line1: 'Find World-Class', word: 'Developers', color: 'from-blue-400 to-cyan-500', subtitle: 'Post a job in 60 seconds. Get proposals within hours. Hire with confidence through secure escrow.' },
-  { line1: 'Work With Top', word: 'Writers', color: 'from-amber-400 to-orange-500', subtitle: 'AI-powered matching. ID-verified talent. Instant M-Pesa payouts. No hidden fees, ever.' },
-  { line1: 'Connect With Expert', word: 'Marketers', color: 'from-purple-400 to-violet-500', subtitle: 'From Nairobi to Mombasa \u2014 Kenya\u2019s top freelancers are here. Your next hire is one click away.' },
-  { line1: 'Discover Talented', word: 'Consultants', color: 'from-emerald-400 to-green-500', subtitle: 'Secure escrow payments. Hustle Score trust system. Build your freelance career in Kenya.' },
-  { line1: 'Engage Elite', word: 'Creatives', color: 'from-red-400 to-pink-500', subtitle: 'Join thousands of Kenyans earning through their skills. The future of work is here.' },
-]
-
 export default function LandingPage() {
   const { openModal } = usePostJobModal()
   const content = usePageContent('homepage', defaultContent)
+  const siteSettings = useSiteSettings()
+
+  const HERO_ROTATIONS = [
+    { line1: "Hire Kenya\u2019s Best", word: 'Designers', color: 'from-pink-400 to-rose-500', subtitle: `Get paid via M-Pesa. Escrow-protected. Only ${siteSettings.service_fee_percent}% fee. The freelance platform built for Kenya.` },
+    { line1: 'Find World-Class', word: 'Developers', color: 'from-blue-400 to-cyan-500', subtitle: 'Post a job in 60 seconds. Get proposals within hours. Hire with confidence through secure escrow.' },
+    { line1: 'Work With Top', word: 'Writers', color: 'from-amber-400 to-orange-500', subtitle: 'AI-powered matching. ID-verified talent. Instant M-Pesa payouts. No hidden fees, ever.' },
+    { line1: 'Connect With Expert', word: 'Marketers', color: 'from-purple-400 to-violet-500', subtitle: 'From Nairobi to Mombasa \u2014 Kenya\u2019s top freelancers are here. Your next hire is one click away.' },
+    { line1: 'Discover Talented', word: 'Consultants', color: 'from-emerald-400 to-green-500', subtitle: 'Secure escrow payments. Hustle Score trust system. Build your freelance career in Kenya.' },
+    { line1: 'Engage Elite', word: 'Creatives', color: 'from-red-400 to-pink-500', subtitle: 'Join thousands of Kenyans earning through their skills. The future of work is here.' },
+  ]
   const [featuredTalent, setFeaturedTalent] = useState<any[]>([])
   const [talentLoading, setTalentLoading] = useState(true)
   const [featuredReviews, setFeaturedReviews] = useState<any[]>([])
@@ -381,7 +383,7 @@ export default function LandingPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Zap className="w-4 h-4 text-green-500" />
-                  <span>Only 6% Fee</span>
+                  <span>Only {siteSettings.service_fee_percent}% Fee</span>
                 </div>
               </div>
             </div>
@@ -397,7 +399,7 @@ export default function LandingPage() {
                       <TrendingUp className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-gray-900 text-sm">HustleKE Platform</h3>
+                      <h3 className="font-bold text-gray-900 text-sm">{siteSettings.platform_name} Platform</h3>
                       <p className="text-xs text-gray-500">Live overview</p>
                     </div>
                     <div className="ml-auto flex items-center gap-1.5 bg-green-50 px-2.5 py-1 rounded-full">
@@ -529,7 +531,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10 sm:mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              {content.value_props_title}
+              {`Why Choose ${siteSettings.platform_name}?`}
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               {content.value_props_subtitle}
@@ -557,7 +559,7 @@ export default function LandingPage() {
                     {prop.features.map((f: string) => (
                       <li key={f} className="flex items-center gap-2 text-sm text-gray-600">
                         <CheckCircle2 className={`w-4 h-4 ${color.check}`} />
-                        {f}
+                        {f.replace('Only 6% service fee', `Only ${siteSettings.service_fee_percent}% service fee`)}
                       </li>
                     ))}
                   </ul>
