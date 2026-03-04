@@ -25,7 +25,7 @@ export interface SiteSettings {
 }
 
 const defaultSettings: SiteSettings = {
-  platform_name: 'HustleKE',
+  platform_name: 'HustleKe',
   platform_tagline: 'Connect with global clients. Get paid instantly via M-Pesa.',
   service_fee_percent: 5,
   tax_rate_percent: 16,

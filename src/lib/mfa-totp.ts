@@ -13,7 +13,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const adminClient = createClient(supabaseUrl, supabaseServiceKey)
 
-const APP_NAME = 'HustleKE'
+const APP_NAME = 'HustleKe'
 
 // Create TOTP instance with required plugins for otplib v13
 const totp = new TOTP({

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePostJobModal } from '../components/PostJobModalContext'
+import LoadingLogo from '../components/LoadingLogo'
 import { useEffect, useState } from 'react'
 import {
   LayoutDashboard,
@@ -128,7 +129,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="animate-spin rounded-full h-10 w-10 border-[3px] border-green-600 border-t-transparent" />
+          <LoadingLogo size="md" />
           <p className="text-sm text-gray-500 font-medium">Loading dashboard...</p>
         </div>
       </div>

@@ -75,7 +75,7 @@ CREATE INDEX idx_activity_log_created ON activity_log(created_at DESC);
 
 -- Seed default settings
 INSERT INTO site_settings (key, value, description, category) VALUES
-  ('platform_name', '"HustleKE"', 'Platform name', 'general'),
+  ('platform_name', '"HustleKe"', 'Platform name', 'general'),
   ('platform_tagline', '"Connect with global clients. Get paid instantly via M-Pesa."', 'Platform tagline', 'general'),
   ('service_fee_percent', '5', 'Service fee percentage', 'fees'),
   ('tax_rate_percent', '16', 'VAT rate on service fees', 'fees'),

@@ -4,6 +4,7 @@ import { useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuthModal } from '../components/AuthModalContext'
 import { useAuth } from '@/contexts/AuthContext'
+import LoadingLogo from '../components/LoadingLogo'
 
 function SignupRedirect() {
   const router = useRouter()
@@ -23,7 +24,7 @@ function SignupRedirect() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600" />
+      <LoadingLogo size="md" />
     </div>
   )
 }
@@ -32,7 +33,7 @@ export default function SignupPageWrapper() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600" />
+        <LoadingLogo size="md" />
       </div>
     }>
       <SignupRedirect />

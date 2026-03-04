@@ -128,7 +128,7 @@ export async function sendNotification(
       if (phone) {
         result.sms = await sendSmsNotification({
           to: phone,
-          message: `[HustleKE] ${payload.title}: ${payload.message}`,
+          message: `[HustleKe] ${payload.title}: ${payload.message}`,
           type: payload.type,
         })
       }
@@ -217,9 +217,9 @@ async function sendEmailNotification(payload: EmailPayload): Promise<boolean> {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: process.env.EMAIL_FROM || 'HustleKE <noreply@hustleke.co.ke>',
+          from: process.env.EMAIL_FROM || 'HustleKe <noreply@hustleke.co.ke>',
           to: payload.to,
-          subject: `[HustleKE] ${payload.subject}`,
+          subject: `[HustleKe] ${payload.subject}`,
           html: buildEmailHtml(payload),
         }),
       })
@@ -258,9 +258,9 @@ async function sendEmailNotification(payload: EmailPayload): Promise<boolean> {
       })
 
       await transporter.sendMail({
-        from: process.env.EMAIL_FROM || 'HustleKE <noreply@hustleke.co.ke>',
+        from: process.env.EMAIL_FROM || 'HustleKe <noreply@hustleke.co.ke>',
         to: payload.to,
-        subject: `[HustleKE] ${payload.subject}`,
+        subject: `[HustleKe] ${payload.subject}`,
         html: buildEmailHtml(payload),
       })
       console.log(`[Email] SMTP sent to ${payload.to}: ${payload.subject}`)
@@ -284,7 +284,7 @@ function buildEmailHtml(payload: EmailPayload): string {
   return `
     <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:600px;margin:0 auto;padding:32px 24px;">
       <div style="text-align:center;margin-bottom:24px;">
-        <h1 style="color:#16a34a;font-size:24px;margin:0;">HustleKE</h1>
+        <h1 style="color:#16a34a;font-size:24px;margin:0;">HustleKe</h1>
         <p style="color:#6b7280;font-size:12px;margin:4px 0 0;">Kenya's Freelance Marketplace</p>
       </div>
       <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:24px;">
@@ -294,7 +294,7 @@ function buildEmailHtml(payload: EmailPayload): string {
         ${linkButton}
       </div>
       <p style="color:#9ca3af;font-size:11px;text-align:center;margin-top:24px;">
-        You received this because you have notifications enabled on HustleKE.<br/>
+        You received this because you have notifications enabled on HustleKe.<br/>
         <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/dashboard/settings?tab=notifications" style="color:#6b7280;">Manage notification preferences</a>
       </p>
     </div>

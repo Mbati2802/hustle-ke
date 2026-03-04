@@ -9,7 +9,7 @@ export interface SEOProps {
   noIndex?: boolean
 }
 
-const SITE_NAME = 'HustleKE'
+const SITE_NAME = 'HustleKe'
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://hustleke.com'
 const DEFAULT_IMAGE = `${BASE_URL}/images/og-default.png`
 const DEFAULT_DESCRIPTION = "Kenya's #1 freelance marketplace. Find work, hire talent, and get paid via M-Pesa. Secure escrow, AI-powered matching, and verified professionals."
