@@ -46,17 +46,47 @@ export default function AdminSettingsPage() {
     try {
       const parsed = JSON.parse(raw)
       if (typeof parsed === 'string') return parsed
-      return String(parsed)
+      if (typeof parsed === 'number' || typeof parsed === 'boolean') return String(parsed)
+      return JSON.stringify(parsed, null, 2)
     } catch {
       return raw
     }
   }
 
-  function getInputType(key: string, value: string): 'text' | 'number' | 'toggle' | 'url' {
+  function getInputType(key: string, value: string): 'text' | 'number' | 'toggle' | 'url' | 'json' {
     if (value === 'true' || value === 'false') return 'toggle'
     if (['service_fee_percent', 'tax_rate_percent', 'min_withdrawal', 'min_escrow', 'max_proposal_per_job', 'max_jobs_per_user'].includes(key)) return 'number'
+    if (key === 'social_links') return 'json'
     if (key.startsWith('social_')) return 'url'
     return 'text'
+  }
+
+  const ensureSocialLinksSetting = async () => {
+    setSaving(true)
+    setMessage(null)
+    try {
+      const res = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ settings: [{ key: 'social_links', value: [] }] }),
+      })
+      if (res.ok) {
+        setMessage({ type: 'success', text: 'Social links setting initialized' })
+        const refreshRes = await fetch('/api/admin/settings')
+        const refreshData = await refreshRes.json()
+        setSettings(refreshData.settings || [])
+        const vals: Record<string, string> = {}
+        for (const s of (refreshData.settings || [])) {
+          vals[s.key] = parseValue(s.value)
+        }
+        setEditedValues(vals)
+      } else {
+        setMessage({ type: 'error', text: 'Failed to initialize social links setting' })
+      }
+    } catch {
+      setMessage({ type: 'error', text: 'Network error' })
+    }
+    setSaving(false)
   }
 
   const handleSave = async () => {
@@ -72,6 +102,14 @@ export default function AdminSettingsPage() {
           changedSettings.push({ key: s.key, value: parseFloat(current) || 0 })
         } else if (inputType === 'toggle') {
           changedSettings.push({ key: s.key, value: current === 'true' })
+        } else if (inputType === 'json') {
+          try {
+            changedSettings.push({ key: s.key, value: JSON.parse(current || '[]') })
+          } catch {
+            setMessage({ type: 'error', text: `Invalid JSON for ${s.key}` })
+            setSaving(false)
+            return
+          }
         } else {
           changedSettings.push({ key: s.key, value: current })
         }
@@ -169,7 +207,18 @@ export default function AdminSettingsPage() {
             </h2>
 
             {filteredSettings.length === 0 ? (
-              <p className="text-sm text-gray-400">No settings in this category</p>
+              <div className="space-y-3">
+                <p className="text-sm text-gray-400">No settings in this category</p>
+                {activeCategory === 'social' && (
+                  <button
+                    onClick={ensureSocialLinksSetting}
+                    disabled={saving}
+                    className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
+                  >
+                    Initialize Social Links Setting
+                  </button>
+                )}
+              </div>
             ) : (
               <div className="space-y-5">
                 {filteredSettings.map(s => {
@@ -200,6 +249,14 @@ export default function AdminSettingsPage() {
                             onChange={e => setEditedValues(p => ({ ...p, [s.key]: e.target.value }))}
                             placeholder="https://..."
                             className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500/30" />
+                        ) : inputType === 'json' ? (
+                          <textarea
+                            value={currentVal}
+                            onChange={e => setEditedValues(p => ({ ...p, [s.key]: e.target.value }))}
+                            rows={6}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-green-500/30"
+                            placeholder='[\n  {"name":"Twitter","url":"https://x.com/...","icon":"Twitter","order_index":1}\n]'
+                          />
                         ) : (
                           <input type="text" value={currentVal}
                             onChange={e => setEditedValues(p => ({ ...p, [s.key]: e.target.value }))}

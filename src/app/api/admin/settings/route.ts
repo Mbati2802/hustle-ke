@@ -32,10 +32,20 @@ export async function PUT(req: NextRequest) {
   const results = []
   for (const s of body.settings) {
     if (!s.key) continue
+    const row: Record<string, unknown> = {
+      key: s.key,
+      value: JSON.stringify(s.value),
+      updated_by: auth.profile.id,
+    }
+
+    if (s.key === 'social_links') {
+      row.category = 'social'
+      row.description = 'Social links list'
+    }
+
     const { data, error } = await auth.supabase
       .from('site_settings')
-      .update({ value: JSON.stringify(s.value), updated_by: auth.profile.id })
-      .eq('key', s.key)
+      .upsert(row, { onConflict: 'key' })
       .select()
       .single()
     if (error) {
