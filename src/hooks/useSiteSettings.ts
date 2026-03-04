@@ -66,17 +66,24 @@ export function useSiteSettings(): SiteSettings & { refresh: () => void } {
       .from('site_settings')
       .select('key, value')
     
-    // Fetch social links
-    const socialResponse = await fetch('/api/social-links')
-    const socialData = socialResponse.ok ? await socialResponse.json() : { social_links: [] }
+    // Fetch social links (new table)
+    let socialLinks = []
+    try {
+      const socialResponse = await fetch('/api/social-links')
+      if (socialResponse.ok) {
+        const socialData = await socialResponse.json()
+        socialLinks = socialData.social_links || []
+      }
+    } catch (error) {
+      console.warn('Failed to fetch social links from new table, will use fallback')
+    }
     
     // Debug logging
     console.log('useSiteSettings Debug:', {
       settingsError: settingsError?.message,
       settingsCount: settingsData?.length || 0,
-      socialResponseOk: socialResponse.ok,
-      socialLinksCount: socialData.social_links?.length || 0,
-      socialLinks: socialData.social_links
+      socialLinksCount: socialLinks.length,
+      socialLinks
     })
     
     if (!settingsError && settingsData) {
@@ -95,8 +102,17 @@ export function useSiteSettings(): SiteSettings & { refresh: () => void } {
         }
       })
       
-      // Add social links
-      merged.social_links = socialData.social_links || []
+      // Use new social links if available, otherwise create from legacy settings
+      if (socialLinks.length > 0) {
+        merged.social_links = socialLinks
+      } else {
+        // Fallback: create social_links array from legacy settings
+        merged.social_links = [
+          { name: 'Twitter', url: merged.social_twitter, icon: 'Twitter', order_index: 1 },
+          { name: 'LinkedIn', url: merged.social_linkedin, icon: 'Linkedin', order_index: 2 },
+          { name: 'Facebook', url: merged.social_facebook, icon: 'Facebook', order_index: 3 }
+        ].filter(link => link.url && link.url !== '') // Only include non-empty URLs
+      }
       
       console.log('Final merged settings social_links:', merged.social_links)
       setSettings(merged)
