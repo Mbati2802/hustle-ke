@@ -25,6 +25,11 @@ export interface SiteSettings {
   [key: string]: any
 }
 
+interface DatabaseSetting {
+  key: string
+  value: string
+}
+
 const defaultSettings: SiteSettings = {
   platform_name: 'HustleKe',
   platform_tagline: 'Connect with global clients. Get paid instantly via M-Pesa.',
@@ -67,7 +72,7 @@ export function useSiteSettings(): SiteSettings & { refresh: () => void } {
     
     if (!settingsError && settingsData) {
       const merged = { ...defaultSettings }
-      settingsData.forEach(setting => {
+      settingsData.forEach((setting: DatabaseSetting) => {
         if (setting.key in merged) {
           // Parse JSON value and assign
           try {
