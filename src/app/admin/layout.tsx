@@ -40,7 +40,6 @@ const navItems = [
   { href: '/admin/broadcast', label: 'Broadcast', icon: Radio },
   { href: '/admin/saved-searches', label: 'Job Alerts', icon: Bell },
   { href: '/admin/pages', label: 'Pages', icon: FileCode },
-  { href: '/admin/social-links', label: 'Social Links', icon: Globe },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
 ]
 
