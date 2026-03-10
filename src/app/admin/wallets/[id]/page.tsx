@@ -38,7 +38,16 @@ export default function WalletDetailPage() {
   const router = useRouter()
   const [wallet, setWallet] = useState<WalletData | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [stats, setStats] = useState({ total_deposits: 0, total_withdrawals: 0, total_escrow: 0, transaction_count: 0 })
+  const [stats, setStats] = useState({ 
+    total_deposits: 0, 
+    total_withdrawals: 0, 
+    total_escrow: 0, 
+    total_credits: 0,
+    total_debits: 0,
+    transaction_count: 0,
+    last_30_days: 0,
+    avg_transaction: 0
+  })
   const [loading, setLoading] = useState(true)
   const [showAdjustModal, setShowAdjustModal] = useState(false)
   const [adjustAction, setAdjustAction] = useState<'credit' | 'debit'>('credit')
@@ -168,7 +177,7 @@ export default function WalletDetailPage() {
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-xl border border-gray-200 p-4">
           <p className="text-sm text-gray-500">Current Balance</p>
           <p className="text-2xl font-bold text-gray-900 mt-1">KES {wallet.balance.toLocaleString()}</p>
@@ -184,6 +193,26 @@ export default function WalletDetailPage() {
         <div className="bg-white rounded-xl border border-gray-200 p-4">
           <p className="text-sm text-gray-500">Transactions</p>
           <p className="text-2xl font-bold text-gray-900 mt-1">{stats.transaction_count}</p>
+        </div>
+      </div>
+
+      {/* Additional Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <p className="text-sm text-gray-500">Total Credits</p>
+          <p className="text-xl font-bold text-blue-600 mt-1">KES {stats.total_credits.toLocaleString()}</p>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <p className="text-sm text-gray-500">Total Debits</p>
+          <p className="text-xl font-bold text-orange-600 mt-1">KES {stats.total_debits.toLocaleString()}</p>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <p className="text-sm text-gray-500">Last 30 Days</p>
+          <p className="text-xl font-bold text-purple-600 mt-1">KES {stats.last_30_days.toLocaleString()}</p>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <p className="text-sm text-gray-500">Avg Transaction</p>
+          <p className="text-xl font-bold text-teal-600 mt-1">KES {Math.round(stats.avg_transaction).toLocaleString()}</p>
         </div>
       </div>
 

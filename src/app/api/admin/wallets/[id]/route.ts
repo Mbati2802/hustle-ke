@@ -27,33 +27,53 @@ export async function GET(
 
   if (error || !wallet) return errorResponse('Wallet not found', 404)
 
-  // Get transaction history
+  // Get transaction history with pagination
   const { data: transactions } = await auth.supabase
     .from('wallet_transactions')
     .select('*')
     .eq('wallet_id', params.id)
     .order('created_at', { ascending: false })
-    .limit(50)
+    .limit(100)
 
-  // Get statistics
-  const { data: stats } = await auth.supabase
-    .from('wallet_transactions')
-    .select('type, amount')
-    .eq('wallet_id', params.id)
+  // Calculate statistics efficiently
+  const stats = {
+    total_deposits: 0,
+    total_withdrawals: 0,
+    total_escrow: 0,
+    total_credits: 0,
+    total_debits: 0,
+    transaction_count: 0,
+    last_30_days: 0,
+    avg_transaction: 0
+  }
 
-  const totalDeposits = stats?.filter(t => t.type === 'Deposit').reduce((sum, t) => sum + t.amount, 0) || 0
-  const totalWithdrawals = stats?.filter(t => t.type === 'Withdrawal').reduce((sum, t) => sum + t.amount, 0) || 0
-  const totalEscrow = stats?.filter(t => t.type === 'Escrow').reduce((sum, t) => sum + t.amount, 0) || 0
+  if (transactions && transactions.length > 0) {
+    const now = new Date()
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+    
+    transactions.forEach(t => {
+      stats.transaction_count++
+      
+      if (t.type === 'Deposit') stats.total_deposits += t.amount
+      if (t.type === 'Withdrawal') stats.total_withdrawals += t.amount
+      if (t.type === 'Escrow') stats.total_escrow += t.amount
+      if (t.type === 'Credit') stats.total_credits += t.amount
+      if (t.type === 'Debit') stats.total_debits += t.amount
+      
+      if (new Date(t.created_at) >= thirtyDaysAgo) {
+        stats.last_30_days += t.amount
+      }
+    })
+    
+    stats.avg_transaction = stats.transaction_count > 0 
+      ? (stats.total_deposits + stats.total_credits) / stats.transaction_count 
+      : 0
+  }
 
   return jsonResponse({
     wallet,
     transactions: transactions || [],
-    stats: {
-      total_deposits: totalDeposits,
-      total_withdrawals: totalWithdrawals,
-      total_escrow: totalEscrow,
-      transaction_count: stats?.length || 0
-    }
+    stats
   })
 }
 
