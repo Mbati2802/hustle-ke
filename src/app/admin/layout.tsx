@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Users, Briefcase, FileText, DollarSign,
   AlertTriangle, Star, MessageSquare, Settings, FileCode,
   ChevronLeft, ChevronRight, LogOut, Menu, X, Bell, Search,
-  Shield, Activity, LifeBuoy, Globe
+  Shield, Activity, LifeBuoy, Globe, Wallet
 } from 'lucide-react'
 import AssignmentNotificationPopup from '@/app/components/AssignmentNotificationPopup'
 
@@ -22,6 +22,7 @@ const navItems = [
   { href: '/admin/users', label: 'Users', icon: Users },
   { href: '/admin/jobs', label: 'Jobs', icon: Briefcase },
   { href: '/admin/proposals', label: 'Proposals', icon: FileText },
+  { href: '/admin/wallets', label: 'Wallets', icon: Wallet },
   { href: '/admin/escrow', label: 'Escrow', icon: DollarSign },
   { href: '/admin/disputes', label: 'Disputes', icon: AlertTriangle },
   { href: '/admin/reviews', label: 'Reviews', icon: Star },
