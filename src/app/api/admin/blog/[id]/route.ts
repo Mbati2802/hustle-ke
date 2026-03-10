@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { requireAdmin, jsonResponse, errorResponse, parseBody } from '@/lib/api-utils'
 
 // GET /api/admin/blog/[id] — Get blog post details
@@ -109,9 +110,15 @@ export async function PUT(
     action: 'update_blog_post',
     entity_type: 'blog_posts',
     entity_id: params.id,
-    details: updateData,
-    ip_address: req.headers.get('x-forwarded-for') || 'unknown'
+    details: { slug: updateData.slug, is_published: updateData.status === 'published' },
+    ip_address: req.headers.get('x-forwarded-for') || 'unknown',
   })
+
+  // Invalidate blog caches so changes appear immediately
+  revalidatePath('/blog')
+  if (post.slug) revalidatePath(`/blog/${post.slug}`)
+  revalidateTag('blog-posts')
+  revalidateTag(`blog-${params.id}`)
 
   return jsonResponse({ post })
 }

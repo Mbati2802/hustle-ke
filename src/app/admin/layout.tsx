@@ -53,6 +53,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [unreadAssignments, setUnreadAssignments] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     async function checkAdmin() {
@@ -227,14 +228,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </button>
 
           <div className="flex-1 flex items-center gap-4">
-            <div className="relative hidden md:block max-w-md flex-1">
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault()
+                if (searchQuery.trim()) {
+                  router.push(`/admin/users?search=${encodeURIComponent(searchQuery)}`)
+                }
+              }}
+              className="relative hidden md:block max-w-md flex-1"
+            >
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search users, jobs, disputes..."
                 className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500"
               />
-            </div>
+            </form>
           </div>
 
           <div className="flex items-center gap-3">

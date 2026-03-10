@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server'
+import { revalidateTag } from 'next/cache'
 import { requireAdmin, jsonResponse, errorResponse, parseBody } from '@/lib/api-utils'
 
 // GET /api/admin/promo-codes/[id] — Get promo code details
@@ -80,8 +81,12 @@ export async function PUT(
     entity_type: 'promo_codes',
     entity_id: params.id,
     details: updateData,
-    ip_address: req.headers.get('x-forwarded-for') || 'unknown'
+    ip_address: req.headers.get('x-forwarded-for') || 'unknown',
   })
+
+  // Invalidate promo code cache
+  revalidateTag('promo-codes')
+  revalidateTag(`promo-${params.id}`)
 
   return jsonResponse({ promo_code: promoCode })
 }

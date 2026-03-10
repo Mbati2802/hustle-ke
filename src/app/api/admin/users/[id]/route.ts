@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { requireAdmin, jsonResponse, errorResponse, parseBody } from '@/lib/api-utils'
 import { createAdminClient } from '@/lib/supabase'
 
@@ -109,6 +110,13 @@ export async function PUT(
     details: updateData,
     ip_address: req.headers.get('x-forwarded-for') || 'unknown',
   })
+
+  // Invalidate caches so changes reflect immediately on frontend
+  revalidatePath('/talent')
+  revalidatePath(`/talent/${params.id}`)
+  revalidatePath('/dashboard')
+  revalidateTag(`user-${params.id}`)
+  revalidateTag('users')
 
   return jsonResponse({ profile: updated })
 }
