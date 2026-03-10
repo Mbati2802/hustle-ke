@@ -5,7 +5,7 @@ import Link from 'next/link'
 import {
   Users, Search, ChevronLeft, ChevronRight,
   Shield, ShieldCheck, Star, MoreVertical, Eye, Pencil, Trash2, X,
-  Plus, Loader2, CheckCircle2, XCircle
+  Plus, Loader2, CheckCircle2, XCircle, Clock, Key, LogOut
 } from 'lucide-react'
 
 interface User {
@@ -80,6 +80,31 @@ export default function AdminUsersPage() {
     await fetch(`/api/admin/users/${id}`, { method: 'DELETE' })
     fetchUsers()
     setActionMenu(null)
+  }
+
+  const handleUserAction = async (userId: string, action: string) => {
+    const confirmations: Record<string, string> = {
+      ban: 'Ban this user? They will be logged out and unable to access the platform.',
+      suspend: 'Suspend this user for 7 days?',
+      reset_password: 'Send password reset email to this user?',
+      force_logout: 'Force logout all sessions for this user?',
+    }
+    
+    if (confirmations[action] && !confirm(confirmations[action])) return
+    
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/actions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, duration: 7 }),
+      })
+      if (res.ok) {
+        fetchUsers()
+        setActionMenu(null)
+      }
+    } catch (err) {
+      console.error('Failed to perform action:', err)
+    }
   }
 
   const handleCreateUser = async (e: React.FormEvent) => {
@@ -236,13 +261,25 @@ export default function AdminUsersPage() {
                         <MoreVertical className="w-4 h-4 text-gray-400" />
                       </button>
                       {actionMenu === u.id && (
-                        <div className="absolute right-4 top-10 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 w-40">
+                        <div className="absolute right-4 top-10 z-20 bg-white border border-gray-200 rounded-lg shadow-lg py-1 w-48">
                           <Link href={`/admin/users/${u.id}`} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setActionMenu(null)}>
                             <Eye className="w-4 h-4" /> View Details
                           </Link>
                           <Link href={`/admin/users/${u.id}?edit=true`} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setActionMenu(null)}>
                             <Pencil className="w-4 h-4" /> Edit User
                           </Link>
+                          <button onClick={() => handleUserAction(u.id, 'ban')} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left">
+                            <Shield className="w-4 h-4" /> Ban User
+                          </button>
+                          <button onClick={() => handleUserAction(u.id, 'suspend')} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left">
+                            <Clock className="w-4 h-4" /> Suspend (7 days)
+                          </button>
+                          <button onClick={() => handleUserAction(u.id, 'reset_password')} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left">
+                            <Key className="w-4 h-4" /> Reset Password
+                          </button>
+                          <button onClick={() => handleUserAction(u.id, 'force_logout')} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left">
+                            <LogOut className="w-4 h-4" /> Force Logout
+                          </button>
                           <button onClick={() => handleDelete(u.id)} className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left">
                             <Trash2 className="w-4 h-4" /> Delete User
                           </button>
