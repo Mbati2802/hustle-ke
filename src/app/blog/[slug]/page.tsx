@@ -84,8 +84,9 @@ export default function BlogPostPage() {
 
   const formatDate = (d: string) => new Date(d).toLocaleDateString('en-KE', { year: 'numeric', month: 'long', day: 'numeric' })
 
-  const readingTime = (content: string) => {
-    const words = content.split(/\s+/).length
+  const readingTime = (content: string | null | undefined) => {
+    if (!content) return 1
+    const words = content.trim().split(/\s+/).length
     return Math.max(1, Math.ceil(words / 200))
   }
 
@@ -98,7 +99,8 @@ export default function BlogPostPage() {
   }
 
   // Simple markdown-to-HTML converter for blog content
-  const renderContent = (md: string) => {
+  const renderContent = (md: string | null | undefined) => {
+    if (!md) return '<p class="text-gray-500 italic">No content available.</p>'
     let html = md
       .replace(/^### (.+)$/gm, '<h3 class="text-lg font-bold text-gray-900 mt-8 mb-3">$1</h3>')
       .replace(/^## (.+)$/gm, '<h2 class="text-xl font-bold text-gray-900 mt-10 mb-4">$1</h2>')
@@ -195,7 +197,7 @@ export default function BlogPostPage() {
               <span className="font-medium text-gray-700">{post.profiles?.full_name || 'HustleKE Team'}</span>
             </div>
             <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> {formatDate(post.published_at)}</span>
-            <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> {readingTime(post.content)} min read</span>
+            <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> {readingTime(post.content || '')} min read</span>
             <span className="flex items-center gap-1"><Eye className="w-4 h-4" /> {post.views} views</span>
           </div>
         </header>
@@ -203,7 +205,7 @@ export default function BlogPostPage() {
         {/* Content */}
         <div
           className="prose prose-gray max-w-none mb-12"
-          dangerouslySetInnerHTML={{ __html: renderContent(post.content) }}
+          dangerouslySetInnerHTML={{ __html: renderContent(post.content || '') }}
         />
 
         {/* Tags */}

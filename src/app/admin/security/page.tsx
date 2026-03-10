@@ -98,68 +98,49 @@ export default function AdminSecurityPage() {
     setSelectedAlert(null)
   }
 
+  const secStatCards = [
+    { label: 'Critical', value: stats.critical, dot: 'bg-red-600', text: 'text-red-600', sFilter: '', svFilter: 'critical' },
+    { label: 'Active', value: stats.active, dot: 'bg-orange-500', text: 'text-orange-600', sFilter: 'active', svFilter: '' },
+    { label: 'Investigating', value: stats.investigating, dot: 'bg-blue-500', text: 'text-blue-600', sFilter: 'investigating', svFilter: '' },
+    { label: 'Resolved', value: stats.resolved, dot: 'bg-green-500', text: 'text-green-600', sFilter: 'resolved', svFilter: '' },
+  ]
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Lock className="w-7 h-7 text-red-500" /> Security Alerts
+          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <Lock className="w-5 h-5 text-red-500" /> Security Alerts
           </h1>
-          <p className="text-sm text-gray-500 mt-1">{total.toLocaleString()} total alerts</p>
+          <p className="text-xs text-gray-500 mt-0.5">{stats.critical} critical · {stats.active} active · {total.toLocaleString()} total</p>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Total Alerts</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total}</p>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {secStatCards.map(s => (
+          <button key={s.label}
+            onClick={() => {
+              if (s.svFilter) setSeverityFilter(severityFilter === s.svFilter ? '' : s.svFilter)
+              if (s.sFilter) setStatusFilter(statusFilter === s.sFilter ? '' : s.sFilter)
+              setPage(1)
+            }}
+            className={`text-left bg-white rounded-xl border p-3 hover:shadow-sm transition-all ${
+              (s.sFilter && statusFilter === s.sFilter) || (s.svFilter && severityFilter === s.svFilter)
+                ? 'ring-1 ring-red-200 border-red-200' : 'border-gray-200'
+            }`}>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className={`w-2 h-2 rounded-full ${s.dot}`} />
+              <span className="text-xs text-gray-500">{s.label}</span>
             </div>
-            <Shield className="w-8 h-8 text-gray-400" />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Active</p>
-              <p className="text-2xl font-bold text-red-600 mt-1">{stats.active}</p>
-            </div>
-            <AlertTriangle className="w-8 h-8 text-red-400" />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Investigating</p>
-              <p className="text-2xl font-bold text-blue-600 mt-1">{stats.investigating}</p>
-            </div>
-            <Eye className="w-8 h-8 text-blue-400" />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Resolved</p>
-              <p className="text-2xl font-bold text-green-600 mt-1">{stats.resolved}</p>
-            </div>
-            <CheckCircle2 className="w-8 h-8 text-green-400" />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Critical</p>
-              <p className="text-2xl font-bold text-red-600 mt-1">{stats.critical}</p>
-            </div>
-            <AlertTriangle className="w-8 h-8 text-red-400" />
-          </div>
-        </div>
+            <p className={`text-xl font-bold ${s.text}`}>{s.value}</p>
+            {stats.total > 0 && (
+              <div className="mt-2 h-1 bg-gray-100 rounded-full overflow-hidden">
+                <div className={`h-full ${s.dot} rounded-full`} style={{ width: `${Math.min(100,(s.value/stats.total)*100)}%` }} />
+              </div>
+            )}
+          </button>
+        ))}
       </div>
 
       {/* Filters */}

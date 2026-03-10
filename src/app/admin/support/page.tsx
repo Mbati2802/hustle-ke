@@ -237,13 +237,18 @@ export default function AdminSupportPage() {
     setSending(false)
   }
 
+  const openCount = tickets.filter(t => t.status === 'Open').length
+  const pendingCount = tickets.filter(t => t.status === 'Pending').length
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <LifeBuoy className="w-7 h-7 text-indigo-600" /> Support Inbox
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">Handle Live Chat escalations and support tickets</p>
+    <div className="space-y-5">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <LifeBuoy className="w-5 h-5 text-indigo-600" /> Support Inbox
+          </h1>
+          <p className="text-xs text-gray-500 mt-0.5">{openCount} open · {pendingCount} pending · {total} total tickets</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">

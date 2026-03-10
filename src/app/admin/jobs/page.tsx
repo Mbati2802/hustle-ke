@@ -43,6 +43,7 @@ export default function AdminJobsPage() {
   const [creating, setCreating] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [clients, setClients] = useState<Array<{ id: string; full_name: string; email: string }>>([])
+  const [jobStats, setJobStats] = useState({ open: 0, inProgress: 0, completed: 0, disputed: 0, cancelled: 0, total: 0 })
 
   const fetchJobs = useCallback(async () => {
     setLoading(true)
@@ -50,11 +51,19 @@ export default function AdminJobsPage() {
     if (search) params.set('search', search)
     if (statusFilter) params.set('status', statusFilter)
     try {
-      const res = await fetch(`/api/admin/jobs?${params}`)
-      const data = await res.json()
+      const [jobsRes, statsRes] = await Promise.all([
+        fetch(`/api/admin/jobs?${params}`),
+        page === 1 && !search && !statusFilter ? fetch('/api/admin/stats') : Promise.resolve(null),
+      ])
+      const data = await jobsRes.json()
       setJobs(data.jobs || [])
       setTotal(data.pagination?.total || 0)
       setHasMore(data.pagination?.hasMore || false)
+      if (statsRes?.ok) {
+        const s = await statsRes.json()
+        const j = s.stats?.jobs || {}
+        setJobStats({ open: j.open||0, inProgress: j.in_progress||0, completed: j.completed||0, disputed: j.disputed||0, cancelled: j.cancelled||0, total: j.total||0 })
+      }
     } catch { /* */ }
     setLoading(false)
   }, [page, search, statusFilter, sortBy])
@@ -114,18 +123,56 @@ export default function AdminJobsPage() {
     setCreating(false)
   }
 
+  const statusCards = [
+    { label: 'Open', value: jobStats.open, color: 'bg-green-500', text: 'text-green-600', status: 'Open' },
+    { label: 'In Progress', value: jobStats.inProgress, color: 'bg-blue-500', text: 'text-blue-600', status: 'In-Progress' },
+    { label: 'Completed', value: jobStats.completed, color: 'bg-gray-400', text: 'text-gray-600', status: 'Completed' },
+    { label: 'Disputed', value: jobStats.disputed, color: 'bg-red-500', text: 'text-red-600', status: 'Disputed' },
+  ]
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5" onClick={() => setActionMenu(null)}>
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Briefcase className="w-7 h-7 text-green-500" /> Jobs
+          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <Briefcase className="w-5 h-5 text-green-500" /> Jobs
           </h1>
-          <p className="text-sm text-gray-500 mt-1">{total.toLocaleString()} total jobs</p>
+          <p className="text-xs text-gray-500 mt-0.5">{total.toLocaleString()} total · {jobStats.open} open</p>
         </div>
-        <button onClick={() => { setShowCreateModal(true); fetchClients() }} className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2">
-          <Plus className="w-4 h-4" /> Add Job
-        </button>
+        <div className="flex items-center gap-2">
+          <Link href="/admin/proposals" className="px-3 py-1.5 text-xs border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition flex items-center gap-1.5">
+            <UsersIcon className="w-3.5 h-3.5" /> Proposals
+          </Link>
+          <button onClick={() => { setShowCreateModal(true); fetchClients() }} className="px-3 py-1.5 text-xs bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-1.5">
+            <Plus className="w-3.5 h-3.5" /> Add Job
+          </button>
+        </div>
+      </div>
+
+      {/* Status Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {statusCards.map(s => (
+          <button key={s.label}
+            onClick={() => { setStatusFilter(statusFilter === s.status ? '' : s.status); setPage(1) }}
+            className={`text-left bg-white rounded-xl border p-3 hover:shadow-sm transition-all ${
+              statusFilter === s.status ? `border-${s.color.split('-')[1]}-300 ring-1 ring-${s.color.split('-')[1]}-200` : 'border-gray-200'
+            }`}>
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs text-gray-500">{s.label}</span>
+              <div className={`w-2 h-2 rounded-full ${s.color}`} />
+            </div>
+            <p className={`text-xl font-bold ${s.text}`}>{s.value.toLocaleString()}</p>
+            {jobStats.total > 0 && (
+              <div className="mt-2">
+                <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
+                  <div className={`h-full ${s.color} rounded-full transition-all`}
+                    style={{ width: `${Math.min(100, (s.value / jobStats.total) * 100)}%` }} />
+                </div>
+                <p className="text-[10px] text-gray-400 mt-0.5">{Math.round((s.value / jobStats.total) * 100)}%</p>
+              </div>
+            )}
+          </button>
+        ))}
       </div>
 
       {message && (

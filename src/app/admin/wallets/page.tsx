@@ -56,56 +56,37 @@ export default function AdminWalletsPage() {
 
   useEffect(() => { fetchWallets() }, [fetchWallets])
 
+  const maxBal = wallets.length > 0 ? Math.max(...wallets.map(w => w.balance)) : 1
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Wallet className="w-7 h-7 text-green-500" /> Wallet Management
+          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <Wallet className="w-5 h-5 text-green-500" /> Wallets
           </h1>
-          <p className="text-sm text-gray-500 mt-1">{total.toLocaleString()} total wallets</p>
+          <p className="text-xs text-gray-500 mt-0.5">{total.toLocaleString()} wallets · KES {stats.total_balance.toLocaleString()} total</p>
         </div>
+        <Link href="/admin/subscriptions" className="px-3 py-1.5 text-xs border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition flex items-center gap-1.5">
+          <TrendingUp className="w-3.5 h-3.5" /> Subscriptions
+        </Link>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Total Wallets</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total_wallets.toLocaleString()}</p>
+      <div className="grid grid-cols-3 gap-3">
+        {[
+          { label: 'Total Wallets', value: stats.total_wallets.toLocaleString(), icon: Users, color: 'text-blue-600', dot: 'bg-blue-500' },
+          { label: 'Total Balance', value: `KES ${stats.total_balance.toLocaleString()}`, icon: DollarSign, color: 'text-green-600', dot: 'bg-green-500' },
+          { label: 'Avg Balance', value: `KES ${stats.total_wallets > 0 ? Math.round(stats.total_balance / stats.total_wallets).toLocaleString() : 0}`, icon: TrendingUp, color: 'text-amber-600', dot: 'bg-amber-500' },
+        ].map(s => (
+          <div key={s.label} className="bg-white rounded-xl border border-gray-200 p-3">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className={`w-2 h-2 rounded-full ${s.dot}`} />
+              <span className="text-xs text-gray-500">{s.label}</span>
             </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Users className="w-6 h-6 text-blue-600" />
-            </div>
+            <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
           </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Total Balance</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">KES {stats.total_balance.toLocaleString()}</p>
-            </div>
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-green-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Average Balance</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">
-                KES {stats.total_wallets > 0 ? Math.round(stats.total_balance / stats.total_wallets).toLocaleString() : 0}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-amber-600" />
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Filters */}
@@ -178,29 +159,31 @@ export default function AdminWalletsPage() {
                 wallets.map((w) => (
                   <tr key={w.id} className="hover:bg-gray-50 transition">
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 text-xs font-bold shrink-0">
-                          {w.profile.full_name.charAt(0)}
-                        </div>
+                      <div className="flex items-center gap-2.5">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 ${
+                          w.profile.role === 'Freelancer' ? 'bg-green-500' : w.profile.role === 'Client' ? 'bg-blue-500' : 'bg-purple-500'
+                        }`}>{(w.profile.full_name || '?').charAt(0).toUpperCase()}</div>
                         <div className="min-w-0">
-                          <p className="font-medium text-gray-900 truncate">{w.profile.full_name}</p>
-                          <p className="text-xs text-gray-500 truncate">{w.profile.email}</p>
+                          <p className="text-xs font-semibold text-gray-900 truncate">{w.profile.full_name}</p>
+                          <p className="text-[11px] text-gray-400 truncate">{w.profile.email}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">{w.profile.role}</span>
+                      <span className="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 font-medium">{w.profile.role}</span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-1">
-                        <DollarSign className="w-3.5 h-3.5 text-green-500" />
-                        <span className="font-semibold text-gray-900">KES {w.balance.toLocaleString()}</span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-green-500 rounded-full" style={{ width: `${Math.min(100,(w.balance/maxBal)*100)}%` }} />
+                        </div>
+                        <span className="text-xs font-semibold text-gray-900">KES {w.balance.toLocaleString()}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">{new Date(w.created_at).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-[11px] text-gray-400">{new Date(w.created_at).toLocaleDateString()}</td>
                     <td className="px-4 py-3 text-right">
-                      <Link href={`/admin/wallets/${w.id}`} className="inline-flex items-center gap-1 px-3 py-1.5 text-xs bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition">
-                        <Eye className="w-3.5 h-3.5" /> View
+                      <Link href={`/admin/wallets/${w.id}`} className="inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition font-medium">
+                        <Eye className="w-3 h-3" /> View
                       </Link>
                     </td>
                   </tr>

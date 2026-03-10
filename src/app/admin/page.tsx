@@ -77,27 +77,33 @@ function useCountUp(target: number, duration = 1200) {
   return value
 }
 
-function StatCard({ label, value, numValue, icon: Icon, color, href, sub }: {
+function StatCard({ label, value, numValue, icon: Icon, color, href, sub, trend }: {
   label: string; value: string; numValue: number; icon: React.ElementType
-  color: string; href?: string; sub?: string
+  color: string; href?: string; sub?: string; trend?: { value: number; label: string }
 }) {
   const animated = useCountUp(numValue)
   const inner = (
-    <div className="bg-white rounded-2xl border border-gray-200 p-5 hover:shadow-lg transition-all duration-300 relative overflow-hidden">
-      <div className={`absolute -top-4 -right-4 w-20 h-20 rounded-full opacity-[0.07] ${color}`} />
-      <div className="flex items-start justify-between mb-4">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide leading-tight">{label}</span>
-        <div className={`w-10 h-10 ${color} rounded-xl flex items-center justify-center shadow-sm shrink-0`}>
-          <Icon className="w-5 h-5 text-white" />
+    <div className="bg-white rounded-xl border border-gray-200 p-3.5 hover:shadow-md hover:border-gray-300 transition-all duration-200 relative overflow-hidden group">
+      <div className={`absolute -top-3 -right-3 w-14 h-14 rounded-full opacity-[0.06] ${color}`} />
+      <div className="flex items-start justify-between mb-2.5">
+        <div className={`w-8 h-8 ${color} rounded-lg flex items-center justify-center shadow-sm shrink-0`}>
+          <Icon className="w-4 h-4 text-white" />
         </div>
+        {trend && (
+          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${trend.value >= 0 ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+            {trend.value >= 0 ? '↑' : '↓'} {Math.abs(trend.value)}%
+          </span>
+        )}
       </div>
-      <p className="text-3xl font-bold text-gray-900">
+      <p className="text-xl font-bold text-gray-900 leading-none mb-1">
         {numValue > 0 ? animated.toLocaleString() : value}
       </p>
-      {sub && <p className="text-xs text-gray-400 mt-1.5">{sub}</p>}
+      <p className="text-[11px] font-medium text-gray-500 truncate">{label}</p>
+      {sub && <p className="text-[10px] text-gray-400 mt-1 truncate">{sub}</p>}
+      {href && <span className="absolute inset-0" />}
     </div>
   )
-  return href ? <Link href={href}>{inner}</Link> : <div>{inner}</div>
+  return href ? <Link href={href} className="block">{inner}</Link> : <div>{inner}</div>
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -204,26 +210,25 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+      {/* KPI Cards — compact 4-col grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-4 gap-3">
         <StatCard label="Total Users" value={stats.users.total.toLocaleString()}
           numValue={stats.users.total} icon={Users} color="bg-blue-500" href="/admin/users"
-          sub={`${stats.users.freelancers ?? 0} freelancers · ${stats.users.clients ?? 0} clients`} />
-        <StatCard label="Total Jobs" value={stats.jobs.total.toLocaleString()}
-          numValue={stats.jobs.total} icon={Briefcase} color="bg-green-500" href="/admin/jobs"
-          sub={`${stats.jobs.open} currently open`} />
+          sub={`${stats.users.freelancers ?? 0} FL · ${stats.users.clients ?? 0} CL`} />
+        <StatCard label="Open Jobs" value={stats.jobs.open.toLocaleString()}
+          numValue={stats.jobs.open} icon={Briefcase} color="bg-green-500" href="/admin/jobs"
+          sub={`${stats.jobs.total} total`} />
         <StatCard label="Proposals" value={stats.proposals.total.toLocaleString()}
           numValue={stats.proposals.total} icon={FileText} color="bg-purple-500" href="/admin/proposals" />
-        <StatCard label="Escrow Transactions" value={stats.escrows.total.toLocaleString()}
+        <StatCard label="Escrows" value={stats.escrows.total.toLocaleString()}
           numValue={stats.escrows.total} icon={Shield} color="bg-amber-500" href="/admin/escrow" />
         <StatCard label="Open Disputes" value={stats.disputes.open.toLocaleString()}
           numValue={stats.disputes.open} icon={AlertTriangle} color="bg-red-500" href="/admin/disputes"
           sub={`${stats.disputes.total} total`} />
         <StatCard label="Pro Subscribers" value={(stats.subscriptions?.pro ?? 0).toLocaleString()}
-          numValue={stats.subscriptions?.pro ?? 0} icon={Crown} color="bg-violet-500" />
-        <StatCard label="Platform Revenue" value={formatKES(stats.revenue.total)}
-          numValue={0} icon={TrendingUp} color="bg-emerald-500"
-          sub={`${formatKES(stats.revenue.service_fees)} fees + ${formatKES(stats.revenue.tax_collected)} tax`} />
+          numValue={stats.subscriptions?.pro ?? 0} icon={Crown} color="bg-violet-500" href="/admin/subscriptions" />
+        <StatCard label="Service Fees" value={formatKES(stats.revenue.service_fees)}
+          numValue={0} icon={TrendingUp} color="bg-emerald-500" />
         <StatCard label="Tax Collected" value={formatKES(stats.revenue.tax_collected)}
           numValue={0} icon={DollarSign} color="bg-teal-500" />
       </div>
@@ -419,25 +424,21 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl p-6">
-        <h2 className="font-semibold text-white mb-4 flex items-center gap-2">
-          <Zap className="w-4 h-4 text-amber-400" /> Quick Actions
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { label: 'Manage Users',    href: '/admin/users',      icon: Users,          color: 'bg-blue-500/20 hover:bg-blue-500/30 border-blue-500/30 text-blue-300' },
-            { label: 'Review Disputes', href: '/admin/disputes',   icon: AlertTriangle,  color: 'bg-red-500/20 hover:bg-red-500/30 border-red-500/30 text-red-300' },
-            { label: 'Escrow Monitor',  href: '/admin/escrow',     icon: Shield,         color: 'bg-amber-500/20 hover:bg-amber-500/30 border-amber-500/30 text-amber-300' },
-            { label: 'Promo Codes',     href: '/admin/promo-codes', icon: TrendingUp,    color: 'bg-purple-500/20 hover:bg-purple-500/30 border-purple-500/30 text-purple-300' },
-          ].map(({ label, href, icon: Icon, color }) => (
-            <Link key={href} href={href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition ${color}`}>
-              <Icon className="w-4 h-4" />
-              <span className="text-sm font-medium text-white">{label}</span>
-            </Link>
-          ))}
-        </div>
+      {/* Quick Actions Row */}
+      <div className="flex flex-wrap gap-2">
+        {[
+          { label: 'Manage Users',     href: '/admin/users',        icon: Users,          color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100' },
+          { label: 'Review Disputes',  href: '/admin/disputes',     icon: AlertTriangle,  color: 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100' },
+          { label: 'Escrow Monitor',   href: '/admin/escrow',       icon: Shield,         color: 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' },
+          { label: 'New Blog Post',    href: '/admin/blog/new',     icon: Zap,            color: 'bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100' },
+          { label: 'Promo Codes',      href: '/admin/promo-codes',  icon: TrendingUp,     color: 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100' },
+          { label: 'Broadcast',        href: '/admin/broadcast',    icon: Activity,       color: 'bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200' },
+        ].map(({ label, href, icon: Icon, color }) => (
+          <Link key={href} href={href}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition ${color}`}>
+            <Icon className="w-3.5 h-3.5" />{label}
+          </Link>
+        ))}
       </div>
 
     </div>

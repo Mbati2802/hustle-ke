@@ -87,12 +87,12 @@ export default function AdminFinancialPage() {
   const maxVolume = Math.max(...data.monthly_breakdown.map(m => m.escrow_volume), 1)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Financial Reports</h1>
-          <p className="text-sm text-gray-500">Platform revenue, escrow, and wallet analytics</p>
+          <h1 className="text-xl font-bold text-gray-900">Financial Reports</h1>
+          <p className="text-xs text-gray-500">Platform revenue, escrow, and wallet analytics</p>
         </div>
         <div className="flex items-center gap-2">
           {['month', 'quarter', 'year', 'all'].map(p => (

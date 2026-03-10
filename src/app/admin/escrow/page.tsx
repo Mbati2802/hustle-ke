@@ -69,57 +69,55 @@ export default function AdminEscrowPage() {
   }
 
   return (
-    <div className="space-y-6" onClick={() => setOpenMenu(null)}>
-      <div className="flex items-center justify-between">
+    <div className="space-y-5" onClick={() => setOpenMenu(null)}>
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <DollarSign className="w-7 h-7 text-amber-500" /> Escrow Transactions
+          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <DollarSign className="w-5 h-5 text-amber-500" /> Escrow
           </h1>
-          <p className="text-sm text-gray-500 mt-1">{total} total transactions</p>
+          <p className="text-xs text-gray-500 mt-0.5">{total} transactions · {stats.disputed} disputed · {stats.pending_releases} pending</p>
         </div>
-        <button onClick={() => fetchEscrows()} className="p-2 hover:bg-gray-100 rounded-lg transition" title="Refresh">
-          <RefreshCw className="w-4 h-4 text-gray-500" />
-        </button>
+        <div className="flex items-center gap-2">
+          <Link href="/admin/disputes" className="px-3 py-1.5 text-xs border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition flex items-center gap-1.5">
+            <AlertTriangle className="w-3.5 h-3.5" /> Disputes
+          </Link>
+          <button onClick={() => fetchEscrows()} className="p-1.5 hover:bg-gray-100 rounded-lg transition" title="Refresh">
+            <RefreshCw className="w-4 h-4 text-gray-500" />
+          </button>
+        </div>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: 'Total Held', value: `KES ${stats.total_held.toLocaleString()}`, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200', icon: Shield },
-          { label: 'Total Released', value: `KES ${stats.total_released.toLocaleString()}`, color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200', icon: CheckCircle2 },
-          { label: 'Pending Releases', value: stats.pending_releases, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200', icon: Clock },
-          { label: 'Disputed', value: stats.disputed, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200', icon: AlertTriangle },
-        ].map((s, i) => {
-          const Icon = s.icon
-          return (
-            <div key={i} className={`bg-white rounded-xl border ${s.border} p-4`}>
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{s.label}</p>
-                <div className={`w-8 h-8 ${s.bg} rounded-lg flex items-center justify-center`}>
-                  <Icon className={`w-4 h-4 ${s.color}`} />
-                </div>
-              </div>
-              <p className={`text-xl font-bold ${s.color}`}>{typeof s.value === 'number' ? s.value.toLocaleString() : s.value}</p>
+          { label: 'Total Held', value: `KES ${stats.total_held.toLocaleString()}`, dot: 'bg-blue-500', text: 'text-blue-600', filter: 'Held' },
+          { label: 'Released', value: `KES ${stats.total_released.toLocaleString()}`, dot: 'bg-green-500', text: 'text-green-600', filter: 'Released' },
+          { label: 'Pending', value: stats.pending_releases, dot: 'bg-amber-500', text: 'text-amber-600', filter: 'Pending' },
+          { label: 'Disputed', value: stats.disputed, dot: 'bg-red-500', text: 'text-red-600', filter: 'Disputed' },
+        ].map((s) => (
+          <button key={s.label}
+            onClick={() => { setStatusFilter(statusFilter === s.filter ? '' : s.filter); setPage(1) }}
+            className={`text-left bg-white rounded-xl border p-3 hover:shadow-sm transition-all ${
+              statusFilter === s.filter ? 'ring-1 ring-amber-200 border-amber-200' : 'border-gray-200'
+            }`}>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className={`w-2 h-2 rounded-full ${s.dot}`} />
+              <span className="text-xs text-gray-500">{s.label}</span>
             </div>
-          )
-        })}
+            <p className={`text-lg font-bold ${s.text}`}>{typeof s.value === 'number' ? s.value.toLocaleString() : s.value}</p>
+          </button>
+        ))}
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1) }} className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500/30">
-            <option value="">All Status</option>
-            <option value="Pending">Pending</option>
-            <option value="Held">Held</option>
-            <option value="Released">Released</option>
-            <option value="Refunded">Refunded</option>
-            <option value="Disputed">Disputed</option>
-          </select>
-          {statusFilter && (
-            <button onClick={() => { setStatusFilter(''); setPage(1) }} className="text-sm text-gray-500 hover:text-red-500 flex items-center gap-1">
-              <X className="w-3.5 h-3.5" /> Clear
+      <div className="bg-white rounded-xl border border-gray-200 p-3">
+        <div className="flex flex-wrap items-center gap-2">
+          {['', 'Pending', 'Held', 'Released', 'Refunded', 'Disputed'].map(s => (
+            <button key={s || 'all'} onClick={() => { setStatusFilter(s); setPage(1) }}
+              className={`px-3 py-1.5 text-xs rounded-lg font-medium transition ${
+                statusFilter === s ? 'bg-amber-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}>{s || 'All'}
             </button>
-          )}
+          ))}
         </div>
       </div>
 

@@ -60,39 +60,44 @@ export default function AdminContactsPage() {
     }
   }
 
+  const contactStatCards = [
+    { label: 'New', value: stats.new, dot: 'bg-amber-500', text: 'text-amber-600', filter: 'new' },
+    { label: 'Read', value: stats.read, dot: 'bg-blue-500', text: 'text-blue-600', filter: 'read' },
+    { label: 'Replied', value: stats.replied, dot: 'bg-green-500', text: 'text-green-600', filter: 'replied' },
+    { label: 'Spam', value: stats.spam, dot: 'bg-red-500', text: 'text-red-600', filter: 'spam' },
+  ]
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Mail className="w-7 h-7 text-blue-500" /> Contact Messages
+          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <Mail className="w-5 h-5 text-blue-500" /> Contacts
           </h1>
-          <p className="text-sm text-gray-500 mt-1">{total.toLocaleString()} total messages</p>
+          <p className="text-xs text-gray-500 mt-0.5">{stats.new} unread · {total.toLocaleString()} total</p>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <p className="text-sm text-gray-500">Total</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <p className="text-sm text-gray-500">New</p>
-          <p className="text-2xl font-bold text-amber-600 mt-1">{stats.new}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <p className="text-sm text-gray-500">Read</p>
-          <p className="text-2xl font-bold text-blue-600 mt-1">{stats.read}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <p className="text-sm text-gray-500">Replied</p>
-          <p className="text-2xl font-bold text-green-600 mt-1">{stats.replied}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <p className="text-sm text-gray-500">Spam</p>
-          <p className="text-2xl font-bold text-red-600 mt-1">{stats.spam}</p>
-        </div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {contactStatCards.map(s => (
+          <button key={s.label}
+            onClick={() => { setStatusFilter(statusFilter === s.filter ? '' : s.filter); setPage(1) }}
+            className={`text-left bg-white rounded-xl border p-3 hover:shadow-sm transition-all ${
+              statusFilter === s.filter ? 'ring-1 ring-blue-200 border-blue-200' : 'border-gray-200'
+            }`}>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className={`w-2 h-2 rounded-full ${s.dot}`} />
+              <span className="text-xs text-gray-500">{s.label}</span>
+            </div>
+            <p className={`text-xl font-bold ${s.text}`}>{s.value}</p>
+            {stats.total > 0 && (
+              <div className="mt-2 h-1 bg-gray-100 rounded-full overflow-hidden">
+                <div className={`h-full ${s.dot} rounded-full`} style={{ width: `${Math.min(100,(s.value/stats.total)*100)}%` }} />
+              </div>
+            )}
+          </button>
+        ))}
       </div>
 
       {/* Filters */}

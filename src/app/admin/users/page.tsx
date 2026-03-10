@@ -55,6 +55,7 @@ export default function AdminUsersPage() {
   const [newUser, setNewUser] = useState(defaultNewUser)
   const [creating, setCreating] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [roleStats, setRoleStats] = useState({ total: 0, freelancers: 0, clients: 0, admins: 0, verified: 0 })
 
   const fetchUsers = useCallback(async () => {
     setLoading(true)
@@ -64,11 +65,25 @@ export default function AdminUsersPage() {
     if (verFilter) params.set('verification', verFilter)
 
     try {
-      const res = await fetch(`/api/admin/users?${params}`)
-      const data = await res.json()
+      const [usersRes, statsRes] = await Promise.all([
+        fetch(`/api/admin/users?${params}`),
+        page === 1 && !search && !roleFilter && !verFilter ? fetch('/api/admin/stats') : Promise.resolve(null),
+      ])
+      const data = await usersRes.json()
       setUsers(data.users || [])
       setTotal(data.pagination?.total || 0)
       setHasMore(data.pagination?.hasMore || false)
+      if (statsRes?.ok) {
+        const statsData = await statsRes.json()
+        const s = statsData.stats
+        setRoleStats({
+          total: s?.users?.total || 0,
+          freelancers: s?.users?.freelancers || 0,
+          clients: s?.users?.clients || 0,
+          admins: s?.users?.admins || 0,
+          verified: s?.users?.verified || 0,
+        })
+      }
     } catch { /* */ }
     setLoading(false)
   }, [page, search, roleFilter, verFilter, sortBy])
@@ -131,18 +146,59 @@ export default function AdminUsersPage() {
     setCreating(false)
   }
 
+  const statCards = [
+    { label: 'Total Users', value: roleStats.total || total, color: 'bg-blue-500', textColor: 'text-blue-600', bg: 'bg-blue-50', filter: '' },
+    { label: 'Freelancers', value: roleStats.freelancers, color: 'bg-green-500', textColor: 'text-green-600', bg: 'bg-green-50', filter: 'Freelancer' },
+    { label: 'Clients', value: roleStats.clients, color: 'bg-purple-500', textColor: 'text-purple-600', bg: 'bg-purple-50', filter: 'Client' },
+    { label: 'Admins', value: roleStats.admins, color: 'bg-red-500', textColor: 'text-red-600', bg: 'bg-red-50', filter: 'Admin' },
+  ]
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5" onClick={() => setActionMenu(null)}>
+      {/* Header */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Users className="w-7 h-7 text-blue-500" /> Users
+          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <Users className="w-5 h-5 text-blue-500" /> Users
           </h1>
-          <p className="text-sm text-gray-500 mt-1">{total.toLocaleString()} total users</p>
+          <p className="text-xs text-gray-500 mt-0.5">{total.toLocaleString()} total · {roleStats.verified} verified</p>
         </div>
-        <button onClick={() => setShowCreateModal(true)} className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2">
-          <Plus className="w-4 h-4" /> Add User
-        </button>
+        <div className="flex items-center gap-2">
+          <Link href="/admin/subscriptions" className="px-3 py-1.5 text-xs border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition flex items-center gap-1.5">
+            <Shield className="w-3.5 h-3.5" /> Subscriptions
+          </Link>
+          <button onClick={() => setShowCreateModal(true)} className="px-3 py-1.5 text-xs bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-1.5">
+            <Plus className="w-3.5 h-3.5" /> Add User
+          </button>
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {statCards.map(s => (
+          <button key={s.label}
+            onClick={() => { setRoleFilter(s.filter); setPage(1) }}
+            className={`text-left bg-white rounded-xl border p-3 hover:shadow-sm transition-all ${
+              roleFilter === s.filter ? `border-current ${s.textColor}` : 'border-gray-200'
+            }`}>
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs text-gray-500">{s.label}</span>
+              <div className={`w-2 h-2 rounded-full ${s.color}`} />
+            </div>
+            <p className={`text-xl font-bold ${s.textColor}`}>{s.value.toLocaleString()}</p>
+            {roleStats.total > 0 && (
+              <div className="mt-2">
+                <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
+                  <div className={`h-full ${s.color} rounded-full transition-all`}
+                    style={{ width: `${Math.min(100, (s.value / (roleStats.total || 1)) * 100)}%` }} />
+                </div>
+                <p className="text-[10px] text-gray-400 mt-0.5">
+                  {roleStats.total > 0 ? Math.round((s.value / roleStats.total) * 100) : 0}% of total
+                </p>
+              </div>
+            )}
+          </button>
+        ))}
       </div>
 
       {message && (
@@ -198,14 +254,14 @@ export default function AdminUsersPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-500">User</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-500">Role</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-500">Verification</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-500">Score</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-500">Earned</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-500">Jobs</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-500">Joined</th>
-                <th className="text-right px-4 py-3 font-medium text-gray-500">Actions</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500">User</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500">Role</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500">Verification</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500">Score</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500">Earned</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500">Jobs</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500">Joined</th>
+                <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -223,39 +279,43 @@ export default function AdminUsersPage() {
                   </tr>
                 ))
               ) : users.length === 0 ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-400">No users found</td></tr>
+                <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-400 text-sm">No users found</td></tr>
               ) : (
                 users.map((u) => (
                   <tr key={u.id} className="hover:bg-gray-50 transition">
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 text-xs font-bold shrink-0">
-                          {u.full_name.charAt(0)}
+                      <div className="flex items-center gap-2.5">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 ${
+                          u.role === 'Admin' ? 'bg-purple-500' : u.role === 'Client' ? 'bg-blue-500' : 'bg-green-500'
+                        }`}>
+                          {(u.full_name || '?').charAt(0).toUpperCase()}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-medium text-gray-900 truncate">{u.full_name}</p>
-                          <p className="text-xs text-gray-500 truncate">{u.email}</p>
+                          <p className="text-xs font-semibold text-gray-900 truncate">{u.full_name}</p>
+                          <p className="text-[11px] text-gray-400 truncate">{u.email}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${roleColors[u.role] || 'bg-gray-100 text-gray-600'}`}>{u.role}</span>
+                      <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${roleColors[u.role] || 'bg-gray-100 text-gray-600'}`}>{u.role}</span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`text-xs px-2 py-0.5 rounded-full flex items-center gap-1 w-fit ${verColors[u.verification_status] || 'bg-gray-100 text-gray-600'}`}>
+                      <span className={`text-[11px] px-2 py-0.5 rounded-full flex items-center gap-1 w-fit ${verColors[u.verification_status] || 'bg-gray-100 text-gray-600'}`}>
                         {u.verification_status === 'Skill-Tested' ? <ShieldCheck className="w-3 h-3" /> : u.verification_status === 'ID-Verified' ? <Shield className="w-3 h-3" /> : null}
                         {u.verification_status}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-1">
-                        <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                        <span className="text-gray-700">{u.hustle_score}</span>
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-12 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-amber-400 rounded-full" style={{ width: `${Math.min(100, u.hustle_score)}%` }} />
+                        </div>
+                        <span className="text-xs text-gray-600">{u.hustle_score}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-gray-700">KES {u.total_earned.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-gray-700">{u.jobs_completed} / {u.jobs_posted}</td>
-                    <td className="px-4 py-3 text-gray-500 text-xs">{new Date(u.created_at).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-xs text-gray-700">KES {u.total_earned.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-xs text-gray-700">{u.jobs_completed}<span className="text-gray-400">/{u.jobs_posted}</span></td>
+                    <td className="px-4 py-3 text-[11px] text-gray-400">{new Date(u.created_at).toLocaleDateString()}</td>
                     <td className="px-4 py-3 text-right relative">
                       <button onClick={() => setActionMenu(actionMenu === u.id ? null : u.id)} className="p-1 hover:bg-gray-100 rounded transition">
                         <MoreVertical className="w-4 h-4 text-gray-400" />

@@ -73,54 +73,49 @@ export default function AdminSubscriptionsPage() {
     }
   }
 
+  const subStatCards = [
+    { label: 'Active', value: stats.active, color: 'bg-green-500', text: 'text-green-600', filter: 'active' },
+    { label: 'Cancelled', value: stats.cancelled, color: 'bg-amber-400', text: 'text-amber-600', filter: 'cancelled' },
+    { label: 'Expired', value: stats.expired, color: 'bg-gray-400', text: 'text-gray-500', filter: 'expired' },
+    { label: 'MRR', value: stats.mrr, color: 'bg-indigo-500', text: 'text-indigo-600', filter: '', prefix: 'KES' },
+  ]
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <CreditCard className="w-7 h-7 text-indigo-500" /> Subscription Management
+          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <CreditCard className="w-5 h-5 text-indigo-500" /> Subscriptions
           </h1>
-          <p className="text-sm text-gray-500 mt-1">{total.toLocaleString()} total subscriptions</p>
+          <p className="text-xs text-gray-500 mt-0.5">{stats.active} active · KES {stats.mrr.toLocaleString()} MRR</p>
         </div>
+        <Link href="/admin/wallets" className="px-3 py-1.5 text-xs border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition flex items-center gap-1.5">
+          <DollarSign className="w-3.5 h-3.5" /> Wallets
+        </Link>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Active Subscriptions</p>
-              <p className="text-2xl font-bold text-green-600 mt-1">{stats.active}</p>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {subStatCards.map(s => (
+          <button key={s.label}
+            onClick={() => s.filter && (setStatusFilter(statusFilter === s.filter ? '' : s.filter), setPage(1))}
+            className={`text-left bg-white rounded-xl border p-3 hover:shadow-sm transition-all ${
+              statusFilter === s.filter && s.filter ? 'ring-1 ring-indigo-200 border-indigo-200' : 'border-gray-200'
+            }`}>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className={`w-2 h-2 rounded-full ${s.color}`} />
+              <span className="text-xs text-gray-500">{s.label}</span>
             </div>
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <CheckCircle2 className="w-6 h-6 text-green-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Monthly Recurring Revenue</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">KES {stats.mrr.toLocaleString()}</p>
-            </div>
-            <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-indigo-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">KES {stats.total_revenue.toLocaleString()}</p>
-            </div>
-            <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-amber-600" />
-            </div>
-          </div>
-        </div>
+            <p className={`text-lg font-bold ${s.text}`}>
+              {s.prefix ? `${s.prefix} ${s.value.toLocaleString()}` : s.value.toLocaleString()}
+            </p>
+            {s.filter && stats.total > 0 && (
+              <div className="mt-2 h-1 bg-gray-100 rounded-full overflow-hidden">
+                <div className={`h-full ${s.color} rounded-full`} style={{ width: `${Math.min(100,(s.value/stats.total)*100)}%` }} />
+              </div>
+            )}
+          </button>
+        ))}
       </div>
 
       {/* Filters */}

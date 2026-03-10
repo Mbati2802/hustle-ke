@@ -76,16 +76,16 @@ export default function AdminBlogPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-5">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <BookOpen className="w-7 h-7 text-blue-500" /> Blog Management
+          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-blue-500" /> Blog
           </h1>
-          <p className="text-sm text-gray-500 mt-1">{total.toLocaleString()} total posts</p>
+          <p className="text-xs text-gray-500 mt-0.5">{stats.published} published · {stats.total_views.toLocaleString()} views</p>
         </div>
-        <Link href="/admin/blog/new" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
-          <Plus className="w-4 h-4" /> New Post
+        <Link href="/admin/blog/new" className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-1.5">
+          <Plus className="w-3.5 h-3.5" /> New Post
         </Link>
       </div>
 
@@ -98,23 +98,30 @@ export default function AdminBlogPage() {
       )}
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <p className="text-sm text-gray-500">Total Posts</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <p className="text-sm text-gray-500">Published</p>
-          <p className="text-2xl font-bold text-green-600 mt-1">{stats.published}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <p className="text-sm text-gray-500">Drafts</p>
-          <p className="text-2xl font-bold text-amber-600 mt-1">{stats.draft}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <p className="text-sm text-gray-500">Total Views</p>
-          <p className="text-2xl font-bold text-blue-600 mt-1">{stats.total_views.toLocaleString()}</p>
-        </div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { label: 'Total', value: stats.total, dot: 'bg-gray-400', text: 'text-gray-700', filter: '' },
+          { label: 'Published', value: stats.published, dot: 'bg-green-500', text: 'text-green-600', filter: 'published' },
+          { label: 'Drafts', value: stats.draft, dot: 'bg-amber-500', text: 'text-amber-600', filter: 'draft' },
+          { label: 'Total Views', value: stats.total_views, dot: 'bg-blue-500', text: 'text-blue-600', filter: '' },
+        ].map(s => (
+          <button key={s.label}
+            onClick={() => s.filter && (setStatusFilter(statusFilter === s.filter ? '' : s.filter), setPage(1))}
+            className={`text-left bg-white rounded-xl border p-3 hover:shadow-sm transition-all ${
+              statusFilter === s.filter && s.filter ? 'ring-1 ring-blue-200 border-blue-200' : 'border-gray-200'
+            }`}>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className={`w-2 h-2 rounded-full ${s.dot}`} />
+              <span className="text-xs text-gray-500">{s.label}</span>
+            </div>
+            <p className={`text-xl font-bold ${s.text}`}>{s.value.toLocaleString()}</p>
+            {s.filter && stats.total > 0 && (
+              <div className="mt-2 h-1 bg-gray-100 rounded-full overflow-hidden">
+                <div className={`h-full ${s.dot} rounded-full`} style={{ width: `${Math.min(100,(s.value/stats.total)*100)}%` }} />
+              </div>
+            )}
+          </button>
+        ))}
       </div>
 
       {/* Filters */}

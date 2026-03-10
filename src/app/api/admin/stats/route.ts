@@ -18,9 +18,14 @@ export async function GET(req: NextRequest) {
     { count: totalUsers },
     { count: totalJobs },
     { count: openJobs },
+    { count: inProgressJobs },
+    { count: completedJobs },
+    { count: disputedJobs },
+    { count: cancelledJobs },
     { count: totalProposals },
     { count: totalDisputes },
     { count: openDisputes },
+    { count: resolvedDisputes },
     { count: totalEscrows },
     { data: revenueData },
     { data: recentUsers },
@@ -32,13 +37,21 @@ export async function GET(req: NextRequest) {
     { count: proSubscriptions },
     { count: activeFreelancers },
     { count: activeClients },
+    { count: adminUsers },
+    { count: verifiedUsers },
+    { data: openDisputeEscrows },
   ] = await Promise.all([
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase.from('jobs').select('*', { count: 'exact', head: true }),
     supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('status', 'Open'),
+    supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('status', 'In-Progress'),
+    supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('status', 'Completed'),
+    supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('status', 'Disputed'),
+    supabase.from('jobs').select('*', { count: 'exact', head: true }).eq('status', 'Cancelled'),
     supabase.from('proposals').select('*', { count: 'exact', head: true }),
     supabase.from('disputes').select('*', { count: 'exact', head: true }),
     supabase.from('disputes').select('*', { count: 'exact', head: true }).eq('status', 'Open'),
+    supabase.from('disputes').select('*', { count: 'exact', head: true }).eq('status', 'Resolved'),
     supabase.from('escrow_transactions').select('*', { count: 'exact', head: true }),
     supabase.from('escrow_transactions').select('service_fee, tax_amount, initiated_at, amount').eq('status', 'Released'),
     supabase.from('profiles').select('id, full_name, email, role, created_at').order('created_at', { ascending: false }).limit(10),
@@ -50,6 +63,9 @@ export async function GET(req: NextRequest) {
     supabase.from('subscriptions').select('*', { count: 'exact', head: true }).eq('status', 'active'),
     supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'Freelancer'),
     supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'Client'),
+    supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'Admin'),
+    supabase.from('profiles').select('*', { count: 'exact', head: true }).neq('verification_status', 'Unverified'),
+    supabase.from('escrow_transactions').select('amount').eq('status', 'Disputed'),
   ])
 
   // Calculate total platform revenue
@@ -130,12 +146,14 @@ export async function GET(req: NextRequest) {
     { name: 'Pro Members', value: proSubscriptions || 0, color: '#F59E0B' },
   ]
 
+  const escrowAtRisk = (openDisputeEscrows || []).reduce((sum: number, e: { amount: number }) => sum + (e.amount || 0), 0)
+
   return jsonResponse({
     stats: {
-      users: { total: totalUsers || 0, freelancers: activeFreelancers || 0, clients: activeClients || 0 },
-      jobs: { total: totalJobs || 0, open: openJobs || 0 },
+      users: { total: totalUsers || 0, freelancers: activeFreelancers || 0, clients: activeClients || 0, admins: adminUsers || 0, verified: verifiedUsers || 0 },
+      jobs: { total: totalJobs || 0, open: openJobs || 0, in_progress: inProgressJobs || 0, completed: completedJobs || 0, disputed: disputedJobs || 0, cancelled: cancelledJobs || 0 },
       proposals: { total: totalProposals || 0 },
-      disputes: { total: totalDisputes || 0, open: openDisputes || 0 },
+      disputes: { total: totalDisputes || 0, open: openDisputes || 0, resolved: resolvedDisputes || 0, escrow_at_risk: escrowAtRisk },
       escrows: { total: totalEscrows || 0 },
       revenue: { service_fees: totalRevenue, tax_collected: totalTax, total: totalRevenue + totalTax },
       subscriptions: { pro: proSubscriptions || 0 },

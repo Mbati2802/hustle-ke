@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import {
-  FileText, ChevronLeft, ChevronRight, X, DollarSign
+  FileText, ChevronLeft, ChevronRight, X, DollarSign,
+  CheckCircle2, Clock, TrendingUp, Briefcase
 } from 'lucide-react'
 
 interface Proposal {
@@ -27,6 +28,7 @@ export default function AdminProposalsPage() {
   const [total, setTotal] = useState(0)
   const [hasMore, setHasMore] = useState(false)
   const limit = 20
+  const [pStats, setPStats] = useState({ pending: 0, accepted: 0, rejected: 0, withdrawn: 0 })
 
   const fetchProposals = useCallback(async () => {
     setLoading(true)
@@ -35,42 +37,79 @@ export default function AdminProposalsPage() {
     if (statusFilter) params.set('status', statusFilter)
     if (search) params.set('search', search)
     try {
-      // Fetch via admin endpoint - proposals don't have a dedicated admin list yet,
-      // so we'll query through jobs. For a full admin view, we fetch proposals directly.
       const res = await fetch(`/api/proposals?${params}`)
       const data = await res.json()
-      setProposals(data.proposals || [])
+      const list: Proposal[] = data.proposals || []
+      setProposals(list)
       setTotal(data.pagination?.total || 0)
       setHasMore(data.pagination?.hasMore || false)
+      if (page === 1 && !statusFilter) {
+        setPStats({
+          pending: list.filter(p => p.status === 'Pending').length,
+          accepted: list.filter(p => p.status === 'Accepted').length,
+          rejected: list.filter(p => p.status === 'Rejected').length,
+          withdrawn: list.filter(p => p.status === 'Withdrawn').length,
+        })
+      }
     } catch { /* */ }
     setLoading(false)
   }, [page, statusFilter, search])
 
   useEffect(() => { fetchProposals() }, [fetchProposals])
 
+  const total4 = pStats.pending + pStats.accepted + pStats.rejected + pStats.withdrawn
+  const acceptRate = total4 > 0 ? Math.round((pStats.accepted / total4) * 100) : 0
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <FileText className="w-7 h-7 text-purple-500" /> Proposals
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">{total} total proposals</p>
+    <div className="space-y-5">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <FileText className="w-5 h-5 text-purple-500" /> Proposals
+          </h1>
+          <p className="text-xs text-gray-500 mt-0.5">{total} total · {acceptRate}% acceptance rate</p>
+        </div>
+        <Link href="/admin/jobs" className="px-3 py-1.5 text-xs border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition flex items-center gap-1.5">
+          <Briefcase className="w-3.5 h-3.5" /> View Jobs
+        </Link>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1) }} className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500/30">
-            <option value="">All Status</option>
-            <option value="Pending">Pending</option>
-            <option value="Accepted">Accepted</option>
-            <option value="Rejected">Rejected</option>
-            <option value="Withdrawn">Withdrawn</option>
-          </select>
-          {statusFilter && (
-            <button onClick={() => { setStatusFilter(''); setPage(1) }} className="text-sm text-gray-500 hover:text-red-500 flex items-center gap-1">
-              <X className="w-3.5 h-3.5" /> Clear
+      {/* Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { label: 'Pending', value: pStats.pending, color: 'bg-blue-500', text: 'text-blue-600', status: 'Pending', icon: Clock },
+          { label: 'Accepted', value: pStats.accepted, color: 'bg-green-500', text: 'text-green-600', status: 'Accepted', icon: CheckCircle2 },
+          { label: 'Rejected', value: pStats.rejected, color: 'bg-red-400', text: 'text-red-600', status: 'Rejected', icon: X },
+          { label: 'Accept Rate', value: acceptRate, color: 'bg-purple-500', text: 'text-purple-600', status: '', icon: TrendingUp, suffix: '%' },
+        ].map(s => (
+          <button key={s.label}
+            onClick={() => s.status && (setStatusFilter(statusFilter === s.status ? '' : s.status), setPage(1))}
+            className={`text-left bg-white rounded-xl border p-3 hover:shadow-sm transition-all ${
+              statusFilter === s.status && s.status ? 'border-purple-200 ring-1 ring-purple-100' : 'border-gray-200'
+            }`}>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className={`w-2 h-2 rounded-full ${s.color}`} />
+              <span className="text-xs text-gray-500">{s.label}</span>
+            </div>
+            <p className={`text-xl font-bold ${s.text}`}>{s.value}{s.suffix || ''}</p>
+            {s.status && total4 > 0 && (
+              <div className="mt-2 h-1 bg-gray-100 rounded-full overflow-hidden">
+                <div className={`h-full ${s.color} rounded-full`} style={{ width: `${Math.min(100,(s.value/total4)*100)}%` }} />
+              </div>
+            )}
+          </button>
+        ))}
+      </div>
+
+      <div className="bg-white rounded-xl border border-gray-200 p-3">
+        <div className="flex flex-wrap items-center gap-2">
+          {['', 'Pending', 'Accepted', 'Rejected', 'Withdrawn'].map(s => (
+            <button key={s || 'all'} onClick={() => { setStatusFilter(s); setPage(1) }}
+              className={`px-3 py-1.5 text-xs rounded-lg font-medium transition ${
+                statusFilter === s ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}>{s || 'All'}
             </button>
-          )}
+          ))}
         </div>
       </div>
 

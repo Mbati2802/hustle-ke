@@ -17,6 +17,7 @@ export default function AdminMessagesPage() {
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [readFilter, setReadFilter] = useState('')
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [hasMore, setHasMore] = useState(false)
@@ -26,6 +27,7 @@ export default function AdminMessagesPage() {
     setLoading(true)
     const params = new URLSearchParams({ page: String(page), limit: String(limit) })
     if (search) params.set('search', search)
+    if (readFilter) params.set('is_read', readFilter)
     try {
       const res = await fetch(`/api/admin/messages?${params}`)
       if (res.ok) {
@@ -36,30 +38,53 @@ export default function AdminMessagesPage() {
       }
     } catch { /* */ }
     setLoading(false)
-  }, [page, search])
+  }, [page, search, readFilter])
 
   useEffect(() => { fetchMessages() }, [fetchMessages])
 
+  const unread = messages.filter(m => !m.is_read).length
+  const read = messages.filter(m => m.is_read).length
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <MessageSquare className="w-7 h-7 text-blue-500" /> Messages
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">Monitor platform communications</p>
+    <div className="space-y-5">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <MessageSquare className="w-5 h-5 text-blue-500" /> Messages
+          </h1>
+          <p className="text-xs text-gray-500 mt-0.5">{total.toLocaleString()} total · {unread} unread on this page</p>
+        </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+      {/* Quick stats */}
+      <div className="grid grid-cols-3 gap-3">
+        {[
+          { label: 'Total', value: total, dot: 'bg-blue-500', text: 'text-blue-600', filter: '' },
+          { label: 'Read', value: read, dot: 'bg-green-500', text: 'text-green-600', filter: 'true' },
+          { label: 'Unread', value: unread, dot: 'bg-gray-400', text: 'text-gray-600', filter: 'false' },
+        ].map(s => (
+          <button key={s.label}
+            onClick={() => { setReadFilter(readFilter === s.filter && s.filter !== '' ? '' : s.filter); setPage(1) }}
+            className={`text-left bg-white rounded-xl border p-3 hover:shadow-sm transition-all ${
+              readFilter === s.filter && s.filter !== '' ? 'ring-1 ring-blue-200 border-blue-200' : 'border-gray-200'
+            }`}>
+            <div className="flex items-center gap-1.5 mb-1"><div className={`w-2 h-2 rounded-full ${s.dot}`} /><span className="text-xs text-gray-500">{s.label}</span></div>
+            <p className={`text-xl font-bold ${s.text}`}>{s.value.toLocaleString()}</p>
+          </button>
+        ))}
+      </div>
+
+      <div className="bg-white rounded-xl border border-gray-200 p-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative flex-1 min-w-[180px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
             <input type="text" placeholder="Search messages..." value={search}
               onChange={e => { setSearch(e.target.value); setPage(1) }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-500" />
+              className="w-full pl-9 pr-3 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20" />
           </div>
           {search && (
-            <button onClick={() => { setSearch(''); setPage(1) }} className="text-sm text-gray-500 hover:text-red-500 flex items-center gap-1">
-              <X className="w-3.5 h-3.5" /> Clear
+            <button onClick={() => { setSearch(''); setPage(1) }} className="text-xs text-gray-500 hover:text-red-500 flex items-center gap-1">
+              <X className="w-3 h-3" /> Clear
             </button>
           )}
         </div>
