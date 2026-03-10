@@ -7,7 +7,8 @@ import {
   LayoutDashboard, Users, Briefcase, FileText, DollarSign,
   AlertTriangle, Star, MessageSquare, Settings, FileCode,
   ChevronLeft, ChevronRight, LogOut, Menu, X, Bell, Search,
-  Shield, Activity, LifeBuoy, Globe, Wallet
+  Shield, Activity, LifeBuoy, Globe, Wallet, CreditCard, Tag,
+  BookOpen, Radio, Lock, FileWarning, Mail
 } from 'lucide-react'
 import AssignmentNotificationPopup from '@/app/components/AssignmentNotificationPopup'
 
@@ -23,16 +24,24 @@ const navItems = [
   { href: '/admin/jobs', label: 'Jobs', icon: Briefcase },
   { href: '/admin/proposals', label: 'Proposals', icon: FileText },
   { href: '/admin/wallets', label: 'Wallets', icon: Wallet },
+  { href: '/admin/subscriptions', label: 'Subscriptions', icon: CreditCard },
+  { href: '/admin/promo-codes', label: 'Promo Codes', icon: Tag },
   { href: '/admin/escrow', label: 'Escrow', icon: DollarSign },
   { href: '/admin/disputes', label: 'Disputes', icon: AlertTriangle },
   { href: '/admin/reviews', label: 'Reviews', icon: Star },
   { href: '/admin/messages', label: 'Messages', icon: MessageSquare },
+  { href: '/admin/contacts', label: 'Contact Messages', icon: Mail },
   { href: '/admin/support', label: 'Support', icon: LifeBuoy },
+  { href: '/admin/fraud', label: 'Fraud Alerts', icon: Shield },
+  { href: '/admin/security', label: 'Security', icon: Lock },
+  { href: '/admin/sessions', label: 'Sessions', icon: Activity },
+  { href: '/admin/audit-logs', label: 'Audit Logs', icon: FileWarning },
+  { href: '/admin/blog', label: 'Blog', icon: BookOpen },
+  { href: '/admin/broadcast', label: 'Broadcast', icon: Radio },
   { href: '/admin/saved-searches', label: 'Job Alerts', icon: Bell },
   { href: '/admin/pages', label: 'Pages', icon: FileCode },
   { href: '/admin/social-links', label: 'Social Links', icon: Globe },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
-  { href: '/admin/activity', label: 'Activity Log', icon: Activity },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
