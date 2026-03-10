@@ -34,6 +34,8 @@ export default function AdminSecurityPage() {
   const [total, setTotal] = useState(0)
   const [hasMore, setHasMore] = useState(false)
   const [stats, setStats] = useState({ total: 0, active: 0, investigating: 0, resolved: 0, critical: 0 })
+  const [selectedAlert, setSelectedAlert] = useState<string | null>(null)
+  const [actionLoading, setActionLoading] = useState(false)
   const limit = 20
 
   const fetchAlerts = useCallback(async () => {
@@ -75,6 +77,25 @@ export default function AdminSecurityPage() {
       case 'active': return <AlertTriangle className="w-4 h-4 text-red-500" />
       default: return <Clock className="w-4 h-4 text-gray-400" />
     }
+  }
+
+  const handleAction = async (alertId: string, action: string) => {
+    setSelectedAlert(alertId)
+    setActionLoading(true)
+    try {
+      const res = await fetch(`/api/admin/security/${alertId}/actions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action })
+      })
+      if (res.ok) {
+        await fetchAlerts()
+      }
+    } catch (err) {
+      console.error('Failed to perform action:', err)
+    }
+    setActionLoading(false)
+    setSelectedAlert(null)
   }
 
   return (
@@ -192,6 +213,7 @@ export default function AdminSecurityPage() {
                 <th className="text-left px-4 py-3 font-medium text-gray-500">Status</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-500">Description</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-500">Created</th>
+                <th className="text-right px-4 py-3 font-medium text-gray-500">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -207,7 +229,7 @@ export default function AdminSecurityPage() {
                   </tr>
                 ))
               ) : alerts.length === 0 ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-400">No security alerts found</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400">No security alerts found</td></tr>
               ) : (
                 alerts.map((alert) => (
                   <tr key={alert.id} className="hover:bg-gray-50 transition">
@@ -235,6 +257,14 @@ export default function AdminSecurityPage() {
                       <p className="text-xs text-gray-600 truncate max-w-xs">{alert.description}</p>
                     </td>
                     <td className="px-4 py-3 text-gray-500 text-xs">{new Date(alert.created_at).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        onClick={() => handleAction(alert.id, 'view')}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition"
+                      >
+                        <Shield className="w-3.5 h-3.5" /> Actions
+                      </button>
+                    </td>
                   </tr>
                 ))
               )}

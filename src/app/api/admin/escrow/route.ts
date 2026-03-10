@@ -21,8 +21,21 @@ export async function GET(req: NextRequest) {
   const { data: escrows, error, count } = await query
   if (error) return errorResponse('Failed to fetch escrows', 500)
 
+  // Calculate stats
+  const { data: allEscrows } = await auth.supabase
+    .from('escrow_transactions')
+    .select('amount, status')
+
+  const stats = {
+    total_held: allEscrows?.filter(e => e.status === 'Held').reduce((sum, e) => sum + e.amount, 0) || 0,
+    total_released: allEscrows?.filter(e => e.status === 'Released').reduce((sum, e) => sum + e.amount, 0) || 0,
+    pending_releases: allEscrows?.filter(e => e.status === 'Held').length || 0,
+    disputed: allEscrows?.filter(e => e.status === 'Disputed').length || 0,
+  }
+
   return jsonResponse({
     escrows,
+    stats,
     pagination: { total: count || 0, limit, offset, hasMore: (count || 0) > offset + limit },
   })
 }

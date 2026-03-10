@@ -76,13 +76,14 @@ export default function AdminMessagesPage() {
                 <th className="text-left px-4 py-3 font-medium text-gray-500">Message</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-500">Read</th>
                 <th className="text-left px-4 py-3 font-medium text-gray-500">Date</th>
+                <th className="text-right px-4 py-3 font-medium text-gray-500">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {loading ? (
                 [...Array(5)].map((_, i) => <tr key={i} className="animate-pulse">{[...Array(6)].map((_, j) => <td key={j} className="px-4 py-3"><div className="h-4 bg-gray-200 rounded w-20" /></td>)}</tr>)
               ) : messages.length === 0 ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-400">No messages found</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400">No messages found</td></tr>
               ) : messages.map(m => (
                 <tr key={m.id} className="hover:bg-gray-50 transition">
                   <td className="px-4 py-3 text-xs">
@@ -99,6 +100,11 @@ export default function AdminMessagesPage() {
                     <span className={`w-2 h-2 rounded-full inline-block ${m.is_read ? 'bg-green-400' : 'bg-gray-300'}`} title={m.is_read ? 'Read' : 'Unread'} />
                   </td>
                   <td className="px-4 py-3 text-xs text-gray-500">{new Date(m.created_at).toLocaleString()}</td>
+                  <td className="px-4 py-3 text-right">
+                    <Link href={`/jobs/${m.job_id}`} className="inline-flex items-center gap-1 px-3 py-1.5 text-xs bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition">
+                      View
+                    </Link>
+                  </td>
                 </tr>
               ))}
             </tbody>

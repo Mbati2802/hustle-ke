@@ -27,6 +27,7 @@ export default function AdminEscrowPage() {
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [hasMore, setHasMore] = useState(false)
+  const [stats, setStats] = useState({ total_held: 0, total_released: 0, pending_releases: 0, disputed: 0 })
   const limit = 20
 
   const fetchEscrows = useCallback(async () => {
@@ -39,6 +40,7 @@ export default function AdminEscrowPage() {
       setEscrows(data.escrows || [])
       setTotal(data.pagination?.total || 0)
       setHasMore(data.pagination?.hasMore || false)
+      setStats(data.stats || { total_held: 0, total_released: 0, pending_releases: 0, disputed: 0 })
     } catch { /* */ }
     setLoading(false)
   }, [page, statusFilter])
@@ -64,6 +66,26 @@ export default function AdminEscrowPage() {
           <DollarSign className="w-7 h-7 text-amber-500" /> Escrow Transactions
         </h1>
         <p className="text-sm text-gray-500 mt-1">{total} total transactions</p>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <p className="text-sm text-gray-500">Total Held</p>
+          <p className="text-2xl font-bold text-blue-600 mt-1">KES {stats.total_held.toLocaleString()}</p>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <p className="text-sm text-gray-500">Total Released</p>
+          <p className="text-2xl font-bold text-green-600 mt-1">KES {stats.total_released.toLocaleString()}</p>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <p className="text-sm text-gray-500">Pending Releases</p>
+          <p className="text-2xl font-bold text-amber-600 mt-1">{stats.pending_releases}</p>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <p className="text-sm text-gray-500">Disputed</p>
+          <p className="text-2xl font-bold text-red-600 mt-1">{stats.disputed}</p>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 p-4">
