@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Bell, Plus, Trash2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 
 interface SavedSearch {
@@ -18,7 +19,8 @@ interface SavedSearch {
 }
 
 export default function JobAlertsPage() {
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
+  const router = useRouter()
   const [items, setItems] = useState<SavedSearch[]>([])
   const [loading, setLoading] = useState(true)
   const [name, setName] = useState('')
@@ -27,6 +29,12 @@ export default function JobAlertsPage() {
   const [error, setError] = useState('')
   const [checkMsg, setCheckMsg] = useState('')
   const [checking, setChecking] = useState(false)
+
+  useEffect(() => {
+    if (profile?.role === 'Admin') {
+      router.replace('/admin/saved-searches')
+    }
+  }, [profile, router])
 
   const load = async () => {
     setLoading(true)

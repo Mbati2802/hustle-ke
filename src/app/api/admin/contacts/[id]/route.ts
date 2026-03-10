@@ -77,6 +77,63 @@ export async function PUT(
   return jsonResponse({ message })
 }
 
+// POST /api/admin/contacts/[id] — Send reply to contact message
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const auth = await requireAdmin(req)
+  if (auth instanceof Response) return auth
+
+  const body = await parseBody<{ reply_message: string; subject?: string }>(req)
+  if (!body?.reply_message?.trim()) return errorResponse('Reply message is required')
+
+  const { data: message, error } = await auth.supabase
+    .from('contact_messages')
+    .select('*')
+    .eq('id', params.id)
+    .single()
+
+  if (error || !message) return errorResponse('Contact message not found', 404)
+
+  const replyThread = {
+    admin_name: auth.profile.full_name,
+    admin_id: auth.profile.id,
+    message: body.reply_message,
+    sent_at: new Date().toISOString(),
+    subject: body.subject || `Re: ${message.subject}`,
+  }
+
+  const existingReplies = Array.isArray(message.replies) ? message.replies : []
+
+  const { error: updateError } = await auth.supabase
+    .from('contact_messages')
+    .update({
+      status: 'replied',
+      replied_at: new Date().toISOString(),
+      replied_by: auth.profile.id,
+      replies: [...existingReplies, replyThread],
+    })
+    .eq('id', params.id)
+
+  if (updateError) return errorResponse('Failed to save reply', 500)
+
+  await auth.supabase.from('activity_log').insert({
+    admin_id: auth.profile.id,
+    action: 'reply_contact_message',
+    entity_type: 'contact_messages',
+    entity_id: params.id,
+    details: { recipient_email: message.email, subject: replyThread.subject },
+    ip_address: req.headers.get('x-forwarded-for') || 'unknown'
+  })
+
+  return jsonResponse({
+    message: 'Reply sent successfully',
+    reply: replyThread,
+    recipient_email: message.email
+  })
+}
+
 // DELETE /api/admin/contacts/[id] — Delete contact message (mark as spam)
 export async function DELETE(
   req: NextRequest,

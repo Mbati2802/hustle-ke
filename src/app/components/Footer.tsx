@@ -1,13 +1,47 @@
 'use client'
 
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
 import { usePostJobModal } from './PostJobModalContext'
 import { useSiteSettings } from '@/hooks/useSiteSettings'
+
+interface SocialLink {
+  name: string
+  url: string
+  icon: string
+  order_index: number
+}
 
 export default function Footer() {
   const { openModal } = usePostJobModal()
   const siteSettings = useSiteSettings()
-  const { platform_name, social_links } = siteSettings
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([])
+
+  useEffect(() => {
+    fetch('/api/social-links')
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data.social_links) && data.social_links.length > 0) {
+          setSocialLinks(data.social_links)
+        } else {
+          // Fallback to site settings defaults
+          const fallback: SocialLink[] = [
+            { name: 'Twitter', url: 'https://x.com/Hustle_Kenya', icon: 'Twitter', order_index: 1 },
+            { name: 'LinkedIn', url: 'https://linkedin.com/company/hustleke', icon: 'Linkedin', order_index: 2 },
+            { name: 'Facebook', url: 'https://www.facebook.com/profile.php?id=61585548811537', icon: 'Facebook', order_index: 3 },
+          ]
+          setSocialLinks(fallback)
+        }
+      })
+      .catch(() => {
+        // Fallback on error
+        setSocialLinks([
+          { name: 'Twitter', url: 'https://x.com/Hustle_Kenya', icon: 'Twitter', order_index: 1 },
+          { name: 'LinkedIn', url: 'https://linkedin.com/company/hustleke', icon: 'Linkedin', order_index: 2 },
+          { name: 'Facebook', url: 'https://www.facebook.com/profile.php?id=61585548811537', icon: 'Facebook', order_index: 3 },
+        ])
+      })
+  }, [])
 
   return (
     <footer className="bg-gray-900 text-gray-400 py-16">
@@ -26,7 +60,7 @@ export default function Footer() {
               Kenya&apos;s #1 freelance marketplace. Connect with clients, get paid via M-Pesa, and build your career.
             </p>
             <div className="flex gap-3">
-              {social_links.map((social) => {
+              {socialLinks.map((social) => {
                 // Dynamic icon component mapping
                 const IconComponent = (() => {
                   switch (social.icon) {

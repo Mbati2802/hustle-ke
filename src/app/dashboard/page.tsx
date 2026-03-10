@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { cachedFetch } from '@/lib/fetch-cache'
 import { usePostJobModal } from '../components/PostJobModalContext'
@@ -56,6 +57,15 @@ interface WalletData {
 export default function DashboardPage() {
   const { user, profile, orgMode, activeOrg } = useAuth()
   const { openModal: openPostJobModal } = usePostJobModal()
+  const router = useRouter()
+
+  // Redirect admins to their dedicated panel
+  useEffect(() => {
+    if (profile?.role === 'Admin') {
+      router.replace('/admin')
+    }
+  }, [profile, router])
+
   const [jobs, setJobs] = useState<DashboardJob[]>([])
   const [proposals, setProposals] = useState<DashboardProposal[]>([])
   const [wallet, setWallet] = useState<WalletData | null>(null)

@@ -3,7 +3,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import {
-  DollarSign, ChevronLeft, ChevronRight, X, ArrowUpRight, ArrowDownRight
+  DollarSign, ChevronLeft, ChevronRight, X, ArrowUpRight, ArrowDownRight,
+  Eye, AlertTriangle, CheckCircle2, RefreshCw, ExternalLink, MoreVertical,
+  Clock, Shield, FileText
 } from 'lucide-react'
 
 interface Escrow {
@@ -47,45 +49,60 @@ export default function AdminEscrowPage() {
 
   useEffect(() => { fetchEscrows() }, [fetchEscrows])
 
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
+  const [openMenu, setOpenMenu] = useState<string | null>(null)
+
   const handleForceRelease = async (id: string) => {
-    if (!confirm('Force release escrow funds to freelancer?')) return
+    if (!confirm('Force release escrow funds to freelancer? This cannot be undone.')) return
+    setActionLoading(id)
     await fetch(`/api/escrow/${id}/release`, { method: 'POST' })
+    setActionLoading(null)
     fetchEscrows()
   }
 
   const handleForceRefund = async (id: string) => {
-    if (!confirm('Force refund escrow funds to client?')) return
+    if (!confirm('Force refund escrow funds to client? This cannot be undone.')) return
+    setActionLoading(id)
     await fetch(`/api/escrow/${id}/refund`, { method: 'POST' })
+    setActionLoading(null)
     fetchEscrows()
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <DollarSign className="w-7 h-7 text-amber-500" /> Escrow Transactions
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">{total} total transactions</p>
+    <div className="space-y-6" onClick={() => setOpenMenu(null)}>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <DollarSign className="w-7 h-7 text-amber-500" /> Escrow Transactions
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">{total} total transactions</p>
+        </div>
+        <button onClick={() => fetchEscrows()} className="p-2 hover:bg-gray-100 rounded-lg transition" title="Refresh">
+          <RefreshCw className="w-4 h-4 text-gray-500" />
+        </button>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <p className="text-sm text-gray-500">Total Held</p>
-          <p className="text-2xl font-bold text-blue-600 mt-1">KES {stats.total_held.toLocaleString()}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <p className="text-sm text-gray-500">Total Released</p>
-          <p className="text-2xl font-bold text-green-600 mt-1">KES {stats.total_released.toLocaleString()}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <p className="text-sm text-gray-500">Pending Releases</p>
-          <p className="text-2xl font-bold text-amber-600 mt-1">{stats.pending_releases}</p>
-        </div>
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <p className="text-sm text-gray-500">Disputed</p>
-          <p className="text-2xl font-bold text-red-600 mt-1">{stats.disputed}</p>
-        </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: 'Total Held', value: `KES ${stats.total_held.toLocaleString()}`, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200', icon: Shield },
+          { label: 'Total Released', value: `KES ${stats.total_released.toLocaleString()}`, color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200', icon: CheckCircle2 },
+          { label: 'Pending Releases', value: stats.pending_releases, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200', icon: Clock },
+          { label: 'Disputed', value: stats.disputed, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200', icon: AlertTriangle },
+        ].map((s, i) => {
+          const Icon = s.icon
+          return (
+            <div key={i} className={`bg-white rounded-xl border ${s.border} p-4`}>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{s.label}</p>
+                <div className={`w-8 h-8 ${s.bg} rounded-lg flex items-center justify-center`}>
+                  <Icon className={`w-4 h-4 ${s.color}`} />
+                </div>
+              </div>
+              <p className={`text-xl font-bold ${s.color}`}>{typeof s.value === 'number' ? s.value.toLocaleString() : s.value}</p>
+            </div>
+          )
+        })}
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 p-4">
@@ -142,19 +159,81 @@ export default function AdminEscrowPage() {
                   <td className="px-4 py-3"><span className={`text-xs px-2 py-0.5 rounded-full ${statusColor[e.status] || 'bg-gray-100 text-gray-600'}`}>{e.status}</span></td>
                   <td className="px-4 py-3 text-xs text-gray-500">{new Date(e.initiated_at).toLocaleDateString()}</td>
                   <td className="px-4 py-3 text-right">
-                    {e.status === 'Held' && (
-                      <div className="flex items-center gap-1 justify-end">
-                        <button onClick={() => handleForceRelease(e.id)} className="px-2 py-1 text-xs bg-green-50 text-green-700 rounded hover:bg-green-100 transition flex items-center gap-1">
-                          <ArrowUpRight className="w-3 h-3" /> Release
-                        </button>
-                        <button onClick={() => handleForceRefund(e.id)} className="px-2 py-1 text-xs bg-red-50 text-red-600 rounded hover:bg-red-100 transition flex items-center gap-1">
-                          <ArrowDownRight className="w-3 h-3" /> Refund
-                        </button>
-                      </div>
-                    )}
-                    {e.status === 'Disputed' && (
-                      <span className="text-xs text-red-500">See Disputes</span>
-                    )}
+                    <div className="flex items-center gap-1 justify-end">
+                      {/* View job link — always available */}
+                      {e.job && (
+                        <Link href={`/admin/jobs/${e.job.id}`}
+                          className="p-1.5 rounded-lg hover:bg-gray-100 transition text-gray-400 hover:text-gray-700" title="View Job">
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </Link>
+                      )}
+
+                      {/* Held: Release or Refund */}
+                      {e.status === 'Held' && (
+                        <>
+                          <button onClick={(ev) => { ev.stopPropagation(); handleForceRelease(e.id) }}
+                            disabled={actionLoading === e.id}
+                            className="px-2.5 py-1.5 text-xs bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition flex items-center gap-1 font-medium disabled:opacity-50">
+                            <ArrowUpRight className="w-3 h-3" /> Release
+                          </button>
+                          <button onClick={(ev) => { ev.stopPropagation(); handleForceRefund(e.id) }}
+                            disabled={actionLoading === e.id}
+                            className="px-2.5 py-1.5 text-xs bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 transition flex items-center gap-1 font-medium disabled:opacity-50">
+                            <ArrowDownRight className="w-3 h-3" /> Refund
+                          </button>
+                        </>
+                      )}
+
+                      {/* Pending: Release or Refund too */}
+                      {e.status === 'Pending' && (
+                        <>
+                          <button onClick={(ev) => { ev.stopPropagation(); handleForceRelease(e.id) }}
+                            disabled={actionLoading === e.id}
+                            className="px-2.5 py-1.5 text-xs bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition flex items-center gap-1 font-medium disabled:opacity-50">
+                            <CheckCircle2 className="w-3 h-3" /> Approve
+                          </button>
+                          <button onClick={(ev) => { ev.stopPropagation(); handleForceRefund(e.id) }}
+                            disabled={actionLoading === e.id}
+                            className="px-2.5 py-1.5 text-xs bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition flex items-center gap-1 font-medium disabled:opacity-50">
+                            <X className="w-3 h-3" /> Cancel
+                          </button>
+                        </>
+                      )}
+
+                      {/* Disputed: Force release, force refund, or view dispute */}
+                      {e.status === 'Disputed' && (
+                        <div className="relative" onClick={ev => ev.stopPropagation()}>
+                          <button onClick={() => setOpenMenu(openMenu === e.id ? null : e.id)}
+                            className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 transition text-red-600">
+                            <MoreVertical className="w-3.5 h-3.5" />
+                          </button>
+                          {openMenu === e.id && (
+                            <div className="absolute right-0 top-8 bg-white rounded-xl shadow-xl border border-gray-200 z-20 min-w-[170px] py-1">
+                              <button onClick={() => { handleForceRelease(e.id); setOpenMenu(null) }}
+                                className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-green-700">
+                                <ArrowUpRight className="w-4 h-4" /> Release to Freelancer
+                              </button>
+                              <button onClick={() => { handleForceRefund(e.id); setOpenMenu(null) }}
+                                className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-amber-700">
+                                <ArrowDownRight className="w-4 h-4" /> Refund to Client
+                              </button>
+                              <div className="border-t border-gray-100 my-1" />
+                              <Link href="/admin/disputes"
+                                className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-blue-700">
+                                <FileText className="w-4 h-4" /> View Dispute
+                              </Link>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Released / Refunded — view only */}
+                      {(e.status === 'Released' || e.status === 'Refunded') && (
+                        <span className={`text-xs px-2 py-1 rounded-lg font-medium ${e.status === 'Released' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                          {e.status === 'Released' ? `${new Date(e.released_at!).toLocaleDateString()}` : `${new Date(e.refunded_at!).toLocaleDateString()}`}
+                        </span>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
