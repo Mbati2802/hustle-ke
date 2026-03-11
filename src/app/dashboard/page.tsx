@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { cachedFetch } from '@/lib/fetch-cache'
 import { usePostJobModal } from '../components/PostJobModalContext'
+import ProfileCompletionBanner from '../components/ProfileCompletionBanner'
 import {
   Briefcase,
   FileText,
@@ -174,6 +175,9 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Profile Completion Banner — shown for Freelancers with incomplete profiles */}
+      <ProfileCompletionBanner />
 
       {/* Email Verification Banner */}
       {showVerificationBanner && (

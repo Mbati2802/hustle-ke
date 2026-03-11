@@ -152,7 +152,7 @@ export default function JobDetailPage({ params }: { params: { id: string } }) {
 
   const handleApply = () => {
     if (!user) {
-      openLogin()
+      openLogin({ afterLogin: () => { if (job) openApplyModal(job) } })
       return
     }
     if (job) openApplyModal(job)

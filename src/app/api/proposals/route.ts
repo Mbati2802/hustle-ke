@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
   const url = new URL(req.url)
   const status = url.searchParams.get('status')
   const orgId = url.searchParams.get('organization_id')
+  const jobId = url.searchParams.get('job_id')
 
   let query = auth.adminDb
     .from('proposals')
@@ -37,6 +38,9 @@ export async function GET(req: NextRequest) {
 
   if (status) {
     query = query.eq('status', status)
+  }
+  if (jobId) {
+    query = query.eq('job_id', jobId)
   }
 
   query = query

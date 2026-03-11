@@ -71,18 +71,30 @@ export default function ApplyJobModal({ isOpen, onClose, job }: ApplyJobModalPro
   } | null>(null)
   const [aiProposalApplied, setAiProposalApplied] = useState(false)
 
+  // Existing proposal state (for dynamic button behavior)
+  const [existingProposal, setExistingProposal] = useState<{ id: string; status: string; cover_letter: string; bid_amount: number; viewed_at?: string | null } | null>(null)
+  const [loadingExisting, setLoadingExisting] = useState(false)
+
   // Inline AI generation state
   const [aiTone, setAiTone] = useState<'professional' | 'casual' | 'technical'>('professional')
   const [isGeneratingAi, setIsGeneratingAi] = useState(false)
   const [aiResult, setAiResult] = useState<AiResult | null>(null)
   const [showAiPanel, setShowAiPanel] = useState(false)
   const [aiError, setAiError] = useState('')
+  const [polishError, setPolishError] = useState('')
+  const [polishLabel, setPolishLabel] = useState('')
 
-  // Load saved progress when modal opens + check for AI proposal
+  // Load saved progress when modal opens + check for AI proposal + check existing proposal
   useEffect(() => {
     if (isOpen && job) {
       loadSavedProgress()
       checkAiProposal()
+      checkExistingProposal()
+    }
+    if (!isOpen) {
+      setExistingProposal(null)
+      setPolishError('')
+      setPolishLabel('')
     }
   }, [isOpen, job?.id])
 
@@ -212,6 +224,33 @@ export default function ApplyJobModal({ isOpen, onClose, job }: ApplyJobModalPro
     })
   }
 
+  // ── Markdown helper — converts **text** to <strong>text</strong> safely ──
+  const markdownToHtml = (text: string): string => {
+    return text
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+  }
+
+  const checkExistingProposal = async () => {
+    setLoadingExisting(true)
+    try {
+      const res = await fetch(`/api/proposals?job_id=${job.id}`)
+      if (res.ok) {
+        const data = await res.json()
+        const proposals: any[] = data.proposals || data || []
+        const mine = proposals.find((p: any) => p.job_id === job.id)
+        if (mine) {
+          setExistingProposal(mine)
+          setCoverLetter(mine.cover_letter || '')
+          setBidAmount(mine.bid_amount || job.budget_max || job.budget_min)
+        }
+      }
+    } catch {
+      // ignore — non-critical
+    }
+    setLoadingExisting(false)
+  }
+
   const checkAiProposal = () => {
     try {
       const stored = sessionStorage.getItem('ai_proposal')
@@ -293,26 +332,31 @@ export default function ApplyJobModal({ isOpen, onClose, job }: ApplyJobModalPro
 
   const handlePolish = async () => {
     if (!coverLetter.trim()) return
-    
     setIsPolishing(true)
-    
-    // Simulate AI processing
-    setTimeout(() => {
-      const polished = `Dear Hiring Manager,
-
-I am excited to submit my proposal for the ${job.title} position at ${clientName}. With extensive experience in this field and a proven track record, I am confident in my ability to deliver exceptional results for your project.
-
-${coverLetter}
-
-I have reviewed your requirements and can complete this project within your timeline while maintaining the highest quality standards. I look forward to discussing how I can contribute to your success.
-
-Best regards,
-[Your Name]`
-      
-      setPolishedLetter(polished)
-      setShowPolished(true)
-      setIsPolishing(false)
-    }, 2000)
+    setPolishError('')
+    setPolishLabel('')
+    try {
+      const res = await fetch('/api/ai-polish-proposal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cover_letter: coverLetter,
+          job_title: job.title,
+          freelancer_name: profile?.full_name || '',
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setPolishError(data.error || 'Failed to polish proposal')
+      } else {
+        setPolishedLetter(data.polished_letter)
+        setPolishLabel(data.improvement_label || 'Improved')
+        setShowPolished(true)
+      }
+    } catch {
+      setPolishError('Network error. Please try again.')
+    }
+    setIsPolishing(false)
   }
 
   const usePolished = () => {
@@ -324,8 +368,32 @@ Best regards,
   const handleSubmit = async () => {
     setIsSubmitting(true)
     setSubmitError('')
-    
+
     try {
+      // If updating an existing proposal, use PUT /api/proposals/[id]
+      if (existingProposal && !existingProposal.viewed_at) {
+        const res = await fetch(`/api/proposals/${existingProposal.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            cover_letter: coverLetter,
+            bid_amount: bidAmount,
+            estimated_duration_days: duration,
+          }),
+        })
+        const data = await res.json()
+        if (!res.ok) {
+          setSubmitError(data.error || 'Failed to update proposal')
+          setIsSubmitting(false)
+          return
+        }
+        clearSavedProgress()
+        setIsSubmitting(false)
+        setIsSuccess(true)
+        return
+      }
+
+      // New submission
       const res = await fetch('/api/proposals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -616,15 +684,15 @@ Best regards,
                           </span>
                         </div>
 
-                        {/* Tone selector + Generate */}
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="flex items-center gap-1.5">
+                        {/* Tone selector + Generate — wraps on mobile */}
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                          <div className="flex items-center gap-1.5 flex-wrap">
                             <span className="text-xs text-gray-600 font-medium">Tone:</span>
                             {(['professional', 'casual', 'technical'] as const).map((tone) => (
                               <button
                                 key={tone}
                                 onClick={() => setAiTone(tone)}
-                                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${
+                                className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors capitalize min-h-[32px] ${
                                   aiTone === tone
                                     ? 'bg-purple-600 text-white'
                                     : 'bg-white text-gray-600 hover:bg-purple-100 border border-gray-200'
@@ -637,7 +705,7 @@ Best regards,
                           <button
                             onClick={generateAiProposal}
                             disabled={isGeneratingAi}
-                            className="ml-auto bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white px-4 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"
+                            className="sm:ml-auto bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white px-4 py-2 sm:py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 min-h-[36px]"
                           >
                             {isGeneratingAi ? (
                               <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generating...</>
@@ -701,11 +769,12 @@ Best regards,
                               </div>
                             )}
 
-                            {/* Generated proposal preview */}
+                            {/* Generated proposal preview — renders **bold** markdown */}
                             <div className="bg-white rounded-lg p-3 border border-purple-100 max-h-48 overflow-y-auto">
-                              <p className="text-gray-700 whitespace-pre-line text-xs leading-relaxed">
-                                {aiResult.proposal}
-                              </p>
+                              <div
+                                className="text-gray-700 whitespace-pre-wrap text-xs leading-relaxed"
+                                dangerouslySetInnerHTML={{ __html: markdownToHtml(aiResult.proposal) }}
+                              />
                             </div>
 
                             {/* Suggestions */}
@@ -772,21 +841,32 @@ Best regards,
                   </div>
                 </div>
 
+                {/* Polish error */}
+                {polishError && (
+                  <div className="bg-red-50 text-red-700 text-xs rounded-lg px-3 py-2 flex items-center gap-2">
+                    <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                    {polishError}
+                  </div>
+                )}
+
                 {/* AI Polished Version */}
                 {showPolished && (
-                  <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-5 border-2 border-purple-200">
+                  <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-4 sm:p-5 border-2 border-purple-200">
                     <div className="flex items-center gap-2 mb-4">
                       <Sparkles className="w-5 h-5 text-purple-600" />
-                      <h3 className="font-semibold text-gray-900">AI Enhanced Version</h3>
-                      <span className="ml-auto text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
-                        +45% more professional
-                      </span>
+                      <h3 className="font-semibold text-gray-900 text-sm sm:text-base">Polished Version</h3>
+                      {polishLabel && (
+                        <span className="ml-auto text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
+                          {polishLabel}
+                        </span>
+                      )}
                     </div>
                     
-                    <div className="bg-white rounded-lg p-4 mb-4 max-h-64 overflow-y-auto">
-                      <p className="text-gray-700 whitespace-pre-line text-sm">
-                        {polishedLetter}
-                      </p>
+                    <div className="bg-white rounded-lg p-3 sm:p-4 mb-4 max-h-64 overflow-y-auto">
+                      <div
+                        className="text-gray-700 whitespace-pre-wrap text-sm leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: markdownToHtml(polishedLetter) }}
+                      />
                     </div>
 
                     <div className="flex gap-3">
@@ -819,40 +899,78 @@ Best regards,
 
           {/* Footer */}
           {!isSuccess && (
-            <div className="border-t border-gray-200 px-6 py-4 bg-gray-50">
-              <div className="flex items-center justify-between">
+            <div className="border-t border-gray-200 px-3 sm:px-6 py-3 sm:py-4 bg-gray-50">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="text-sm text-gray-600">
-                  {hasUnsavedProgress && (
-                    <span className="flex items-center gap-1 text-amber-600">
+                  {loadingExisting && (
+                    <span className="flex items-center gap-1 text-gray-400 text-xs">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      Checking your application...
+                    </span>
+                  )}
+                  {!loadingExisting && existingProposal && existingProposal.viewed_at && (
+                    <span className="flex items-center gap-1.5 text-blue-600 text-xs font-medium">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      Proposal viewed by client
+                    </span>
+                  )}
+                  {!loadingExisting && existingProposal && !existingProposal.viewed_at && (
+                    <span className="flex items-center gap-1.5 text-amber-600 text-xs font-medium">
+                      <AlertTriangle className="w-3.5 h-3.5" />
+                      You have an existing proposal
+                    </span>
+                  )}
+                  {!loadingExisting && !existingProposal && hasUnsavedProgress && (
+                    <span className="flex items-center gap-1 text-amber-600 text-xs">
                       <AlertTriangle className="w-4 h-4" />
                       Saving progress...
                     </span>
                   )}
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-2 sm:gap-3">
                   <button
                     onClick={handleClose}
-                    className="px-6 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+                    className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-600 hover:bg-gray-50 transition-colors text-sm"
                   >
                     Cancel
                   </button>
-                  <button
-                    onClick={handleSubmit}
-                    disabled={!coverLetter.trim() || isSubmitting}
-                    className="bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center gap-2"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Submitting...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-5 h-5" />
-                        Submit Proposal
-                      </>
-                    )}
-                  </button>
+
+                  {/* Locked: client already viewed */}
+                  {existingProposal?.viewed_at ? (
+                    <button
+                      disabled
+                      className="flex-1 sm:flex-none bg-gray-400 cursor-not-allowed text-white px-4 sm:px-6 py-2.5 rounded-lg font-semibold text-sm flex items-center justify-center gap-2"
+                    >
+                      <CheckCircle2 className="w-4 h-4" />
+                      Under Review
+                    </button>
+                  ) : existingProposal ? (
+                    /* Already submitted, not yet viewed — allow edit */
+                    <button
+                      onClick={handleSubmit}
+                      disabled={!coverLetter.trim() || isSubmitting}
+                      className="flex-1 sm:flex-none bg-amber-500 hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 sm:px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm"
+                    >
+                      {isSubmitting ? (
+                        <><Loader2 className="w-4 h-4 animate-spin" /> Updating...</>
+                      ) : (
+                        <><Send className="w-4 h-4" /> Update Submission</>
+                      )}
+                    </button>
+                  ) : (
+                    /* No existing proposal */
+                    <button
+                      onClick={handleSubmit}
+                      disabled={!coverLetter.trim() || isSubmitting}
+                      className="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 sm:px-6 py-2.5 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm"
+                    >
+                      {isSubmitting ? (
+                        <><Loader2 className="w-4 h-4 animate-spin" /> Submitting...</>
+                      ) : (
+                        <><Send className="w-4 h-4" /> Submit Proposal</>
+                      )}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

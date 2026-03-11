@@ -1,19 +1,27 @@
 'use client'
 
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, useRef, ReactNode } from 'react'
 
 type AuthModalView = 'login' | 'signup' | 'forgot-password'
+
+interface OpenLoginOptions {
+  redirectTo?: string
+  afterLogin?: () => void
+}
 
 interface AuthModalContextType {
   isOpen: boolean
   view: AuthModalView
-  openLogin: () => void
-  openSignup: (type?: 'freelancer' | 'client') => void
+  openLogin: (opts?: OpenLoginOptions) => void
+  openSignup: (type?: 'freelancer' | 'client', opts?: { redirectTo?: string }) => void
   openForgotPassword: () => void
   closeModal: () => void
   setView: (view: AuthModalView) => void
   signupType: 'freelancer' | 'client'
   setSignupType: (type: 'freelancer' | 'client') => void
+  pendingRedirect: string | null
+  pendingCallbackRef: React.MutableRefObject<(() => void) | null>
+  clearPending: () => void
 }
 
 const AuthModalContext = createContext<AuthModalContextType | undefined>(undefined)
@@ -22,14 +30,19 @@ export function AuthModalProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false)
   const [view, setView] = useState<AuthModalView>('login')
   const [signupType, setSignupType] = useState<'freelancer' | 'client'>('freelancer')
+  const [pendingRedirect, setPendingRedirect] = useState<string | null>(null)
+  const pendingCallbackRef = useRef<(() => void) | null>(null)
 
-  const openLogin = useCallback(() => {
+  const openLogin = useCallback((opts?: OpenLoginOptions) => {
+    if (opts?.afterLogin) pendingCallbackRef.current = opts.afterLogin
+    if (opts?.redirectTo) setPendingRedirect(opts.redirectTo)
     setView('login')
     setIsOpen(true)
   }, [])
 
-  const openSignup = useCallback((type?: 'freelancer' | 'client') => {
+  const openSignup = useCallback((type?: 'freelancer' | 'client', opts?: { redirectTo?: string }) => {
     if (type) setSignupType(type)
+    if (opts?.redirectTo) setPendingRedirect(opts.redirectTo)
     setView('signup')
     setIsOpen(true)
   }, [])
@@ -39,10 +52,17 @@ export function AuthModalProvider({ children }: { children: ReactNode }) {
     setIsOpen(true)
   }, [])
 
-  const closeModal = useCallback(() => setIsOpen(false), [])
+  const clearPending = useCallback(() => {
+    pendingCallbackRef.current = null
+    setPendingRedirect(null)
+  }, [])
+
+  const closeModal = useCallback(() => {
+    setIsOpen(false)
+  }, [])
 
   return (
-    <AuthModalContext.Provider value={{ isOpen, view, openLogin, openSignup, openForgotPassword, closeModal, setView, signupType, setSignupType }}>
+    <AuthModalContext.Provider value={{ isOpen, view, openLogin, openSignup, openForgotPassword, closeModal, setView, signupType, setSignupType, pendingRedirect, pendingCallbackRef, clearPending }}>
       {children}
     </AuthModalContext.Provider>
   )

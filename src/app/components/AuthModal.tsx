@@ -44,7 +44,7 @@ const skillOptions = [
 ]
 
 export default function AuthModal() {
-  const { isOpen, view, closeModal, setView, signupType, setSignupType } = useAuthModal()
+  const { isOpen, view, closeModal, setView, signupType, setSignupType, pendingRedirect, pendingCallbackRef, clearPending } = useAuthModal()
   const { login, signup } = useAuth()
   const router = useRouter()
   const { executeRecaptcha } = useGoogleReCaptcha()
@@ -102,10 +102,15 @@ export default function AuthModal() {
     if (result.error) {
       setLoginError(result.error)
     } else {
-      // Close modal immediately on success
       closeModal()
-      // Navigate after modal closes
-      if (result.redirect) {
+      const callback = pendingCallbackRef.current
+      const redirect = pendingRedirect
+      clearPending()
+      if (callback) {
+        setTimeout(callback, 150)
+      } else if (redirect) {
+        setTimeout(() => router.push(redirect), 100)
+      } else if (result.redirect) {
         setTimeout(() => router.push(result.redirect!), 100)
       }
     }
@@ -144,7 +149,16 @@ export default function AuthModal() {
     } else {
       setSignupLoading(false)
       closeModal()
-      router.push('/dashboard')
+      const callback = pendingCallbackRef.current
+      const redirect = pendingRedirect
+      clearPending()
+      if (callback) {
+        setTimeout(callback, 150)
+      } else if (redirect) {
+        setTimeout(() => router.push(redirect), 100)
+      } else {
+        router.push('/dashboard')
+      }
     }
   }
 
