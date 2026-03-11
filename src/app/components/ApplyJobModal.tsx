@@ -224,11 +224,24 @@ export default function ApplyJobModal({ isOpen, onClose, job }: ApplyJobModalPro
     })
   }
 
-  // ── Markdown helper — converts **text** to <strong>text</strong> safely ──
+  // ── Markdown helpers ────────────────────────────────────────────────────
+  // For HTML preview panels — renders **bold** and plain "Section Header:" lines as bold
   const markdownToHtml = (text: string): string => {
     return text
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/^([A-Z][^\n:]{2,50}:)(\s*)$/gm, '<strong>$1</strong>$2')
+  }
+
+  // For textarea insertion — strips **bold** markers so users see clean text
+  const stripMarkdown = (text: string): string => {
+    return text
+      .replace(/\*\*([^*\n]+)\*\*/g, '$1')  // **bold** → bold
+      .replace(/\*([^*\n]+)\*/g, '$1')       // *italic* → italic
+      .replace(/^#{1,6}\s+/gm, '')            // ## Heading → Heading
+      .replace(/^[\-\*]\s+/gm, '• ')         // - item / * item → • item
+      .replace(/\n{3,}/g, '\n\n')            // collapse triple newlines
+      .trim()
   }
 
   const checkExistingProposal = async () => {
@@ -270,7 +283,7 @@ export default function ApplyJobModal({ isOpen, onClose, job }: ApplyJobModalPro
 
   const useAiProposal = () => {
     if (!aiProposalAvailable) return
-    setCoverLetter(aiProposalAvailable.cover_letter)
+    setCoverLetter(stripMarkdown(aiProposalAvailable.cover_letter))
     setBidAmount(aiProposalAvailable.bid_amount)
     setAiProposalApplied(true)
     setAiProposalAvailable(null)
@@ -321,7 +334,7 @@ export default function ApplyJobModal({ isOpen, onClose, job }: ApplyJobModalPro
 
   const applyAiResult = () => {
     if (!aiResult) return
-    setCoverLetter(aiResult.proposal)
+    setCoverLetter(stripMarkdown(aiResult.proposal))
     setBidAmount(aiResult.bid_suggestion.recommended)
     setShowAiPanel(false)
     setAiResult(null)
@@ -360,7 +373,7 @@ export default function ApplyJobModal({ isOpen, onClose, job }: ApplyJobModalPro
   }
 
   const usePolished = () => {
-    setCoverLetter(polishedLetter)
+    setCoverLetter(stripMarkdown(polishedLetter))
     setShowPolished(false)
     saveProgress()
   }

@@ -245,14 +245,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Understanding section
-    proposal += `**Understanding Your Requirements:**\n`
+    proposal += `Understanding Your Requirements:\n`
     keyRequirements.forEach((req: string) => {
       proposal += `• ${req}\n`
     })
     proposal += `\n`
 
     // Approach
-    proposal += `**My Approach:**\n`
+    proposal += `My Approach:\n`
     approachPoints.forEach((point: string) => {
       proposal += `${tone === 'casual' ? '✅' : '•'} ${point}\n`
     })
@@ -260,7 +260,7 @@ export async function POST(req: NextRequest) {
 
     // Skills highlight
     if (matchedSkills.length > 0) {
-      proposal += `**Relevant Skills:**\n`
+      proposal += `Relevant Skills:\n`
       proposal += matchedSkills.map((s: string) => `• ${s.charAt(0).toUpperCase() + s.slice(1)}`).join('\n')
       if (bonusSkills.length > 0) {
         proposal += `\n• Plus: ${bonusSkills.slice(0, 3).map((s: string) => s.charAt(0).toUpperCase() + s.slice(1)).join(', ')}`
@@ -269,7 +269,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Timeline & availability
-    proposal += `**Timeline & Availability:**\n`
+    proposal += `Timeline & Availability:\n`
     proposal += `I am available to start immediately and can dedicate focused time to ensure timely delivery. `
     proposal += `I will provide regular progress updates and am responsive to feedback throughout the project.\n\n`
 

@@ -95,8 +95,11 @@ export async function POST(req: NextRequest) {
       polished = polished.replace(pattern, replacement)
     }
 
-    // Trim final output
-    polished = polished.trim()
+    // Strip any remaining **markdown** bold markers from output
+    polished = polished
+      .replace(/\*\*([^*\n]+)\*\*/g, '$1')
+      .replace(/\*([^*\n]+)\*/g, '$1')
+      .trim()
 
     // Calculate improvement score (always show meaningful improvement)
     const originalWords = original.split(/\s+/).length
