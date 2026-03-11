@@ -43,6 +43,7 @@ import {
 } from 'lucide-react'
 import NotificationDropdown from '../components/NotificationDropdown'
 import NotificationPermission from '../components/NotificationPermission'
+import MessagesIcon from '../components/MessagesIcon'
 
 const freelancerItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
@@ -185,6 +186,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <span className="font-bold text-white text-sm sm:text-base truncate max-w-[120px] sm:max-w-[200px]">{orgMode && activeOrg ? activeOrg.name : 'HustleKE'}</span>
           </Link>
           <div className="flex items-center gap-2 sm:gap-3">
+            <MessagesIcon variant="mobile" />
             <NotificationDropdown variant="mobile" />
             <Link href="/dashboard/settings" className="flex items-center justify-center">
               {profile?.avatar_url ? (
@@ -396,6 +398,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <MessagesIcon variant="desktop" />
               <NotificationDropdown variant="desktop" />
               <div className="w-px h-8 bg-gray-200"></div>
               <Link href="/dashboard/settings" className="flex items-center gap-3 hover:bg-gray-50 rounded-lg px-2 py-1.5 transition-colors">
