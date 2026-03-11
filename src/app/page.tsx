@@ -315,7 +315,7 @@ export default function LandingPage() {
         <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl" />
 
         {/* ── Content — Split Layout ── */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
 
             {/* ── Left: Text ── */}
@@ -330,7 +330,7 @@ export default function LandingPage() {
               </div>
 
               {/* Headline — both lines rotate */}
-              <h1 className="hk3-anim hk3-d2 text-4xl lg:text-5xl font-bold text-white mb-5 leading-tight">
+              <h1 className="hk3-anim hk3-d2 text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-5 leading-tight">
                 <span
                   className={`block transition-all duration-300 ${isHeroTransitioning ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'}`}
                 >
@@ -355,17 +355,17 @@ export default function LandingPage() {
               </p>
 
               {/* CTAs */}
-              <div className="hk3-anim hk3-d4 flex flex-row gap-3 sm:gap-4 mb-8 justify-center lg:justify-start">
+              <div className="hk3-anim hk3-d4 flex flex-wrap gap-3 sm:gap-4 mb-6 sm:mb-8 justify-center lg:justify-start">
                 <Link
                   href={content.hero_cta_primary_link}
-                  className="hk3-glow-btn group inline-flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white px-5 sm:px-7 py-3 sm:py-3.5 rounded-xl font-semibold transition-colors text-sm sm:text-base"
+                  className="hk3-glow-btn group inline-flex items-center gap-2 bg-green-600 hover:bg-green-500 text-white px-5 py-3 sm:px-7 sm:py-3.5 rounded-xl font-semibold transition-colors text-sm sm:text-base min-h-[44px]"
                 >
                   {content.hero_cta_primary}
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                 </Link>
                 <button
                   onClick={() => openModal()}
-                  className="group inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 text-white px-5 sm:px-7 py-3 sm:py-3.5 rounded-xl font-medium transition-colors text-sm sm:text-base"
+                  className="group inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 text-white px-5 py-3 sm:px-7 sm:py-3.5 rounded-xl font-medium transition-colors text-sm sm:text-base min-h-[44px]"
                 >
                   {content.hero_cta_secondary}
                   <Briefcase className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
@@ -505,8 +505,8 @@ export default function LandingPage() {
 
       {/* ═══════════════════ FEATURES STRIP (replaced trust partners) ═══════════════════ */}
       <section className="bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8">
             {[
               { icon: Smartphone, label: 'Instant M-Pesa Payouts', desc: 'Get paid in seconds', color: 'text-green-600', bg: 'bg-green-50' },
               { icon: Shield, label: 'Escrow Protection', desc: 'Funds held securely', color: 'text-blue-600', bg: 'bg-blue-50' },
@@ -528,18 +528,18 @@ export default function LandingPage() {
       </section>
 
       {/* Value Proposition */}
-      <section className="py-12 sm:py-24 bg-white">
+      <section className="py-10 sm:py-16 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10 sm:mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
               {`Why Choose ${siteSettings.platform_name}?`}
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-base sm:text-xl text-gray-600 max-w-2xl mx-auto">
               {content.value_props_subtitle}
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {content.value_props.map((prop: { title: string; description: string; features: string[] }, i: number) => {
               const icons = [Bot, Smartphone, Shield]
               const colors = [
@@ -550,12 +550,12 @@ export default function LandingPage() {
               const Icon = icons[i] || Bot
               const color = colors[i] || colors[0]
               return (
-                <div key={prop.title} className={`bg-gradient-to-br ${color.bg} rounded-2xl p-8 border ${color.border}`}>
-                  <div className={`w-14 h-14 ${color.icon} rounded-xl flex items-center justify-center mb-6`}>
+                <div key={prop.title} className={`bg-gradient-to-br ${color.bg} rounded-2xl p-5 sm:p-8 border ${color.border}`}>
+                  <div className={`w-11 h-11 sm:w-14 sm:h-14 ${color.icon} rounded-xl flex items-center justify-center mb-4 sm:mb-6`}>
                     <Icon className="w-7 h-7 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{prop.title}</h3>
-                  <p className="text-gray-600 mb-4">{prop.description}</p>
+                  <h3 className="text-base sm:text-xl font-bold text-gray-900 mb-2">{prop.title}</h3>
+                  <p className="text-sm sm:text-base text-gray-600 mb-3">{prop.description}</p>
                   <ul className="space-y-2">
                     {prop.features.map((f: string) => (
                       <li key={f} className="flex items-center gap-2 text-sm text-gray-600">
@@ -572,14 +572,14 @@ export default function LandingPage() {
       </section>
 
       {/* Featured Talent */}
-      <section className="py-12 sm:py-24 bg-gray-50">
+      <section className="py-10 sm:py-16 lg:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-end mb-8 sm:mb-12">
+          <div className="flex justify-between items-end mb-6 sm:mb-10 lg:mb-12">
             <div>
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">
                 Featured Talent
               </h2>
-              <p className="text-xl text-gray-600">
+              <p className="text-sm sm:text-lg text-gray-600">
                 Top-rated freelancers ready to work on your projects
               </p>
             </div>
@@ -592,7 +592,7 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
             {talentLoading ? (
               // Loading skeleton
               Array.from({ length: 4 }).map((_, i) => (
@@ -620,34 +620,34 @@ export default function LandingPage() {
                   {/* Top color accent */}
                   <div className="h-1.5 bg-gradient-to-r from-green-500 to-emerald-400" />
 
-                  <div className="p-5">
+                  <div className="p-3 sm:p-5">
                     {/* Avatar + Name */}
-                    <div className="flex items-center gap-3 mb-3">
+                    <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                       {talent.avatar_url ? (
                         <img
                           src={talent.avatar_url}
                           alt={talent.full_name}
-                          className="w-14 h-14 rounded-full object-cover ring-2 ring-green-100"
+                          className="w-10 h-10 sm:w-14 sm:h-14 rounded-full object-cover ring-2 ring-green-100 shrink-0"
                         />
                       ) : (
-                        <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-lg ring-2 ring-green-100">
+                        <div className="w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-base sm:text-lg ring-2 ring-green-100 shrink-0">
                           {talent.full_name?.charAt(0)?.toUpperCase() || 'T'}
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <h3 className="font-semibold text-gray-900 truncate group-hover:text-green-600 transition-colors">{talent.full_name || 'Anonymous'}</h3>
+                          <h3 className="font-semibold text-gray-900 text-xs sm:text-sm truncate group-hover:text-green-600 transition-colors">{talent.full_name || 'Anonymous'}</h3>
                           {talent.verification_status === 'ID-Verified' && (
                             <Shield className="w-4 h-4 text-green-500 flex-shrink-0" />
                           )}
                         </div>
-                        <p className="text-sm text-gray-500 truncate">{talent.title || 'Freelancer'}</p>
+                        <p className="text-xs text-gray-500 truncate">{talent.title || 'Freelancer'}</p>
                       </div>
                     </div>
 
                     {/* Bio snippet */}
                     {talent.bio && (
-                      <p className="text-xs text-gray-400 line-clamp-2 mb-3 leading-relaxed">{talent.bio}</p>
+                      <p className="hidden sm:block text-xs text-gray-400 line-clamp-2 mb-2 sm:mb-3 leading-relaxed">{talent.bio}</p>
                     )}
 
                     {/* Skills */}
@@ -665,7 +665,7 @@ export default function LandingPage() {
                     )}
 
                     {/* Stats row */}
-                    <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
+                    <div className="flex items-center gap-2 sm:gap-3 text-xs text-gray-500 mb-2 sm:mb-3">
                       {talent.jobs_completed > 0 && (
                         <span className="flex items-center gap-1">
                           <Briefcase className="w-3 h-3" />
@@ -726,26 +726,26 @@ export default function LandingPage() {
       </section>
 
       {/* Featured Reviews */}
-      <section className="py-16 sm:py-28 bg-gradient-to-b from-gray-50 via-white to-gray-50 relative overflow-hidden">
+      <section className="py-10 sm:py-16 lg:py-20 bg-gradient-to-b from-gray-50 via-white to-gray-50 relative overflow-hidden">
         {/* Decorative background elements */}
         <div className="absolute top-0 left-0 w-72 h-72 bg-green-100/30 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-yellow-100/20 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center mb-12 sm:mb-16">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-50 to-amber-50 text-amber-700 px-5 py-2 rounded-full text-sm font-semibold mb-5 border border-amber-100 shadow-sm">
+          <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-50 to-amber-50 text-amber-700 px-4 py-1.5 rounded-full text-sm font-semibold mb-4 border border-amber-100 shadow-sm">
               <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
               Trusted by Thousands
             </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
               What Clients Are Saying
             </h2>
-            <p className="text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto">
+            <p className="text-sm sm:text-lg text-gray-500 max-w-2xl mx-auto">
               Real reviews from real clients about our talented freelancers
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
             {reviewsLoading ? (
               Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="bg-white rounded-2xl p-6 animate-pulse shadow-sm border border-gray-100">
@@ -770,7 +770,7 @@ export default function LandingPage() {
               featuredReviews.map((review, idx) => (
                 <div
                   key={review.id}
-                  className={`group relative bg-white rounded-2xl border shadow-sm hover:shadow-xl transition-all duration-300 p-6 flex flex-col ${
+                  className={`group relative bg-white rounded-2xl border shadow-sm hover:shadow-md transition-all duration-300 p-4 sm:p-6 flex flex-col ${
                     idx === 0 ? 'border-green-200 ring-1 ring-green-100' : 'border-gray-100 hover:border-green-200'
                   }`}
                 >
@@ -784,7 +784,7 @@ export default function LandingPage() {
 
                   {/* Reviewer info at top */}
                   {review.reviewer && (
-                    <div className="flex items-center gap-3 mb-4">
+                    <div className="flex items-center gap-2 mb-3">
                       {review.reviewer.avatar_url ? (
                         <img src={review.reviewer.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100" />
                       ) : (
@@ -804,7 +804,7 @@ export default function LandingPage() {
                   )}
 
                   {/* Star rating */}
-                  <div className="flex items-center gap-1 mb-3">
+                  <div className="flex items-center gap-0.5 sm:gap-1 mb-2 sm:mb-3">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <Star
                         key={i}
@@ -819,7 +819,7 @@ export default function LandingPage() {
                   </div>
 
                   {/* Review text */}
-                  <p className="text-sm text-gray-600 leading-relaxed line-clamp-4 mb-4 flex-1 italic">
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-3 sm:line-clamp-4 mb-3 sm:mb-4 flex-1 italic">
                     &ldquo;{review.comment}&rdquo;
                   </p>
 
@@ -935,7 +935,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {adsLoading ? (
               Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 animate-pulse">
@@ -957,7 +957,7 @@ export default function LandingPage() {
                 return (
                   <div
                     key={ad.id}
-                    className={`hk-ad-card relative bg-gradient-to-br ${colors.bg} rounded-2xl p-6 border ${colors.border} shadow-lg transition-all duration-300 group cursor-pointer`}
+                    className={`hk-ad-card relative bg-gradient-to-br ${colors.bg} rounded-2xl p-4 sm:p-6 border ${colors.border} shadow-lg transition-all duration-300 group cursor-pointer`}
                   >
                     <div className="hk-shimmer" />
                     <div className="relative z-10">
@@ -1000,13 +1000,13 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section className="py-12 sm:py-24 bg-gray-50">
+      <section className="py-10 sm:py-16 lg:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10 sm:mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
               How It Works
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-sm sm:text-xl text-gray-600 max-w-2xl mx-auto">
               Get started in minutes. Whether you are hiring or hustling, we have made it simple.
             </p>
           </div>
@@ -1039,7 +1039,7 @@ export default function LandingPage() {
               },
             ].map((item) => (
               <div key={item.step} className="relative">
-                <div className="text-4xl sm:text-6xl font-bold text-gray-100 mb-2 sm:mb-4">{item.step}</div>
+                <div className="text-3xl sm:text-5xl font-bold text-gray-100 mb-1 sm:mb-4">{item.step}</div>
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-xl flex items-center justify-center mb-3 sm:mb-4">
                   <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
                 </div>
@@ -1067,26 +1067,26 @@ export default function LandingPage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10">
             <div>
-              <div className="inline-flex items-center gap-2 bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
+              <div className="inline-flex items-center gap-2 bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-sm font-medium mb-3 sm:mb-4">
                 <span className="relative flex h-2.5 w-2.5">
                   <span className="hk-live-dot absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
                 </span>
                 Live Activity
               </div>
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">
                 The Hustle is <span className="text-green-600">Happening Now</span>
               </h2>
-              <p className="text-lg text-gray-500 max-w-lg">
+              <p className="text-sm sm:text-lg text-gray-500 max-w-lg">
                 Real activity from the platform right now. Jobs posted, talent hired, money earned.
               </p>
             </div>
 
             {/* Live stats counters */}
             {liveStats && (
-              <div className="flex gap-6 mt-6 md:mt-0">
+              <div className="flex flex-wrap gap-4 mt-5 md:mt-0">
                 {liveStats.active_jobs > 0 && (
                   <div className="text-center">
                     <div className="text-2xl font-bold text-green-600">{liveStats.active_jobs}</div>
@@ -1134,7 +1134,7 @@ export default function LandingPage() {
           )}
 
           {/* Feed cards grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {feedLoading ? (
               Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="bg-gray-50 rounded-xl p-4 animate-pulse">
@@ -1196,7 +1196,7 @@ export default function LandingPage() {
       </section>
 
       {/* Career Intelligence Teaser */}
-      <section className="py-16 bg-gradient-to-br from-indigo-900 via-purple-900 to-gray-900 relative overflow-hidden">
+      <section className="py-10 sm:py-16 bg-gradient-to-br from-indigo-900 via-purple-900 to-gray-900 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl" />
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1206,10 +1206,10 @@ export default function LandingPage() {
                 <Brain className="w-4 h-4" />
                 AI-Powered — Only on HustleKE
               </div>
-              <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3">
                 Career Intelligence
               </h2>
-              <p className="text-gray-300 mb-6 max-w-md">
+              <p className="text-sm sm:text-base text-gray-300 mb-4 sm:mb-6 max-w-md">
                 Know which skills pay the most. See where demand beats supply. Get AI-powered earnings projections based on real market data. No other platform offers this.
               </p>
               <div className="flex flex-wrap gap-3 mb-6">
@@ -1257,24 +1257,24 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 sm:py-24 bg-gradient-to-br from-green-600 to-green-700">
+      <section className="py-10 sm:py-16 lg:py-24 bg-gradient-to-br from-green-600 to-green-700">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl lg:text-5xl font-bold text-white mb-6">
+          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
             {content.cta_title}
           </h2>
-          <p className="text-xl text-green-100 mb-8 max-w-2xl mx-auto">
+          <p className="text-base sm:text-xl text-green-100 mb-6 sm:mb-8 max-w-2xl mx-auto">
             {content.cta_subtitle}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <Link 
               href="/signup?type=freelancer"
-              className="bg-white text-green-700 hover:bg-gray-100 px-8 py-4 rounded-xl font-semibold text-lg transition-all"
+              className="bg-white text-green-700 hover:bg-gray-100 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all min-h-[52px] flex items-center justify-center"
             >
               I am a Freelancer
             </Link>
             <Link 
               href="/signup?type=client"
-              className="bg-green-500 text-white hover:bg-green-400 px-8 py-4 rounded-xl font-semibold text-lg transition-all"
+              className="bg-green-500 text-white hover:bg-green-400 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all min-h-[52px] flex items-center justify-center"
             >
               I want to Hire
             </Link>

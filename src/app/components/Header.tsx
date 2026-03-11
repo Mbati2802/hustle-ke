@@ -564,13 +564,13 @@ export default function Header({ activeLink }: HeaderProps) {
                 <hr className="border-gray-100 my-2" />
                 {isLoggedIn ? (
                   <div className="px-4 pt-2 space-y-2">
-                    <Link href={profile?.role === 'Admin' ? '/admin' : '/dashboard'} className="block text-center py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium" onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
-                    <button onClick={() => { setMobileMenuOpen(false); logout() }} className="w-full text-center py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50">Log Out</button>
+                    <Link href={profile?.role === 'Admin' ? '/admin' : '/dashboard'} className="block text-center py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold min-h-[48px] flex items-center justify-center" onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
+                    <button onClick={() => { setMobileMenuOpen(false); logout() }} className="w-full text-center py-3 border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 min-h-[48px]">Log Out</button>
                   </div>
                 ) : (
                   <div className="flex gap-3 px-4 pt-2">
-                    <button onClick={() => { setMobileMenuOpen(false); openLogin() }} className="flex-1 text-center py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50">Log In</button>
-                    <button onClick={() => { setMobileMenuOpen(false); openSignup() }} className="flex-1 text-center py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium">Sign Up</button>
+                    <button onClick={() => { setMobileMenuOpen(false); openLogin() }} className="flex-1 text-center py-3 border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 min-h-[48px]">Log In</button>
+                    <button onClick={() => { setMobileMenuOpen(false); openSignup() }} className="flex-1 text-center py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold min-h-[48px]">Sign Up</button>
                   </div>
                 )}
               </div>

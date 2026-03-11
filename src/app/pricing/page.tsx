@@ -88,22 +88,22 @@ export default function PricingPage() {
           <div className="absolute top-10 right-20 w-72 h-72 bg-green-500/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />
 
-          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20 text-center">
-            <div className="inline-flex items-center gap-2 bg-green-500/15 text-green-400 px-4 py-1.5 rounded-full text-sm font-medium mb-6">
+          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-20 text-center">
+            <div className="inline-flex items-center gap-2 bg-green-500/15 text-green-400 px-4 py-1.5 rounded-full text-sm font-medium mb-4 sm:mb-6">
               <DollarSign className="w-4 h-4" />
               Pricing
             </div>
 
-            <h1 className="text-4xl lg:text-5xl font-bold text-white mb-5 leading-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-5 leading-tight">
               {content.hero_title.split('Pricing')[0]}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300">Pricing</span>
             </h1>
 
-            <p className="text-lg text-gray-400 max-w-xl mx-auto mb-8">
+            <p className="text-sm sm:text-lg text-gray-400 max-w-xl mx-auto mb-6 sm:mb-8">
               {content.hero_subtitle}
             </p>
 
-            <div className="flex items-center justify-center gap-6 text-sm text-gray-400">
+            <div className="hidden sm:flex items-center justify-center gap-6 text-sm text-gray-400">
               {[
                 { icon: Shield, label: 'Escrow Protected' },
                 { icon: Smartphone, label: 'M-Pesa Payments' },
@@ -119,9 +119,9 @@ export default function PricingPage() {
         </section>
 
         {/* Pricing cards */}
-        <section className="py-16 px-4 -mt-0 bg-gray-50">
+        <section className="py-10 sm:py-14 lg:py-16 px-4 bg-gray-50">
           <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               {content.plans.map((plan: { name: string; price: string; period: string; desc: string; color: string; popular: boolean; features: string[]; cta: string; href: string }, i: number) => {
                 const Icon = planIcons[i] || Zap
                 const isPro = plan.popular
@@ -141,8 +141,8 @@ export default function PricingPage() {
                       </div>
                     )}
 
-                    <div className="p-8">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${
+                    <div className="p-5 sm:p-8">
+                      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-3 sm:mb-4 ${
                         isPro ? 'bg-amber-100' : isEnterprise ? 'bg-green-100' : 'bg-gray-100'
                       }`}>
                         <Icon className={`w-6 h-6 ${
@@ -150,11 +150,11 @@ export default function PricingPage() {
                         }`} />
                       </div>
 
-                      <h3 className="text-xl font-bold text-gray-900 mb-1">{plan.name}</h3>
-                      <p className="text-sm text-gray-500 mb-5">{plan.desc}</p>
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1">{plan.name}</h3>
+                      <p className="text-sm text-gray-500 mb-3 sm:mb-5">{plan.desc}</p>
 
-                      <div className="mb-6">
-                        <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
+                      <div className="mb-4 sm:mb-6">
+                        <span className="text-3xl sm:text-4xl font-bold text-gray-900">{plan.price}</span>
                         {plan.period && <span className="text-gray-500 ml-1">{plan.period}</span>}
                       </div>
 
@@ -173,7 +173,7 @@ export default function PricingPage() {
                       </Link>
                     </div>
 
-                    <div className="border-t border-gray-100 px-8 py-6">
+                    <div className="border-t border-gray-100 px-5 sm:px-8 py-4 sm:py-6">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">What&rsquo;s included</p>
                       <ul className="space-y-3">
                         {plan.features.map((f: string) => (
@@ -211,18 +211,19 @@ export default function PricingPage() {
         </section>
 
         {/* Feature comparison table */}
-        <section className="py-12 sm:py-20 bg-white">
+        <section className="py-10 sm:py-20 bg-white">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-14">
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+            <div className="text-center mb-8 sm:mb-14">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
                 Detailed <span className="text-green-600">Comparison</span>
               </h2>
-              <p className="text-lg text-gray-500 max-w-xl mx-auto">
+              <p className="text-sm sm:text-lg text-gray-500 max-w-xl mx-auto">
                 See exactly what you get on each plan
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+            <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden min-w-[480px]">
               {/* Header */}
               <div className="grid grid-cols-4 text-center border-b border-gray-100">
                 <div className="p-5 text-left">
@@ -257,22 +258,23 @@ export default function PricingPage() {
                 </div>
               ))}
             </div>
+            </div>
           </div>
         </section>
 
         {/* How fees work */}
-        <section className="py-12 sm:py-20 bg-gray-50">
+        <section className="py-10 sm:py-20 bg-gray-50">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-14">
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+            <div className="text-center mb-8 sm:mb-14">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
                 How Fees <span className="text-green-600">Work</span>
               </h2>
-              <p className="text-lg text-gray-500 max-w-xl mx-auto">
+              <p className="text-sm sm:text-lg text-gray-500 max-w-xl mx-auto">
                 We only charge when you get paid. No upfront costs, no monthly minimums on Free.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
               {[
                 {
                   icon: Briefcase,

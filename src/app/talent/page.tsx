@@ -259,12 +259,12 @@ export default function TalentPage() {
         <div className="absolute top-10 right-20 w-72 h-72 bg-green-500/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl lg:text-4xl font-bold text-white mb-3">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3">
               Find Top <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300">Kenyan Talent</span>
             </h1>
-            <p className="text-gray-400 text-lg max-w-lg mx-auto">
+            <p className="text-gray-400 text-sm sm:text-lg max-w-lg mx-auto">
               {total > 0 ? `Browse ${total} verified freelancers ready for your project` : 'Connect with skilled, verified freelancers across Kenya'}
             </p>
           </div>
@@ -278,11 +278,11 @@ export default function TalentPage() {
                 value={searchInput}
                 onChange={(e) => handleSearchInput(e.target.value)}
                 placeholder="Search by skill, name, or role..."
-                className="w-full pl-12 pr-32 py-4 bg-white rounded-2xl text-gray-900 placeholder-gray-400 border-2 border-transparent focus:border-green-500 focus:outline-none shadow-lg text-base"
+                className="w-full pl-11 pr-24 sm:pr-32 py-3.5 sm:py-4 bg-white rounded-2xl text-gray-900 placeholder-gray-400 border-2 border-transparent focus:border-green-500 focus:outline-none shadow-lg text-base"
               />
               <button
                 onClick={() => fetchTalent(1)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-green-600 hover:bg-green-500 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-green-600 hover:bg-green-500 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl font-semibold text-sm transition-colors"
               >
                 Search
               </button>
@@ -355,7 +355,7 @@ export default function TalentPage() {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-5 sm:py-8">
         <div className="flex gap-8">
           {/* Sidebar */}
           <aside className="hidden lg:block w-72 flex-shrink-0">
@@ -413,7 +413,7 @@ export default function TalentPage() {
 
             {/* Loading */}
             {loading ? (
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {[1, 2, 3, 4, 5, 6].map(i => (
                   <div key={i} className="bg-white rounded-2xl p-6 border border-gray-200 animate-pulse">
                     <div className="flex items-start gap-4 mb-4">
@@ -434,7 +434,7 @@ export default function TalentPage() {
                 ))}
               </div>
             ) : profiles.length === 0 ? (
-              <div className="bg-white rounded-2xl p-16 border border-gray-200 text-center">
+              <div className="bg-white rounded-2xl p-8 sm:p-16 border border-gray-200 text-center">
                 <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <Users className="w-8 h-8 text-gray-300" />
                 </div>
@@ -457,7 +457,7 @@ export default function TalentPage() {
               </div>
             ) : (
               <>
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   {profiles.map((person) => {
                     const scoreColor = getScoreColor(person.hustle_score)
                     return (
@@ -466,14 +466,14 @@ export default function TalentPage() {
                         href={`/talent/${person.id}`}
                         className="bg-white rounded-2xl border border-gray-200 hover:border-green-200 hover:shadow-md transition-all group block"
                       >
-                        <div className="p-5">
+                        <div className="p-4 sm:p-5">
                           {/* Header row */}
-                          <div className="flex items-start gap-4 mb-4">
+                          <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
                             <div className="relative shrink-0">
                               {person.avatar_url ? (
-                                <img src={person.avatar_url} alt={person.full_name} className="w-14 h-14 rounded-2xl object-cover" />
+                                <img src={person.avatar_url} alt={person.full_name} className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl object-cover" />
                               ) : (
-                                <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white font-bold text-lg">
+                                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white font-bold text-base sm:text-lg">
                                   {getInitials(person.full_name)}
                                 </div>
                               )}
@@ -483,7 +483,7 @@ export default function TalentPage() {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-                                <h3 className="font-bold text-gray-900 group-hover:text-green-600 transition-colors">{person.full_name}</h3>
+                                <h3 className="font-bold text-sm text-gray-900 group-hover:text-green-600 transition-colors">{person.full_name}</h3>
                                 {person.verification_status === 'Verified' && (
                                   <Shield className="w-4 h-4 text-green-500 shrink-0" />
                                 )}
@@ -509,7 +509,7 @@ export default function TalentPage() {
                           </div>
 
                           {/* Stats row */}
-                          <div className="flex items-center gap-3 mb-4">
+                          <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                             <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-semibold ${scoreColor}`}>
                               <Award className="w-3.5 h-3.5" />
                               {person.hustle_score}
@@ -546,7 +546,7 @@ export default function TalentPage() {
                         </div>
 
                         {/* Bottom bar */}
-                        <div className="px-5 py-3 bg-gray-50 border-t border-gray-100 rounded-b-2xl flex items-center justify-between">
+                        <div className="px-4 sm:px-5 py-2.5 sm:py-3 bg-gray-50 border-t border-gray-100 rounded-b-2xl flex items-center justify-between">
                           <span className="text-xs text-gray-400">
                             {person.availability === 'available'
                               ? '🟢 Available now'

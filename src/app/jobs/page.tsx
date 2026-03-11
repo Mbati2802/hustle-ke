@@ -201,12 +201,12 @@ export default function JobsPage() {
         <div className="absolute top-10 right-20 w-72 h-72 bg-green-500/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 left-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl lg:text-4xl font-bold text-white mb-3">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3">
               Find Your Next <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300">Hustle</span>
             </h1>
-            <p className="text-gray-400 text-lg max-w-lg mx-auto">
+            <p className="text-gray-400 text-sm sm:text-lg max-w-lg mx-auto">
               {total > 0 ? `${total} open jobs waiting for talented freelancers like you` : 'Browse open jobs from verified Kenyan clients'}
             </p>
           </div>
@@ -220,11 +220,11 @@ export default function JobsPage() {
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
                 placeholder="Search by skill, title, or keyword..."
-                className="w-full pl-12 pr-32 py-4 bg-white rounded-2xl text-gray-900 placeholder-gray-400 border-2 border-transparent focus:border-green-500 focus:outline-none shadow-lg text-base"
+                className="w-full pl-11 pr-24 sm:pr-32 py-3.5 sm:py-4 bg-white rounded-2xl text-gray-900 placeholder-gray-400 border-2 border-transparent focus:border-green-500 focus:outline-none shadow-lg text-base"
               />
               <button
                 onClick={() => fetchJobs()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-green-600 hover:bg-green-500 text-white px-6 py-2.5 rounded-xl font-semibold text-sm transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-green-600 hover:bg-green-500 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl font-semibold text-sm transition-colors"
               >
                 Search
               </button>
@@ -447,7 +447,7 @@ export default function JobsPage() {
                 ))}
               </div>
             ) : jobs.length === 0 ? (
-              <div className="bg-white rounded-2xl p-16 border border-gray-200 text-center">
+              <div className="bg-white rounded-2xl p-8 sm:p-16 border border-gray-200 text-center">
                 <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <Briefcase className="w-8 h-8 text-gray-300" />
                 </div>
@@ -543,45 +543,42 @@ export default function JobsPage() {
 
                         {/* Meta row */}
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                          <div className="flex items-center gap-2 sm:gap-4 text-xs text-gray-500 flex-wrap min-w-0">
+                          <div className="flex items-center gap-2 sm:gap-3 text-xs text-gray-500 flex-wrap min-w-0">
                             {/* Client/Org info */}
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1">
                               {isOrgJob ? (
                                 <div className="flex items-center gap-1 text-slate-700">
-                                  <Building2 className="w-3.5 h-3.5 text-slate-500" />
-                                  <span className="font-medium">{job.organization?.name}</span>
+                                  <Building2 className="w-3 h-3 text-slate-500" />
+                                  <span className="font-medium truncate max-w-[80px] sm:max-w-none">{job.organization?.name}</span>
                                 </div>
                               ) : job.client?.verification_status === 'Verified' ? (
                                 <div className="flex items-center gap-1 text-green-600">
-                                  <Shield className="w-3.5 h-3.5" />
-                                  <span className="font-medium">{job.client?.full_name || 'Client'}</span>
+                                  <Shield className="w-3 h-3" />
+                                  <span className="font-medium truncate max-w-[80px] sm:max-w-none">{job.client?.full_name || 'Client'}</span>
                                 </div>
                               ) : (
-                                <span className="text-gray-600">{job.client?.full_name || 'Client'}</span>
+                                <span className="text-gray-600 truncate max-w-[80px] sm:max-w-none">{job.client?.full_name || 'Client'}</span>
                               )}
                             </div>
-                            <span className="text-gray-200">|</span>
 
                             {/* Time */}
                             <div className="flex items-center gap-1">
-                              <Clock className="w-3.5 h-3.5" />
+                              <Clock className="w-3 h-3" />
                               {timeAgo(job.created_at)}
                             </div>
-                            <span className="text-gray-200">|</span>
 
                             {/* Location */}
                             <div className="flex items-center gap-1">
                               {job.remote_allowed ? (
-                                <><Globe className="w-3.5 h-3.5 text-blue-500" /> <span className="text-blue-600 font-medium">Remote</span></>
+                                <><Globe className="w-3 h-3 text-blue-500" /> <span className="text-blue-600 font-medium">Remote</span></>
                               ) : (
-                                <><MapPin className="w-3.5 h-3.5" /> {job.location_preference || 'Any'}</>
+                                <><MapPin className="w-3 h-3" /> {job.location_preference || 'Any'}</>
                               )}
                             </div>
-                            <span className="hidden sm:inline text-gray-200">|</span>
 
                             {/* Proposals */}
                             <div className="hidden sm:flex items-center gap-1">
-                              <Users className="w-3.5 h-3.5" />
+                              <Users className="w-3 h-3" />
                               <span>{job.proposals_count || 0} proposals</span>
                             </div>
                           </div>

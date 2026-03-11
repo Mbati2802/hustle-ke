@@ -172,12 +172,12 @@ export default function AuthModal() {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeModal} />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] sm:mx-4 mx-3 overflow-y-auto">
+      <div className="relative bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-md max-h-[92vh] sm:mx-4 overflow-y-auto">
         {/* Close button */}
         <button onClick={closeModal} className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors z-10">
           <X className="w-5 h-5" />
@@ -185,7 +185,7 @@ export default function AuthModal() {
 
         {/* ═══ LOGIN VIEW ═══ */}
         {view === 'login' && (
-          <div className="p-6 pt-8">
+          <div className="p-5 sm:p-6 pt-6 sm:pt-8">
             <div className="text-center mb-6">
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3">
                 <Zap className="w-6 h-6 text-green-600" />
@@ -205,7 +205,7 @@ export default function AuthModal() {
                   <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input type="email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)}
                     placeholder="name@example.com" required
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
                 </div>
               </div>
 
@@ -215,7 +215,7 @@ export default function AuthModal() {
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <input type={showLoginPassword ? 'text' : 'password'} value={loginPassword}
                     onChange={e => setLoginPassword(e.target.value)} placeholder="Enter your password" required
-                    className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
+                    className="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
                   <button type="button" onClick={() => setShowLoginPassword(!showLoginPassword)}
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                     {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -234,7 +234,7 @@ export default function AuthModal() {
               </div>
 
               <button type="submit" disabled={loginLoading}
-                className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white py-2.5 rounded-xl font-semibold transition-all flex items-center justify-center gap-2">
+                className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white py-3 min-h-[48px] rounded-xl font-semibold transition-all flex items-center justify-center gap-2">
                 {loginLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Logging in...</> : <>Log In <ArrowRight className="w-4 h-4" /></>}
               </button>
             </form>
@@ -244,7 +244,7 @@ export default function AuthModal() {
               <div className="relative flex justify-center"><span className="bg-white px-4 text-xs text-gray-400">or</span></div>
             </div>
 
-            <button className="w-full border-2 border-green-100 hover:border-green-300 bg-green-50/50 text-green-700 py-2.5 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 text-sm">
+            <button className="w-full border-2 border-green-100 hover:border-green-300 bg-green-50/50 text-green-700 py-3 min-h-[48px] rounded-xl font-semibold transition-all flex items-center justify-center gap-2 text-sm">
               <Smartphone className="w-4 h-4" /> M-Pesa Login
             </button>
 
@@ -263,7 +263,7 @@ export default function AuthModal() {
 
         {/* ═══ SIGNUP VIEW ═══ */}
         {view === 'signup' && (
-          <div className="p-6 pt-8">
+          <div className="p-5 sm:p-6 pt-6 sm:pt-8">
             <div className="text-center mb-5">
               <h2 className="text-xl font-bold text-gray-900">Create Account</h2>
               <p className="text-sm text-gray-500 mt-1">Join Kenya&apos;s fastest-growing freelance marketplace</p>
@@ -326,7 +326,7 @@ export default function AuthModal() {
                   <div className="relative">
                     <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input type="text" value={signupForm.fullName} onChange={e => setSignupForm({ ...signupForm, fullName: e.target.value })}
-                      placeholder="John Kamau" required className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
+                      placeholder="John Kamau" required className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
                   </div>
                 </div>
                 <div>
@@ -334,7 +334,7 @@ export default function AuthModal() {
                   <div className="relative">
                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input type="email" value={signupForm.email} onChange={e => setSignupForm({ ...signupForm, email: e.target.value })}
-                      placeholder="name@example.com" required className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
+                      placeholder="name@example.com" required className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
                   </div>
                 </div>
                 <div>
@@ -342,7 +342,7 @@ export default function AuthModal() {
                   <div className="relative">
                     <Smartphone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input type="tel" value={signupForm.phone} onChange={e => setSignupForm({ ...signupForm, phone: e.target.value })}
-                      placeholder="254712345678" required className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
+                      placeholder="254712345678" required className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
                   </div>
                 </div>
                 <div>
@@ -352,7 +352,7 @@ export default function AuthModal() {
                     <input type={showSignupPassword ? 'text' : 'password'} value={signupForm.password}
                       onChange={e => setSignupForm({ ...signupForm, password: e.target.value })}
                       placeholder="Min. 8 characters" required minLength={8}
-                      className="w-full pl-10 pr-10 py-2.5 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
+                      className="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
                     <button type="button" onClick={() => setShowSignupPassword(!showSignupPassword)}
                       className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                       {showSignupPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -364,7 +364,7 @@ export default function AuthModal() {
                   <div className="relative">
                     <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <select value={signupForm.county} onChange={e => setSignupForm({ ...signupForm, county: e.target.value })}
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm appearance-none bg-white">
+                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm appearance-none bg-white">
                       <option value="">Select county</option>
                       {counties.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
@@ -377,7 +377,7 @@ export default function AuthModal() {
                   }
                   setSignupError('')
                   setSignupStep(3)
-                }} className="w-full bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2">
+                }} className="w-full bg-green-600 hover:bg-green-700 text-white py-3 min-h-[48px] rounded-xl font-semibold flex items-center justify-center gap-2">
                   Continue <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -436,7 +436,7 @@ export default function AuthModal() {
                 </label>
 
                 <button type="submit" disabled={signupLoading || !agreed}
-                  className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2">
+                  className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white py-3 min-h-[48px] rounded-xl font-semibold flex items-center justify-center gap-2">
                   {signupLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Creating account...</> : <>Create Account <ArrowRight className="w-4 h-4" /></>}
                 </button>
               </form>
@@ -446,7 +446,7 @@ export default function AuthModal() {
 
         {/* ═══ FORGOT PASSWORD VIEW ═══ */}
         {view === 'forgot-password' && (
-          <div className="p-6 pt-8">
+          <div className="p-5 sm:p-6 pt-6 sm:pt-8">
             <div className="text-center mb-6">
               <h2 className="text-xl font-bold text-gray-900">Reset Password</h2>
               <p className="text-sm text-gray-500 mt-1">We&apos;ll send you a reset link</p>
@@ -469,11 +469,11 @@ export default function AuthModal() {
                     <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input type="email" value={forgotEmail} onChange={e => setForgotEmail(e.target.value)}
                       placeholder="name@example.com" required
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
+                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-sm" />
                   </div>
                 </div>
                 <button type="submit" disabled={forgotLoading}
-                  className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2">
+                  className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white py-3 min-h-[48px] rounded-xl font-semibold flex items-center justify-center gap-2">
                   {forgotLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Send Reset Link'}
                 </button>
                 <button type="button" onClick={() => setView('login')} className="w-full text-gray-500 hover:text-gray-700 text-sm font-medium">
